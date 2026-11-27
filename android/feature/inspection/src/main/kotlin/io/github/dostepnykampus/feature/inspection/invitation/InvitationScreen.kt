@@ -9,7 +9,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -32,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -40,7 +36,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
@@ -51,6 +46,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.StaffResultMessage
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.inspection.R
 
@@ -108,44 +104,31 @@ fun InvitationContent(
 ) {
     val problem = problemOf(state.stage)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.zaproszenie_naglowek), onBack = onBack)
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.zaproszenie_naglowek), onBack = onBack) },
+            actions = { if (problem == null) PinnedActionBar { SendButton(onSend) } },
+        ) {
             if (problem != null) {
                 val onAction = if (problem == StaffProblem.FORBIDDEN) onLeave else onSend
                 StaffProblemMessage(problem = problem, onAction = onAction)
             } else {
-                InvitationBody(state = state, onEdit = onEdit, onChoose = onChoose, onSend = onSend)
+                InvitationBody(state = state, onEdit = onEdit, onChoose = onChoose)
             }
         }
     }
 }
 
 @Composable
-private fun ColumnScope.InvitationBody(
-    state: InvitationUiState,
-    onEdit: (String) -> Unit,
-    onChoose: (StaffRole) -> Unit,
-    onSend: () -> Unit,
-) {
-    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+private fun InvitationBody(state: InvitationUiState, onEdit: (String) -> Unit, onChoose: (StaffRole) -> Unit) {
     Column(
-        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+        modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
     ) {
         Message(state)
-        EmailField(
-            email = state.email,
-            isWrong = InvitationProblem.EMAIL in state.problems,
-            onEdit = onEdit,
-        )
-        Roles(
-            chosen = state.role,
-            isMissing = InvitationProblem.ROLE in state.problems,
-            onChoose = onChoose,
-        )
-        if (isInContent) SendButton(onSend)
+        EmailField(email = state.email, isWrong = InvitationProblem.EMAIL in state.problems, onEdit = onEdit)
+        Roles(chosen = state.role, isMissing = InvitationProblem.ROLE in state.problems, onChoose = onChoose)
     }
-    if (!isInContent) PinnedActionBar { SendButton(onSend) }
 }
 
 private fun problemOf(stage: InvitationStage): StaffProblem? =
@@ -153,7 +136,10 @@ private fun problemOf(stage: InvitationStage): StaffProblem? =
         InvitationStage.OFFLINE -> StaffProblem.OFFLINE
         InvitationStage.SERVER_ERROR -> StaffProblem.SERVER
         InvitationStage.FORBIDDEN -> StaffProblem.FORBIDDEN
-        InvitationStage.IDLE, InvitationStage.SENDING, InvitationStage.SENT, InvitationStage.ROLE_ADDED -> null
+        InvitationStage.IDLE,
+        InvitationStage.SENDING,
+        InvitationStage.SENT,
+        InvitationStage.ROLE_ADDED -> null
     }
 
 @Composable
@@ -211,9 +197,7 @@ private fun Roles(chosen: StaffRole?, isMissing: Boolean, onChoose: (StaffRole) 
 }
 
 @Composable
-private fun SectionTitle(
-    @StringRes text: Int,
-) {
+private fun SectionTitle(@StringRes text: Int) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { heading() },

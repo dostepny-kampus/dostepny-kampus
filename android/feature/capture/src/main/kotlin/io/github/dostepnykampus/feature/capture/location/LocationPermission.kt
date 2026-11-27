@@ -18,11 +18,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,6 +38,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.feature.capture.R
 
 private val LOCATION = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -86,8 +86,8 @@ enum class LocationPermissionState(
 }
 
 /**
- * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej ekran prośby odpowiedni do stanu zgody.
- * Po powrocie z ustawień sprawdza zgodę jeszcze raz.
+ * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej ekran prośby odpowiedni do stanu zgody. Po
+ * powrocie z ustawień sprawdza zgodę jeszcze raz.
  *
  * Wymagania: NFR-27, BR-8
  *
@@ -138,11 +138,7 @@ internal fun LocationPermissionGate(
     if (current == null) {
         content()
     } else {
-        permission(
-            current,
-            { request.launch(LOCATION) },
-            { context.startActivity(context.appSettings()) },
-        )
+        permission(current, { request.launch(LOCATION) }, { context.startActivity(context.appSettings()) })
     }
 }
 
@@ -195,13 +191,12 @@ internal fun MeasureFrame(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
-            Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
-                content = content,
-            )
-            actions()
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack) },
+            actions = { actions() },
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(Odstepy.m), content = content)
         }
     }
 }

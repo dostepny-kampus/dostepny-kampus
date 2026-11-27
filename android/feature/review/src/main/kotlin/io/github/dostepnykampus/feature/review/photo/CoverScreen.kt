@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.review.photo
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,14 +33,15 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.feature.review.R
-import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * Zasłanianie twarzy i tablic na zdjęciu [photoId] zgłoszenia [submissionId] ze stanem z modelu widoku.
@@ -85,8 +83,8 @@ fun CoverScreen(
 }
 
 /**
- * Widok zasłaniania bez modelu widoku: napis, zdjęcie z zasłonami, przyciski zaznaczonej zasłony,
- * „Zapisz zdjęcie” w przypiętym pasie, brak sieci przy zapisie, wczytywanie i stany wspólne.
+ * Widok zasłaniania bez modelu widoku: napis, zdjęcie z zasłonami, przyciski zaznaczonej zasłony, „Zapisz zdjęcie” w
+ * przypiętym pasie, brak sieci przy zapisie, wczytywanie i stany wspólne.
  *
  * Wymagania: BR-15, NFR-17, NFR-25, NFR-53
  *
@@ -97,8 +95,11 @@ fun CoverScreen(
 @Composable
 internal fun CoverContent(state: CoverUiState, actions: CoverActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.zaslona_naglowek), onBack = actions.onBack)
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.zaslona_naglowek), onBack = actions.onBack) },
+            actions = { if (state is CoverUiState.Ready) PinnedActionBar { SaveButton(state, actions) } },
+        ) {
             when (state) {
                 CoverUiState.Loading -> Loading()
                 is CoverUiState.Ready -> Ready(state = state, actions = actions)
@@ -119,17 +120,11 @@ private fun Loading() {
 }
 
 @Composable
-private fun ColumnScope.Ready(state: CoverUiState.Ready, actions: CoverActions) {
+private fun Ready(state: CoverUiState.Ready, actions: CoverActions) {
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    val saveButton: @Composable () -> Unit = {
-        PinnedButton(
-            text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
-            onClick = actions.onSave,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
+
     Column(
-        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+        modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
     ) {
         if (state.isOffline) {
@@ -143,9 +138,16 @@ private fun ColumnScope.Ready(state: CoverUiState.Ready, actions: CoverActions) 
         Text(stringResource(R.string.zaslona_dotknij), style = MaterialTheme.typography.bodyLarge)
         CoverPhotoView(photo = state.photo, covers = state.covers, onTap = actions.onTap)
         SelectedCover(covers = state.covers, actions = actions, isLarge = isLarge)
-        if (isLarge) saveButton()
     }
-    if (!isLarge) PinnedActionBar { saveButton() }
+}
+
+@Composable
+private fun SaveButton(state: CoverUiState.Ready, actions: CoverActions) {
+    PinnedButton(
+        text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
+        onClick = actions.onSave,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

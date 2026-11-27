@@ -22,9 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,8 +49,9 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.readableWidth
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
@@ -81,30 +80,22 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
     }
     val onNext: () -> Unit = { if (isLast) onOpenMap() else step++ }
     BackHandler(enabled = step > 0, onBack = onBack)
-    val isLargeFont = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.pomoc_tytul), onBack = onBack)
-            val actions =
-                @Composable {
-                    NextAndSkipButtons(
-                        isLast = isLast,
-                        onNext = onNext,
-                        onOpenMap = onOpenMap,
-                        isInContent = isLargeFont,
-                    )
-                }
+        AdaptiveScreen(
+            modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.pomoc_tytul), onBack = onBack) },
+            actions = { NextAndSkipButtons(isLast = isLast, onNext = onNext, onOpenMap = onOpenMap) },
+            contentKey = step,
+        ) {
             key(step) {
                 Column(
-                    modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                    modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                     verticalArrangement = Arrangement.spacedBy(Odstepy.m),
                 ) {
                     StepNumberAndBar(step = step)
                     StepTitleTextAndImage(HelpSteps[step])
-                    if (isLargeFont) actions()
                 }
             }
-            if (!isLargeFont) actions()
         }
     }
 }
@@ -164,8 +155,7 @@ private fun SearchFieldExample(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.pomoc_budynek_pole),
             modifier =
-                Modifier
-                    .heightIn(min = CeleDotyku.przycisk)
+                Modifier.heightIn(min = CeleDotyku.przycisk)
                     .wrapContentHeight()
                     .padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -185,16 +175,15 @@ private fun EntranceExample(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun NextAndSkipButtons(isLast: Boolean, onNext: () -> Unit, onOpenMap: () -> Unit, isInContent: Boolean) {
+private fun NextAndSkipButtons(isLast: Boolean, onNext: () -> Unit, onOpenMap: () -> Unit) {
     val next = stringResource(if (isLast) R.string.pomoc_zacznij else R.string.pomoc_dalej)
     val skip = stringResource(R.string.pomoc_pomin)
     val buttons: @Composable (Modifier) -> Unit = { width ->
         PinnedButton(text = next, onClick = onNext, modifier = width)
         PinnedButton(text = skip, onClick = onOpenMap, modifier = width, kind = Outlined)
     }
-    if (isInContent) {
-        Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) { buttons(Modifier.fillMaxWidth()) }
-    } else {
-        PinnedActionBar { buttons(Modifier.weight(1f)) }
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    PinnedActionBar {
+        buttons(if (isLarge) Modifier.fillMaxWidth() else Modifier.weight(1f))
     }
 }

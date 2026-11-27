@@ -9,17 +9,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
@@ -36,9 +31,6 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
@@ -47,6 +39,7 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
+import io.github.dostepnykampus.feature.capture.report.form.ReportFrame
 import io.github.dostepnykampus.feature.capture.report.form.SectionTitle
 import io.github.dostepnykampus.feature.capture.report.form.SendFailure
 
@@ -65,10 +58,14 @@ private val Choices = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCES
 @Composable
 fun MarkingContent(state: MarkingUiState, actions: MarkingActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.zmiana_oznaczenia_naglowek), onBack = actions.onBack)
+        ReportFrame(
+            title = stringResource(R.string.zmiana_oznaczenia_naglowek),
+            onBack = actions.onBack,
+            actionText = stringResource(R.string.usuniecie_wyslij),
+            onSubmit = actions.onSend,
+        ) {
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 val isRejected = state.stage == MarkingStage.SAVE_REJECTED
@@ -83,9 +80,6 @@ fun MarkingContent(state: MarkingUiState, actions: MarkingActions, modifier: Mod
                     if (state.isPhotoMissing) ProblemText(stringResource(R.string.zmiana_oznaczenia_brak_zdjecia))
                 }
                 Text(stringResource(R.string.zmiana_oznaczenia_sprawdzi))
-            }
-            PinnedActionBar {
-                PinnedButton(text = stringResource(R.string.usuniecie_wyslij), onClick = actions.onSend)
             }
         }
     }
@@ -145,8 +139,7 @@ private fun MarkingOption(
 ) {
     OutlinedCard(
         modifier =
-            Modifier
-                .fillMaxWidth()
+            Modifier.fillMaxWidth()
                 .heightIn(min = CeleDotyku.przycisk)
                 .selectable(selected = isChosen, role = Role.RadioButton, onClick = onChoose),
         border =

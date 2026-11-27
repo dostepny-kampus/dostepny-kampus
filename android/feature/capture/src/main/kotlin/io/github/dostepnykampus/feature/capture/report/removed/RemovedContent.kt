@@ -7,13 +7,9 @@ package io.github.dostepnykampus.feature.capture.report.removed
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,9 +21,6 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
@@ -36,12 +29,13 @@ import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
+import io.github.dostepnykampus.feature.capture.report.form.ReportFrame
 import io.github.dostepnykampus.feature.capture.report.form.SendFailure
 
 /**
- * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe
- * zdjęcie miejsca, błąd walidacji albo zapisu i przypięte „Wyślij do sprawdzenia”. Dzień sprawdzenia liczy się
- * w strefie czasu kampusu, nie telefonu.
+ * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe zdjęcie
+ * miejsca, błąd walidacji albo zapisu i przypięte „Wyślij do sprawdzenia”. Dzień sprawdzenia liczy się w strefie czasu
+ * kampusu, nie telefonu.
  *
  * Wymagania: US8.4, BR-19, NFR-7, NFR-25, NFR-52
  *
@@ -52,10 +46,14 @@ import io.github.dostepnykampus.feature.capture.report.form.SendFailure
 @Composable
 fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.usuniecie_naglowek), onBack = actions.onBack)
+        ReportFrame(
+            title = stringResource(R.string.usuniecie_naglowek),
+            onBack = actions.onBack,
+            actionText = stringResource(R.string.usuniecie_wyslij),
+            onSubmit = actions.onSend,
+        ) {
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 val isRejected = state.stage == RemovedStage.SAVE_REJECTED
@@ -75,9 +73,6 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
                     }
                 }
                 Text(stringResource(R.string.usuniecie_zostaje))
-            }
-            PinnedActionBar {
-                PinnedButton(text = stringResource(R.string.usuniecie_wyslij), onClick = actions.onSend)
             }
         }
     }

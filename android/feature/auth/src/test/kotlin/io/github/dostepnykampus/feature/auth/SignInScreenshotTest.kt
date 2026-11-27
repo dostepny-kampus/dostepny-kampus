@@ -7,7 +7,9 @@ package io.github.dostepnykampus.feature.auth
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import org.junit.Rule
@@ -30,7 +32,7 @@ class SignInScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(state: SignInUiState) {
+    private fun capture(state: SignInUiState, scrollToEnd: Boolean = false) {
         compose.setContent {
             DostepnyKampusTheme {
                 SignInContent(
@@ -43,6 +45,7 @@ class SignInScreenshotTest {
             }
         }
         compose.waitForIdle()
+        if (scrollToEnd) compose.onNodeWithText("Nie teraz").performScrollTo()
         compose.onRoot().captureRoboImage()
     }
 
@@ -93,5 +96,16 @@ class SignInScreenshotTest {
     @Config(qualifiers = "w840dp-h800dp-xhdpi", fontScale = 2f)
     fun drawsWideContentAtFont200() {
         capture(SignInUiState())
+    }
+    @Test
+    @Config(qualifiers = "w840dp-h360dp-xhdpi")
+    fun drawsLandscapeContent() {
+        capture(SignInUiState())
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp-h360dp-xhdpi", fontScale = 2f)
+    fun drawsLandscapeContentAtFont200() {
+        capture(SignInUiState(), scrollToEnd = true)
     }
 }

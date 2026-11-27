@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,21 +37,22 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import java.io.File
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
-import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
- * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
- * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro.
- * „Wstecz” z kroku 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa
- * zdjęcie i wraca z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`). Kroki
+ * przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie przy wejściu
+ * albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro. „Wstecz” z kroku
+ * 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa zdjęcie i wraca z kroku 1
+ * do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -70,22 +69,25 @@ fun QuickReportScreen(
     models: QuickReportModels = QuickReportModels(),
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
-            var isLeaving by rememberSaveable { mutableStateOf(false) }
-            BackHandler(enabled = isPhotoTaken || isLeaving) { isLeaving = !isLeaving }
-            val back: () -> Unit = {
-                if (isPhotoTaken) {
-                    isLeaving = true
-                } else {
-                    actions.onBack()
-                }
+        val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
+        var isLeaving by rememberSaveable { mutableStateOf(false) }
+        BackHandler(enabled = isPhotoTaken || isLeaving) { isLeaving = !isLeaving }
+        val back: () -> Unit = {
+            if (isPhotoTaken) {
+                isLeaving = true
+            } else {
+                actions.onBack()
             }
-            BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+        }
+        val slot = remember { QuickPinnedSlot() }
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back) },
+            actions = { slot.content?.let { PinnedActionBar(content = it) } },
+        ) {
             if (route.step == ReportStep.SENT && route.isSavedOffline) QuickOfflineLine(models.offline)
-            val slot = remember { QuickPinnedSlot() }
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 when {
@@ -109,7 +111,6 @@ fun QuickReportScreen(
                     }
                 }
             }
-            slot.content?.let { PinnedActionBar(content = it) }
         }
     }
 }
@@ -193,14 +194,10 @@ private fun QuickStep(
             QuickGroupStep(route = route, onNext = actions.onNext, where = where)
         }
 
-        ReportStep.SEND, ReportStep.SENT -> {
+        ReportStep.SEND,
+        ReportStep.SENT -> {
             route.quickReport()?.let { report ->
-                QuickSendStep(
-                    route = route,
-                    report = report,
-                    onGiveUp = onGiveUp,
-                    viewModel = where,
-                )
+                QuickSendStep(route = route, report = report, onGiveUp = onGiveUp, viewModel = where)
             }
         }
     }
@@ -216,8 +213,7 @@ private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onComplete: (Bool
     }
 }
 
-@Composable
-private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltViewModel()
+@Composable private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltViewModel()
 
 @Composable
 private fun QuickPositionWarmUp(where: QuickSendViewModel) {
@@ -244,17 +240,24 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
-        QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
-            if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
-        })
+        QuickGroupQuestion(
+            selected = route.group,
+            onGroup = { chosen ->
+                val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
+                if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
+            },
+        )
     } else {
         BackHandler { asked = null }
-        QuickFloorQuestion(group = group, floors = QuickFloors(floors), onFloor = { answer ->
-            val floor = answer.floor
-            val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
-            onNext(answered.copy(group = group, isFloorAsked = true))
-        })
+        QuickFloorQuestion(
+            group = group,
+            floors = QuickFloors(floors),
+            onFloor = { answer ->
+                val floor = answer.floor
+                val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
+                onNext(answered.copy(group = group, isFloorAsked = true))
+            },
+        )
     }
 }
 
@@ -285,11 +288,5 @@ private fun QuickSendStep(
 
 @Composable
 private fun MainButton(text: String, onClick: () -> Unit, isEnabled: Boolean = true) {
-    PrimaryAction(
-        onClick = onClick,
-        enabled = isEnabled,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(text)
-    }
+    PrimaryAction(onClick = onClick, enabled = isEnabled, modifier = Modifier.fillMaxWidth()) { Text(text) }
 }

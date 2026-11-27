@@ -11,6 +11,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -35,7 +36,7 @@ class HelpScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(isFirstStep: Boolean) {
+    private fun capture(isFirstStep: Boolean, scrollToEnd: Boolean = false) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = isFirstStep, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
@@ -48,6 +49,7 @@ class HelpScreenshotTest {
             compose.onNodeWithText("Dalej").performSemanticsAction(SemanticsActions.OnClick)
         }
         compose.waitForIdle()
+        if (scrollToEnd) compose.onNodeWithText("Pomiń instrukcję").performScrollTo()
         compose.onRoot().captureRoboImage()
     }
 
@@ -98,5 +100,16 @@ class HelpScreenshotTest {
     @Config(qualifiers = "w840dp-h800dp-xhdpi", fontScale = 2f)
     fun drawsWideContentAtFont200() {
         capture(isFirstStep = true)
+    }
+    @Test
+    @Config(qualifiers = "w840dp-h360dp-xhdpi")
+    fun drawsLandscapeContent() {
+        capture(isFirstStep = true)
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp-h360dp-xhdpi", fontScale = 2f)
+    fun drawsLandscapeContentAtFont200() {
+        capture(isFirstStep = true, scrollToEnd = true)
     }
 }
