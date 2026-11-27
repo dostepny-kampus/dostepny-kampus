@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.map.style.OVERLAP
+import io.github.dostepnykampus.core.map.style.expression
 import io.github.dostepnykampus.core.map.style.numbers
 import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.core.map.style.symbolLayer
@@ -72,7 +73,7 @@ private fun CampusMapData.barrierPoint(selection: MapSelection): ChosenPoint? {
     val floor = properties[BARRIER_FLOOR]?.jsonPrimitive?.content
     val building = properties[BARRIER_BUILDING]?.jsonPrimitive?.content
     val onPlan = selection.plan != null && selection.plan.building == building
-    if (onPlan && floor != null && floor != selection.plan?.floor) return null
+    if (onPlan && floor != null && floor != selection.plan.floor) return null
     val height = if (onPlan && floor == null) BARRIER_NO_FLOOR_DP else BARRIER_SIGN_DP
     val offset = properties[BARRIER_OFFSET]?.jsonArray
     val gap = height / 2.0 + 2
@@ -115,8 +116,12 @@ internal fun chosenLayers(look: SelectionLook): List<JsonObject> {
 }
 
 internal fun pinOffset(look: SelectionLook): JsonElement =
-    if (look.chosenPoint.barrierCaptionOffset != null) look.besideEntrance.signOffset() else numbers(0.0, 0.0)
+    if (look.chosenPoint.barrierCaptionOffset != null) {
+        look.besideEntrance.signOffset()
+    } else {
+        expression("literal", numbers(0.0, 0.0))
+    }
 
 internal fun captionOffset(look: SelectionLook): JsonElement =
     look.chosenPoint.barrierCaptionOffset?.let(look.besideEntrance::captionOffset)
-        ?: numbers(0.0, CAPTION_OFFSET_DP.toDouble())
+        ?: expression("literal", numbers(0.0, CAPTION_OFFSET_DP.toDouble()))
