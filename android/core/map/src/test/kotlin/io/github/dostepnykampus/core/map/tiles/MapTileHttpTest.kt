@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.tiles
+package io.github.dostepnykampus.core.map.tiles
 
 import io.github.dostepnykampus.core.model.CampusBounds
 import okhttp3.OkHttpClient

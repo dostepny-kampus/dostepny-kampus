@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.tiles
+package io.github.dostepnykampus.core.map.tiles
 
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -23,7 +23,7 @@ private val TILE_CONNECT_TIMEOUT: Duration = Duration.ofSeconds(10)
 /** Nagłówek User-Agent kafelków mapy OSM, dostarczany przez aplikację do grafu Hilt. Wymagania: NFR-39 */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class MapUserAgent
+public annotation class MapUserAgent
 
 /**
  * Klient HTTP kafelków mapy z grafu Hilt, więc nagłówek nie zależy od kolejności startu. Powstaje z klienta
@@ -39,7 +39,7 @@ annotation class MapUserAgent
  * @param userAgent nagłówek User-Agent aplikacji
  */
 @Singleton
-class MapTileHttp
+public class MapTileHttp
     @Inject
     constructor(
         http: OkHttpClient,
@@ -60,7 +60,7 @@ class MapTileHttp
          *
          * Wymagania: NFR-39
          */
-        val calls: Call.Factory =
+        public val calls: Call.Factory =
             Call.Factory { request ->
                 val sent = request.newBuilder().header(name = "User-Agent", value = userAgent)
                 val isBlocked = isOutside(url = request.url.toString(), areas = activeAreas.get().values.flatten())
@@ -69,25 +69,25 @@ class MapTileHttp
             }
 
         /** Tworzy rejestrację prostokątów jednego widoku mapy, początkowo ukrytego. */
-        internal fun newView(): ViewAreas = ViewAreas()
+        public fun newView(): ViewAreas = ViewAreas()
 
         /**
          * Granice jednego widoku mapy, aktualizowane na wątku interfejsu. Klient HTTP widzi tylko granice
          * widocznych widoków i odczytuje jeden stan wszystkich rejestracji dla każdego żądania.
          */
-        internal inner class ViewAreas {
+        public inner class ViewAreas {
             private var bounds: List<CampusBounds> = emptyList()
             private var isShown = false
 
             /** Zapisuje bieżące granice widoku, także gdy widok jest ukryty. */
-            fun update(areas: List<CampusBounds>) {
+            public fun update(areas: List<CampusBounds>) {
                 if (bounds == areas) return
                 bounds = areas.toList()
                 if (isShown) publish()
             }
 
             /** Pokazuje bieżące granice klientowi HTTP albo wycofuje udział tego widoku. */
-            fun setVisible(isVisible: Boolean) {
+            public fun setVisible(isVisible: Boolean) {
                 if (isShown == isVisible) return
                 isShown = isVisible
                 publish()
@@ -105,7 +105,7 @@ class MapTileHttp
 /** Dostęp widoku mapy do [MapTileHttp]: widok jest obiektem, więc nie ma wstrzykiwania przez konstruktor. */
 @EntryPoint
 @InstallIn(SingletonComponent::class)
-interface MapTileHttpEntryPoint {
+public interface MapTileHttpEntryPoint {
     /** Klient kafelków mapy z grafu. */
-    fun mapTileHttp(): MapTileHttp
+    public fun mapTileHttp(): MapTileHttp
 }

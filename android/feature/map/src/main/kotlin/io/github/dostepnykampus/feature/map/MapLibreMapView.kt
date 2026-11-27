@@ -35,6 +35,8 @@ import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.map.rememberNativeMap
+import io.github.dostepnykampus.core.map.tiles.MapTileHttp
+import io.github.dostepnykampus.core.map.tiles.MapTileHttpEntryPoint
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.camera.BasemapReveal
@@ -87,8 +89,6 @@ import io.github.dostepnykampus.feature.map.style.showData
 import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
-import io.github.dostepnykampus.feature.map.tiles.MapTileHttp
-import io.github.dostepnykampus.feature.map.tiles.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement

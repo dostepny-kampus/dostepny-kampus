@@ -106,7 +106,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:core:database` | baza Room | — |
 | `:core:network` | klient HTTP serwera | `:core:model`, `:core:geo` |
 | `:core:geo`, `:core:location`, `:core:designsystem` | geometria, pozycja GNSS, wygląd | `:core:model` |
-| `:core:map` | mapa kampusu MapLibre wspólna dla ekranów z mapą | `:core:designsystem` |
+| `:core:map` | mapa kampusu MapLibre wspólna dla ekranów z mapą | `:core:designsystem`, `:core:model` |
 | `:core:model` | typy dziedziny wspólne dla modułów | — |
 
 `core:data.photo` udostępnia kontrakt `PhotoCapture`: żądanie zdjęcia oraz wynik z plikiem,

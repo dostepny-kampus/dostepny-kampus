@@ -8,14 +8,16 @@ Mapa kampusu MapLibre wspólna dla ekranów z mapą.
 
 - `core.map` — wczytanie biblioteki natywnej MapLibre.
 - `core.map.style` — budowa stylu mapy w JSON: warstwy, wyrażenia i ścieżki dostosowane.
+- `core.map.tiles` — klient HTTP kafelków podkładu z nagłówkiem User-Agent aplikacji; kafelki poza prostokątami terenów widocznych map tylko z pamięci podręcznej.
 
 ## API
 
-Wczytanie biblioteki natywnej i funkcje budowy stylu MapLibre w JSON.
+Wczytanie biblioteki natywnej, funkcje budowy stylu MapLibre w JSON i klient kafelków z grafu Hilt (`MapTileHttp`, `MapTileHttpEntryPoint`, `MapUserAgent`).
 
 ## Zależności
 
 - `:core:designsystem`
+- `:core:model`
 
 ## Czego moduł nie robi
 

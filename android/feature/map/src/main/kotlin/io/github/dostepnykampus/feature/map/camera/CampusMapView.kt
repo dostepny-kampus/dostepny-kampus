@@ -20,9 +20,7 @@ import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
-import io.github.dostepnykampus.feature.map.style.BasemapColors
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
-import io.github.dostepnykampus.feature.map.style.PathColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
