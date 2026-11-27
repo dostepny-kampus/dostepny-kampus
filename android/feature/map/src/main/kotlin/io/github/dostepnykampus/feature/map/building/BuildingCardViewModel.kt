@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -175,7 +176,10 @@ class BuildingCardViewModel
             viewModelScope.launch {
                 val own = sources.serverEntrances.cardEntrances(symbol)
                 serverCard.value = own
-                val groupSymbols = repository.catalog().sharedGroup(symbol).map(Building::symbol)
+                val groupSymbols =
+                    withContext(sources.computeContext) {
+                        repository.catalog().sharedGroup(symbol).map(Building::symbol)
+                    }
                 if (groupSymbols.size > 1) {
                     val cards =
                         groupSymbols.associateWith { item ->
@@ -294,12 +298,16 @@ internal object NoFloorPlans : FloorPlans {
     override suspend fun rooms(symbol: String, floor: String): RoomList? = null
 }
 
-private fun initialCard(
+internal fun initialCard(
     symbol: String,
     repository: BuildingCatalogRepository,
     entrances: ServerEntrances,
 ): CardEntrances? {
-    val group = repository.current()?.sharedGroup(symbol)?.map(Building::symbol).orEmpty()
+    val group =
+        repository
+            .current()
+            ?.let { catalog -> catalog.sharedGroup(symbol).map(Building::symbol) }
+            .orEmpty()
     val cards =
         if (group.size > 1) {
             group.mapNotNull { item -> entrances.knownCard(item)?.let { card -> item to card } }.toMap()
@@ -313,7 +321,7 @@ private fun initialCard(
     }
 }
 
-private fun mergeCardEntrances(symbols: List<String>, cards: Map<String, CardEntrances>): CardEntrances {
+internal fun mergeCardEntrances(symbols: List<String>, cards: Map<String, CardEntrances>): CardEntrances {
     val ordered = symbols.mapNotNull(cards::get)
     return CardEntrances(
         entrances = distinctEntrancesById(ordered.flatMap(CardEntrances::entrances)),

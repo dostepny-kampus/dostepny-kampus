@@ -78,7 +78,15 @@ class MapSceneStateTest {
 
     private fun pickShared(outlines: List<List<String>>, touched: List<String>, detailed: Set<String> = emptySet()) {
         val empty = JsonObject(emptyMap())
-        val data = CampusMapData(empty, emptyList(), empty, empty, start = null, outlines = outlines)
+        val data =
+            CampusMapData(
+                buildings = empty,
+                labels = emptyList(),
+                labelPoints = empty,
+                entrances = empty,
+                start = null,
+                outlines = outlines,
+            )
         val picking = MapPicking(choices) { singleTouchedBuilding(symbols = it, data = data, detailed = detailed) }
         picking.touch(symbols = touched, onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
     }

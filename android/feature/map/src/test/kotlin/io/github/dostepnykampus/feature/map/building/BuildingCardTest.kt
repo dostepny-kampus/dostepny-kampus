@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -239,7 +240,7 @@ class BuildingCardTest {
 
     /** Model widoku karty konturu wspólnego daje ten sam stan i bariery dla obu symboli. Wymagania: US2, BR-14 */
     @Test
-    fun mergesSharedBarriersInViewModel() =
+    fun sharesBarriersOfContour() =
         runTest(UnconfinedTestDispatcher()) {
             val geo =
                 """{"type":"FeatureCollection","attribution":"©","features":[{"type":"Feature",""" +
@@ -259,10 +260,22 @@ class BuildingCardTest {
                 object : AcceptedBarriers {
                     override suspend fun barriers(): List<AcceptedBarrier> = listOf(barrier)
 
-                    override fun syncedAt() = java.time.Instant.EPOCH
+                    override fun syncedAt() = Instant.EPOCH
                 }
-            val first = BuildingCardViewModel("T-18", repo, online, acceptedBarriers = barriers)
-            val second = BuildingCardViewModel("T-22", repo, online, acceptedBarriers = barriers)
+            val first =
+                BuildingCardViewModel(
+                    symbol = "T-18",
+                    repository = repo,
+                    networkStatus = online,
+                    acceptedBarriers = barriers,
+                )
+            val second =
+                BuildingCardViewModel(
+                    symbol = "T-22",
+                    repository = repo,
+                    networkStatus = online,
+                    acceptedBarriers = barriers,
+                )
             backgroundScope.launch { first.uiState.collect {} }
             backgroundScope.launch { second.uiState.collect {} }
             val state = first.uiState.value as BuildingCardUiState.Ready
@@ -427,7 +440,7 @@ class BuildingCardTest {
         val ASSET_WITH_NEW_JSON =
             ASSET_JSON.removeSuffix("]}") +
                 """,{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],"osm_id":"way/3"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+                """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,0]]]}}]}"""
 
         val repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
     }

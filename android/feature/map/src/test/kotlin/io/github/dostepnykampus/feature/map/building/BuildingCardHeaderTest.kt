@@ -78,7 +78,7 @@ class BuildingCardHeaderTest {
 
     /** Nagłówek konturu wspólnego z nazwą podaje oba symbole i nazwę w opisie dla TalkBack. Wymagania: US2, NFR-18 */
     @Test
-    fun showsSharedOutlineSymbolsWithName() {
+    fun showsContourSymbolsWithName() {
         show(symbol = "T-18", name = "Dom studencki", symbols = listOf("T-18", "T-22"))
         compose.onNodeWithText("T-18 / T-22", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("Dom studencki", useUnmergedTree = true).assertIsDisplayed()

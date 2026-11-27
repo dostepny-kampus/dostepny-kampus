@@ -66,7 +66,7 @@ private fun EntrancesOrSpace(ready: BuildingCardUiState.Ready?) {
 @Composable
 private fun NameOrSpace(symbol: String, ready: BuildingCardUiState.Ready?) {
     if (ready != null) {
-        SymbolOverName(symbols = ready.symbols, name = ready.name)
+        SymbolOverName(ready)
     } else {
         Column {
             Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
@@ -168,9 +168,9 @@ internal fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
     this == BuildingCardUiState.Loading && !isFullScreen
 
 @Composable
-private fun SymbolOverName(symbols: List<String>, name: String?) {
-    val shown = symbols.joinToString(separator = " / ")
-    val spoken = spokenHeader(symbols = symbols, name = name)
+private fun SymbolOverName(ready: BuildingCardUiState.Ready) {
+    val shown = ready.symbols.joinToString(separator = " / ")
+    val spoken = spokenHeader(ready)
     val focus = remember { FocusRequester() }
     Column(
         modifier =
@@ -180,15 +180,17 @@ private fun SymbolOverName(symbols: List<String>, name: String?) {
                 .focusable(),
     ) {
         Text(text = shown, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
+        ready.name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
     }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
 @Composable
 @ReadOnlyComposable
-private fun spokenHeader(symbols: List<String>, name: String?): String =
-    if (symbols.size > 1) {
+private fun spokenHeader(ready: BuildingCardUiState.Ready): String {
+    val symbols = ready.symbols
+    val name = ready.name
+    return if (symbols.size > 1) {
         val joined = symbols.joinToString(separator = ", ")
         name?.let { stringResource(R.string.karta_czytaj_wiele, joined, it) }
             ?: stringResource(R.string.mapa_budynki, joined)
@@ -197,3 +199,4 @@ private fun spokenHeader(symbols: List<String>, name: String?): String =
         name?.let { stringResource(R.string.karta_czytaj, single, it) }
             ?: stringResource(R.string.mapa_budynek, single)
     }
+}

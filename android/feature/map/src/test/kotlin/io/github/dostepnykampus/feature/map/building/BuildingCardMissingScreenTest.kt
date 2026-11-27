@@ -30,7 +30,7 @@ private const val GMACH =
 private const val NEW_BUILDING =
     """{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],""" +
         """"display_name":"Nowy budynek","osm_id":"way/2"},""" +
-        """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
+        """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,0]]]}}"""
 
 /** V2 Karta budynku, gdy budynku nie ma w katalogu zapisanym w telefonie. Wymagania: US2.7, NFR-10 */
 @RunWith(RobolectricTestRunner::class)

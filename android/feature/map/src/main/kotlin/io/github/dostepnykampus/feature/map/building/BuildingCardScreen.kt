@@ -138,7 +138,7 @@ fun BuildingCardContent(
     Column(if (isFullScreen) column.fillMaxSize() else column) {
         if (mode == CardMode.Direct) {
             val directTitle =
-                (card as? BuildingCardUiState.Ready)?.symbols?.joinToString(separator = " / ") ?: symbol
+                (card as? BuildingCardUiState.Ready)?.run { symbols.joinToString(separator = " / ") } ?: symbol
             BackHeader(title = directTitle, onBack = onBack)
         }
         if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }

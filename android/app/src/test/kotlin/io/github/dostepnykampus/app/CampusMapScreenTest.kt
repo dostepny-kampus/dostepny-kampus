@@ -220,8 +220,8 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         buildingSymbols = """["C-13"]"""
         entrances =
             """,{"type":"Feature","properties":{"kind":"building","symbols":["C-14"],""" +
-                """"display_name":"Budynek testowy","osm_id":"way/2"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,1],[2,0]]]}}"""
+            """"display_name":"Budynek testowy","osm_id":"way/2"},""" +
+            """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,1],[2,0]]]}}"""
     }
 
     /** Wiersz: dwa różne kontury „C-13” i „C-14” → arkusz „Który budynek?”, wiersz „Budynek C-14” → V2. */
@@ -243,7 +243,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
 
     /** Wiersz: kontur wspólny „C-13/C-14” bez planów pięter otwiera budynek od razu bez arkusza „Który budynek?”. */
     @Test
-    fun opensSharedOutlineWithoutChoice() {
+    fun opensContourWithoutChoice() {
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
