@@ -43,7 +43,7 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoWarning
  * @param camera aparat „Zrób zdjęcie”
  * @param title nagłówek sekcji; `null` daje sekcję bez nagłówka
  * @param isTakeShown czy „Zrób zdjęcie” stoi w sekcji; bez niego ekran stawia przycisk sam
- * @param validation treść komunikatu walidacji nad „Zrób zdjęcie”
+ * @param content treść komunikatu walidacji nad „Zrób zdjęcie”
  */
 @Composable
 internal fun PhotoSection(
@@ -51,7 +51,7 @@ internal fun PhotoSection(
     camera: PhotoCamera,
     title: String? = stringResource(R.string.formularz_zdjecie),
     isTakeShown: Boolean = true,
-    validation: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {},
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         title?.let { SectionTitle(it) }
@@ -60,7 +60,7 @@ internal fun PhotoSection(
             Text(stringResource(R.string.formularz_wazne_widoczne))
         }
         PhotoPreviews(photos)
-        validation()
+        content()
         if (isTakeShown) {
             FilledTonalButton(
                 onClick = camera.onTake,
