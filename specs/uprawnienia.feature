@@ -85,7 +85,6 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal status „wysłane”
 
-  # test aplikacji: #3773
   @US14.4 @aplikacja
   Scenariusz: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
     Zakładając, że Odwiedzający zalogował się przy pierwszym zgłoszeniu szybkim

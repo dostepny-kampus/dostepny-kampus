@@ -44,6 +44,6 @@ enum class WorkAction(
  *
  * @property onBack „Wstecz”
  * @property onWork wybrana czynność roli
- * @property onSignOut wylogowanie
+ * @property onSignOut wylogowanie, także po potwierdzonym wycofaniu zgody
  */
 data class AccountActions(val onBack: () -> Unit, val onWork: (WorkAction) -> Unit, val onSignOut: () -> Unit)
