@@ -43,6 +43,12 @@ internal object DeviceEvidence {
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(IDLE_MS, SCREEN_TIMEOUT_MS)
         val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot()) { "Brak zrzutu ekranu" }
+        record(label, bitmap)
+    }
+
+    /** Zapisuje [bitmap] w wyniku instrumentacji i zwalnia ją. */
+    fun record(label: String, bitmap: Bitmap) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
         val encoded =
             try {
                 ByteArrayOutputStream().use { output ->

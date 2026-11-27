@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import android.graphics.Bitmap
 import android.graphics.PointF
 import android.graphics.RectF
 import android.os.SystemClock
@@ -180,14 +181,14 @@ class CameraFlightDeviceTest {
             nodeExists(hasContentDescription("Zaznaczona bariera:", substring = true))
         }
         composeRule.waitUntil(READY_TIMEOUT_MS) { hasRenderedPin(map, barrierId = barrier.id) }
-        DeviceEvidence.record("v1-barrier-selected")
+        recordMap(map, "v1-barrier-selected")
 
         tapMap(map, location)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             nodeExists(hasContentDescription("Zaznaczone wejście:", substring = true)) &&
                 hasRenderedPin(map, barrierId = null)
         }
-        DeviceEvidence.record("v1-entrance-after-barrier")
+        recordMap(map, "v1-entrance-after-barrier")
     }
 
     private fun tapMap(map: MapLibreMap, location: LatLng, dx: Float = 0f) {
@@ -216,6 +217,13 @@ class CameraFlightDeviceTest {
             val frame = RectF(0f, 0f, view.width.toFloat(), view.height.toFloat())
             map.queryRenderedFeatures(frame, "wejscie_pinezka").any { it.getStringProperty("id") == barrierId }
         }
+
+    private fun recordMap(map: MapLibreMap, label: String) {
+        val frame = AtomicReference<Bitmap>()
+        composeRule.runOnUiThread { map.snapshot(frame::set) }
+        composeRule.waitUntil(READY_TIMEOUT_MS) { frame.get() != null }
+        DeviceEvidence.record(label, requireNotNull(frame.get()))
+    }
 
     private fun showMap(state: CampusMapUiState, focus: MapFocus) {
         composeRule.activityRule.scenario.onActivity { activity ->
