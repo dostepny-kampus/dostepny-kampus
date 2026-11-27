@@ -93,7 +93,7 @@ open class EntranceSheetFixture {
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG_JSON }
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, modifier: Modifier ->
+        CampusMapView { _: CampusMapData, selection, _, _, _, _, onBuildingsTouch, onSignTouch, modifier: Modifier ->
             selections += selection
             touchBuildings = onBuildingsTouch
             touchSign = onSignTouch

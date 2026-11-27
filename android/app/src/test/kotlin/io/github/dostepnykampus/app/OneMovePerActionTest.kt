@@ -52,7 +52,7 @@ class OneMovePerActionTest {
     private val shown = mutableListOf<CameraTransition>()
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _, _, move, _, _, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { _, _, move, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
             shown += move
             touch = onBuildingsTouch
             Box(modifier)

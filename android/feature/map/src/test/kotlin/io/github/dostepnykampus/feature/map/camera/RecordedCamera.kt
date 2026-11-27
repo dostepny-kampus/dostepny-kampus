@@ -11,16 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntSize
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.MapSelection
 
 /**
  * Ruch kamery wykonany przez udawaną mapę: rodzaj [motion], czas [millis] oraz obraz mapy przed ruchem [before]
@@ -49,9 +44,9 @@ internal class RecordedCamera {
         private set
 
     val view =
-        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { _: CampusMapData, _, move, inset, frame, _, onBuildingsTouch, _, modifier: Modifier ->
             touch = onBuildingsTouch
-            Follow(selection = selection, move = move, inset = inset, modifier = modifier)
+            Follow(move = move, inset = inset, frame = frame, modifier = modifier)
         }
 
     /** Zapomina zapisane ruchy i granice, np. po ustaleniu się widoku startowego. */
@@ -61,18 +56,8 @@ internal class RecordedCamera {
     }
 
     @Composable
-    private fun Follow(
-        selection: MapSelection,
-        move: CameraTransition,
-        inset: MapInset,
-        modifier: Modifier = Modifier,
-    ) {
+    private fun Follow(move: CameraTransition, inset: MapInset, frame: MapFrame, modifier: Modifier = Modifier) {
         val density = LocalDensity.current
-        var size by remember { mutableStateOf(IntSize.Zero) }
-        val bounds =
-            remember(selection.bounds, size, density, inset.top) {
-                density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
-            }
         val controller = remember { CameraController(Port(move.camera, inset, density.density)) }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
@@ -80,15 +65,15 @@ internal class RecordedCamera {
             controller.move(currentMove, currentInset)
             onDispose {}
         }
-        DisposableEffect(controller, bounds) {
-            controller.limit(bounds)
+        DisposableEffect(controller, frame.restLimits()) {
+            controller.limit(frame.restLimits())
             onDispose {}
         }
         DisposableEffect(controller, inset) {
             controller.pad(inset)
             onDispose {}
         }
-        Box(modifier.onSizeChanged { size = it })
+        Box(modifier)
     }
 
     private inner class Port(

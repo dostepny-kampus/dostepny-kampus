@@ -50,7 +50,7 @@ open class CampusMapScreenFixture {
     protected var emptyTaps = 0
     protected var touch: (List<String>) -> Unit = {}
     protected val fakeMap =
-        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, _, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, move, inset, _, _, onBuildingsTouch, _, _: Modifier ->
             cameras += move.camera
             moves += move
             insets += inset.bottom

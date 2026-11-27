@@ -97,7 +97,7 @@ class BuildingRowNoFlightTest {
     private var onSign: (TouchSign, String) -> Unit = { _, _ -> }
     private lateinit var mapModel: CampusMapViewModel
     private val fakeMap =
-        CampusMapView { _, selection, move, inset, idle, touch, sign, modifier: Modifier ->
+        CampusMapView { _, selection, move, inset, _, idle, touch, sign, modifier: Modifier ->
             moves += move to inset
             selections += selection
             onIdle = idle

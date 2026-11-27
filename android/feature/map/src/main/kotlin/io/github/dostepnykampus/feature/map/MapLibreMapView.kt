@@ -21,11 +21,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -47,12 +44,11 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapFrame
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.camera.belowTop
-import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -138,6 +134,7 @@ object MapLibreMapView : CampusMapView {
         selection: MapSelection,
         move: CameraTransition,
         inset: MapInset,
+        frame: MapFrame,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onSignTouch: (TouchSign, String) -> Unit,
@@ -157,13 +154,7 @@ object MapLibreMapView : CampusMapView {
         val mapView = rememberMapView(context, background = colors.lad.toArgb(), tiles = tiles)
         val tileAreas = remember(tiles) { tiles.newView() }
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
-        var size by remember { mutableStateOf(IntSize.Zero) }
-        val limits =
-            remember(selection.bounds, size, density, inset.top) {
-                density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
-            }
-        val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
-        val area = styleAreaOf(selection = selection, basemap = basemap)
+        val area = styleAreaOf(selection = selection, basemap = frame.basemap)
         val areas = remember(tileAreas) { FlightArea(first = area, onTileAreas = tileAreas::update) }
         FollowScreenLifecycle(mapView, tileAreas)
         val reveal = remember { BasemapReveal() }
@@ -197,8 +188,15 @@ object MapLibreMapView : CampusMapView {
             reveal = reveal,
         )
         map.FollowBasemapReveal(mapView = mapView, reveal = reveal, area = areas.shown)
-        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas, view = mapView)
-        AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
+        map.FollowEachMoveOnce(
+            move = move,
+            inset = inset,
+            limits = frame.restLimits(),
+            area = area,
+            areas = areas,
+            view = mapView,
+        )
+        AndroidView(factory = { mapView }, modifier = modifier)
     }
 
     @Composable
@@ -683,6 +681,3 @@ internal fun Style.addMapImages(images: MapImages) {
  */
 internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> =
     entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
-
-private fun Density.basemapOf(bounds: CampusBounds?, size: IntSize): Basemap? =
-    mapLimits(bounds, size).takeIf { size != IntSize.Zero }?.basemap
