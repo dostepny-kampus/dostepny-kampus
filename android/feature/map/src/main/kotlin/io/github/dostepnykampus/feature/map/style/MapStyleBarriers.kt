@@ -31,6 +31,7 @@ internal const val CHOSEN_BARRIER_LAYER = "bariera_wybrana"
 internal const val BARRIERS_SOURCE = BARRIERS_LAYER
 
 private const val FILTER = "filter"
+private const val LITERAL = "literal"
 
 /** Bok obrazu znaku bariery na mapie w dp. */
 internal const val BARRIER_SIGN_DP = 32
@@ -77,7 +78,7 @@ internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?,
 
     private fun shifted(key: String, atAnchor: Double): JsonElement {
         val still = numbers(atAnchor, 0.0)
-        val stays = expression("literal", still)
+        val stays = expression(LITERAL, still)
         val moves = offsetOr(key, still)
         val symbols = buildings?.map(::JsonPrimitive)
         val building = expression("to-string", property(BARRIER_BUILDING))
@@ -87,13 +88,13 @@ internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?,
                 symbols.isEmpty() -> stays
                 else -> expression("match", building, JsonArray(symbols), moves, stays)
             }
-        val atPin = expression("literal", numbers(PINNED_BARRIER_DP + atAnchor, 0.0))
+        val atPin = expression(LITERAL, numbers(PINNED_BARRIER_DP + atAnchor, 0.0))
         return expression(
             "step",
             expression("zoom"),
-            besidePin(stays, atPin),
+            besidePin(base = stays, offset = atPin),
             JsonPrimitive(minZoom),
-            besidePin(byBuilding, atPin),
+            besidePin(base = byBuilding, offset = atPin),
         )
     }
 
@@ -221,4 +222,4 @@ internal fun ofBarrier(id: String): JsonElement = expression("==", property(BARR
 
 /** Przesunięcie z właściwości [key] punktu, a bez niej [fallback]. */
 internal fun offsetOr(key: String, fallback: JsonArray): JsonArray =
-    expression("coalesce", property(key), expression("literal", fallback))
+    expression("coalesce", property(key), expression(LITERAL, fallback))

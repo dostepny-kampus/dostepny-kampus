@@ -140,6 +140,21 @@ class CameraFlightDeviceTest {
 
     @Test
     fun barrierShowsBesidePin() {
+        val size = DeviceEvidence.shell("wm size")
+        val override = size.lineSequence().firstOrNull { it.startsWith("Override size: ") }
+        val restore = override?.substringAfter(": ")?.trim() ?: "reset"
+        try {
+            DeviceEvidence.shell("wm size 480x960")
+            composeRule.waitUntil(READY_TIMEOUT_MS) {
+                composeRule.activity.resources.configuration.screenHeightDp >= TALL_SCREEN_DP
+            }
+            captureBarrierBesidePin()
+        } finally {
+            DeviceEvidence.shell("wm size $restore")
+        }
+    }
+
+    private fun captureBarrierBesidePin() {
         val entries = runBlocking { catalog.catalog() }.copy(hasServerList = true)
         val entrance = entries.entrances.first { it.buildingSymbol == "A-1" && it.isForVisitors }
         val barrier =
@@ -269,6 +284,7 @@ class CameraFlightDeviceTest {
         const val FLOOR_PLAN_ZOOM = 17.0
         const val BARRIER_PIN_GAP_DP = 48f
         const val PIN_BODY_DP = 24f
+        const val TALL_SCREEN_DP = 700
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L

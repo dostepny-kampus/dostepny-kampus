@@ -133,7 +133,13 @@ class EntranceBarrierSignTest {
 
     @Test
     fun keepsBarrierBesidePin() {
-        val entrance = SelectedEntrance("w1", data.entrancePoints.getValue("w1"), "Wejście", "C-13")
+        val entrance =
+            SelectedEntrance(
+                id = "w1",
+                location = data.entrancePoints.getValue("w1"),
+                label = "Wejście",
+                buildingSymbol = "C-13",
+            )
         val zero = """["literal",[0.0,0.0]]"""
         val still = """["literal",[20.0,0.0]]"""
         val sign = """["literal",[48.0,0.0]]"""

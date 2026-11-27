@@ -412,8 +412,7 @@ object MapLibreMapView : CampusMapView {
                             idKey = sign.idKey,
                             at = at,
                             pxPerDp = tolerance / TOUCH_TOLERANCE_DP,
-                            beside = beside,
-                            zoom = zoom,
+                            offset = feature.signOffset(beside = beside, zoom = zoom),
                         )
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
@@ -436,23 +435,24 @@ object MapLibreMapView : CampusMapView {
         idKey: String,
         at: PointF,
         pxPerDp: Float,
-        beside: BesideEntrance,
-        zoom: Double,
+        offset: PointF,
     ): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = (feature.geometry() as? Point)?.let { LatLng(latitude = it.latitude(), longitude = it.longitude()) }
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
-        val pinned = beside.pinnedOffset(feature.getStringProperty(BARRIER_ENTRANCE))
+        return SignPoint(id = id, dx = screen.x + offset.x * pxPerDp - at.x, dy = screen.y + offset.y * pxPerDp - at.y)
+    }
+
+    private fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
+        val pinned = beside.pinnedOffset(getStringProperty(BARRIER_ENTRANCE))
+        if (pinned != null) return PointF(pinned.toFloat(), 0f)
         val offset =
-            feature
-                .getProperty(BARRIER_OFFSET)
-                ?.takeIf { it.isJsonArray && beside.isBeside(zoom, feature.getStringProperty(BARRIER_BUILDING)) }
+            getProperty(BARRIER_OFFSET)
+                ?.takeIf { it.isJsonArray && beside.isBeside(zoom = zoom, building = getStringProperty(BARRIER_BUILDING)) }
                 ?.asJsonArray
-                ?: feature.getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
-        val shiftX = (pinned?.toFloat() ?: offset?.get(0)?.asFloat ?: 0f) * pxPerDp
-        val shiftY = (if (pinned == null) offset?.get(1)?.asFloat ?: 0f else 0f) * pxPerDp
-        return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
+                ?: getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
+        return PointF(offset?.get(0)?.asFloat ?: 0f, offset?.get(1)?.asFloat ?: 0f)
     }
 
     private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
