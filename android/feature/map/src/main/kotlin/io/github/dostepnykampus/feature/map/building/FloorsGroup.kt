@@ -14,7 +14,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
+import io.github.dostepnykampus.core.designsystem.card.TextAction
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
@@ -96,7 +96,7 @@ private fun FloorRow(described: FloorDescription, onShowPlan: () -> Unit) {
             Text(text = floorDescriptionText(described.functions), style = MaterialTheme.typography.bodyLarge)
         }
         val action = stringResource(R.string.karta_pokaz_na_planie_czytaj, label)
-        TextButton(onClick = onShowPlan, modifier = Modifier.semantics { contentDescription = action }) {
+        TextAction(onClick = onShowPlan, modifier = Modifier.semantics { contentDescription = action }) {
             Text(stringResource(R.string.karta_pokaz_na_planie))
         }
     }
