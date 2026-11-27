@@ -40,7 +40,7 @@ class MapSearchCloseTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val map =
-        CampusMapView { _: CampusMapData, _, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { _: CampusMapData, _, _, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
             Box(modifier.testTag(MAP).clickable { onBuildingsTouch(listOf("C-13")) })
         }
     private val repository =

@@ -42,7 +42,7 @@ open class PwrMapFixture {
     protected var touch: (List<String>) -> Unit = {}
     protected var idle: (MapCamera) -> Unit = {}
     private val fakeMap =
-        CampusMapView { shown, _, move, _, onIdle, onTouch, _, modifier ->
+        CampusMapView { shown, _, move, _, _, onIdle, onTouch, _, modifier ->
             data = shown
             camera = move.camera
             idle = onIdle

@@ -13,15 +13,22 @@ import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.mySubmissionsActions
+import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
+import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
@@ -29,6 +36,7 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -82,7 +90,9 @@ class SavedReportTest {
         save(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE), ReportEdit.Rating(Severity.BLOCKING))
 
         assertEquals("TB-1", stored().barrierType)
-        showMine()
+        showMineAfterSave()
+        compose.onNodeWithText("Zmiana zapisana w telefonie.").assertIsDisplayed()
+        compose.onNodeWithText("Wyślemy ją, gdy wróci internet.").assertIsDisplayed()
         compose.onNodeWithText("W telefonie").assertIsDisplayed()
     }
 
@@ -102,6 +112,7 @@ class SavedReportTest {
         assertEquals(DESCRIPTION, stored().description)
         showMine()
         compose.onNodeWithText("W telefonie").assertIsDisplayed()
+        compose.onNodeWithText("Zmiana zapisana w telefonie.").assertDoesNotExist()
     }
 
     private fun save(vararg edits: ReportEdit) {
@@ -125,6 +136,29 @@ class SavedReportTest {
     private fun showMine() {
         val viewModel = offlineOwnList(store)
         compose.setContent { OwnListScreen(viewModel) }
+    }
+
+    private fun showMineAfterSave() {
+        val viewModel = offlineOwnList(store)
+        val form =
+            ReportFormRoute(
+                longitude = A1.location.longitude,
+                latitude = A1.location.latitude,
+                accuracyMeters = A1.accuracyMeters,
+                buildingSymbol = A1.buildingSymbol,
+            )
+        val navigator = AppNavigator(backStack = mutableListOf(MapRoute(), form), roles = TestRoles())
+        navigator.reportSaved()
+        assertEquals("Po zapisie otwiera się C3", MySubmissionsRoute, navigator.current)
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsScreen(
+                    actions = navigator.mySubmissionsActions(),
+                    viewModel = viewModel,
+                    hasJustSaved = navigator.hasJustSavedReport,
+                )
+            }
+        }
     }
 
     private fun queue(): SubmissionQueue = offlineQueue(store) { sent++ }

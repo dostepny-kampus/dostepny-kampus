@@ -65,7 +65,7 @@ class MapPlanSelectionTest {
     private var onBuildings: (List<String>) -> Unit = {}
     private var onSign: (TouchSign, String) -> Unit = { _, _ -> }
     private val fakeMap =
-        CampusMapView { _, selection, _, _, idle, touch, sign, modifier: Modifier ->
+        CampusMapView { _, selection, _, _, _, idle, touch, sign, modifier: Modifier ->
             shownPlan = selection.plan?.building
             onIdle = idle
             onBuildings = touch

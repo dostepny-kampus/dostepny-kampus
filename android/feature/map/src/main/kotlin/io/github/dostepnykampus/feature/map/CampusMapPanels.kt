@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,7 +43,6 @@ internal fun CampusMapPanels(
     catalog: BuildingCatalog?,
     areas: MapAreas,
     top: Dp?,
-    topInset: WindowInsets,
     sheet: ScreenSheet,
     isKeyboardOpen: Boolean,
     motion: MapMotion?,
@@ -49,6 +51,7 @@ internal fun CampusMapPanels(
     content: @Composable BoxScope.() -> Unit,
 ) {
     val camera = state.move?.camera ?: return
+    val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     val limits = state.limits ?: return
     val hasPanels = !state.isCovered && !isKeyboardOpen
     val data = state.scene?.data

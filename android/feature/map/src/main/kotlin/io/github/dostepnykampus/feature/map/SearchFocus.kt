@@ -98,12 +98,13 @@ private suspend fun AwaitPointerEventScope.isBlankTap(down: PointerInputChange):
  */
 internal fun CampusMapView.closingSearchFirst(search: SearchFocus): CampusMapView {
     val view = this
-    return CampusMapView { data, selection, move, inset, onCameraIdle, onBuildingsTouch, onSignTouch, modifier ->
+    return CampusMapView { data, selection, move, inset, frame, onCameraIdle, onBuildingsTouch, onSignTouch, modifier ->
         view.Show(
             data = data,
             selection = selection,
             move = move,
             inset = inset,
+            frame = frame,
             onCameraIdle = onCameraIdle,
             onBuildingsTouch = onBuildingsTouch,
             onSignTouch = onSignTouch,

@@ -377,6 +377,7 @@ private fun CampusMap(
                 selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
                 move = move,
                 inset = state.inset,
+                frame = state.frame,
                 onCameraIdle = { view ->
                     areas.acknowledge()
                     plan.onView(view.also { state.keep(it) }.also(rooms::onIdle))
@@ -394,7 +395,6 @@ private fun CampusMap(
                 catalog = ui.catalog,
                 areas = areas,
                 top = top,
-                topInset = topInset,
                 sheet = sheet,
                 isKeyboardOpen = isKeyboardOpen,
                 motion = motion,

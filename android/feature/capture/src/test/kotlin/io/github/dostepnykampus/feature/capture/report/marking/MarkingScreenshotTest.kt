@@ -72,6 +72,7 @@ class MarkingScreenshotTest {
 
     /** Wysłanie bez wyboru i zdjęcia: komunikaty walidacji przy obu polach. Wymagania: BR-7, BR-24 */
     @Test
+    @Config(qualifiers = "w360dp-h1080dp-xhdpi")
     fun drawsLightMissing() {
         capture(EDITING.copy(isChoiceMissing = true, isPhotoMissing = true))
     }

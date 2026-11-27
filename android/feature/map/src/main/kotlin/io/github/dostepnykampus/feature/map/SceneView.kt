@@ -15,6 +15,7 @@ import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.ShownCamera
 import io.github.dostepnykampus.feature.map.camera.areaMove
+import io.github.dostepnykampus.feature.map.camera.isSameView
 
 /**
  * Widok bez arkusza: widok zapisany [shown], a bez niego wejście [entrance] albo widok startowy [start], w granicach
@@ -27,8 +28,8 @@ internal fun uncoveredView(shown: MapCamera?, entrance: GeoPoint?, start: GeoPoi
 
 /**
  * Ruch do widoku wybranego terenu [target] według drogi ([areaMove]) w wolnej części mapy [free] przy skali animacji
- * [scale]; `null` bez celu albo gdy widok [view] to nie lądowanie na terenie, także tuż po zamknięciu arkusza
- * ([closed]).
+ * [scale]; `null` bez celu, gdy widok [view] to nie lądowanie na terenie albo gdy [target] to obraz mapy z chwili
+ * zamknięcia arkusza ([closed]).
  */
 internal fun ShownCamera.landingMove(
     target: MapCamera?,
@@ -37,6 +38,6 @@ internal fun ShownCamera.landingMove(
     free: FreeMap,
     scale: Float,
 ): CameraTransition? =
-    target?.takeIf { view.isLanding && closed == null }?.let { to ->
+    target?.takeIf { view.isLanding && closed?.isSameView(it) != true }?.let { to ->
         areaMove(from = originOf(to), to = to, free = free, animationScale = scale)
     }

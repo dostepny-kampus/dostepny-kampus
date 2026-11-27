@@ -29,6 +29,7 @@ import io.github.dostepnykampus.feature.map.camera.CameraSaver
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapFrame
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
@@ -36,13 +37,13 @@ import io.github.dostepnykampus.feature.map.camera.PickOrigin
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.ShownCamera
 import io.github.dostepnykampus.feature.map.camera.TapSight
-import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
+import io.github.dostepnykampus.feature.map.camera.frameOf
 import io.github.dostepnykampus.feature.map.camera.landed
-import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.pickView
+import io.github.dostepnykampus.feature.map.camera.rememberAction
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.camera.rememberPrevious
 import io.github.dostepnykampus.feature.map.camera.rememberSeen
@@ -67,7 +68,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  *
  * @property scene dane katalogu z zaznaczeniem; `null`, dopóki nie ma danych mapy
  * @property shown ruch kamery do pokazania z zasłoniętym dołem mapy; `null` bez danych
- * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
+ * @property frame geometria mapy z jednego pomiaru: granice kamery i obszar podkładu
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @property taps wybór budynku dotykiem i arkusz „Który budynek?”
  * @param onCamera zapis widoku kamery po ruchu osoby i po wyborze terenu, zob. [cameraKeeper]
@@ -75,11 +76,14 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
 internal class MapSceneState(
     val scene: MapScene?,
     val shown: SceneCamera?,
-    val limits: MapLimits?,
+    val frame: MapFrame,
     val cover: MapCover,
     val taps: MapPicking,
     private val onCamera: CameraKeeper,
 ) {
+    /** Granice kamery dla terenu i rozmiaru mapy z [frame]; `null` bez terenu. */
+    val limits: MapLimits? get() = frame.limits
+
     /** Ruch kamery do pokazania, zob. [SceneCamera.move]; `null` bez danych. */
     val move: CameraTransition? get() = shown?.move
 
@@ -161,7 +165,10 @@ internal fun rememberMapSceneState(
         seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
-    val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
+    val bounds = selection?.bounds
+    val frame =
+        remember(bounds, size, density, topInset) { density.frameOf(bounds = bounds, size = size, top = topInset) }
+    val limits = frame.limits
     val entrance = selection?.entrance?.location
     val uncovered = uncoveredView(shown = shown, entrance = entrance, start = layers?.start, limits = limits)
     val reserve = rememberNoticeReserve(building = selection?.building, notice = notice)
@@ -186,14 +193,17 @@ internal fun rememberMapSceneState(
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val toArea = last.landingMove(target = uncovered, view = view, closed = closed, free = fit, scale = scale)
-    val move = above ?: toArea ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
+    val move =
+        rememberAction(
+            above ?: toArea ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump),
+        )
     val inset =
         cameraInset(held = heldInset, isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet)
     SideEffect { last.keep(shown = move?.camera, inset = inset) }
     return MapSceneState(
         scene = scene,
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
-        limits = limits,
+        frame = frame,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         taps = MapPicking(choices = choices, onTap = origin::tap),
         onCamera = cameraKeeper(isCovered = isCovered, onMap = view.keep, onCard = card.keep, onLand = view.land),

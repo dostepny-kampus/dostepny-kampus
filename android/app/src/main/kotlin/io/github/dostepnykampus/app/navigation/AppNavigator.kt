@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.app.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.model.Account
@@ -167,6 +170,9 @@ class AppNavigator(
     private val onChooseMap: () -> Unit = {},
     internal val reportDraft: ReportDraft = ReportDraft(),
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
+    /** Czy powrót do własnych zgłoszeń nastąpił po zapisie formularza albo oznaczenia wejścia. */
+    internal var hasJustSavedReport by mutableStateOf(false)
+
     /** Ruchy mapy V1 do budynku, z których karta V2 bierze czas wjazdu. Wymagania: NFR-56 */
     internal val mapMotion: MapMotion = MapMotion()
 
