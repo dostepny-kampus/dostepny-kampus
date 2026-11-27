@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import android.graphics.PointF
+import android.graphics.RectF
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -25,6 +26,7 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.CampusBounds
+import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
@@ -147,7 +149,7 @@ class CameraFlightDeviceTest {
                 id = "bariera-wejscia-test",
                 location = entrance.location,
                 severity = Severity.HINDRANCE,
-                type = null,
+                type = BarrierType.STAIRS_AT_ENTRANCE,
                 buildingSymbol = entrance.buildingSymbol,
                 verifiedAt = null,
                 entranceId = entrance.id,
@@ -171,7 +173,40 @@ class CameraFlightDeviceTest {
                     map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
             }
         }
+        tapMap(map, location, dx = BARRIER_PIN_GAP_DP)
+        composeRule.waitUntil(READY_TIMEOUT_MS) {
+            nodeExists(hasContentDescription("Zaznaczona bariera:", substring = true)) &&
+                hasRenderedPin(map, barrierId = barrier.id)
+        }
+        DeviceEvidence.record("v1-barrier-selected")
+
+        tapMap(map, location)
+        composeRule.waitUntil(READY_TIMEOUT_MS) {
+            nodeExists(hasContentDescription("Zaznaczone wejście:", substring = true)) &&
+                hasRenderedPin(map, barrierId = null)
+        }
+        DeviceEvidence.record("v1-entrance-after-barrier")
     }
+
+    private fun tapMap(map: MapLibreMap, location: LatLng, dx: Float = 0f) {
+        val point = composeRule.runOnUiThread {
+            val root = composeRule.activity.findViewById<View>(android.R.id.content)
+            val view = requireNotNull(findAttachedMapView(root))
+            val origin = IntArray(2).also(view::getLocationOnScreen)
+            val anchor = map.projection.toScreenLocation(location)
+            val density = view.resources.displayMetrics.density
+            PointF(anchor.x + origin[0] + dx * density, anchor.y + origin[1])
+        }
+        DeviceEvidence.shell("input tap ${point.x.toInt()} ${point.y.toInt()}")
+    }
+
+    private fun hasRenderedPin(map: MapLibreMap, barrierId: String?): Boolean =
+        composeRule.runOnUiThread {
+            val root = composeRule.activity.findViewById<View>(android.R.id.content)
+            val view = requireNotNull(findAttachedMapView(root))
+            val frame = RectF(0f, 0f, view.width.toFloat(), view.height.toFloat())
+            map.queryRenderedFeatures(frame, "wejscie_pinezka").any { it.getStringProperty("id") == barrierId }
+        }
 
     private fun showMap(state: CampusMapUiState, focus: MapFocus) {
         composeRule.activityRule.scenario.onActivity { activity ->
