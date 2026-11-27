@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.mandatorySystemGestures
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -132,7 +135,10 @@ fun AppShell(
             content = {
                 NavDisplay(
                     entries = entries,
-                    modifier = Modifier.consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide)),
+                    modifier =
+                        Modifier
+                            .consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
+                            .windowInsetsPadding(wideNavigationInsets(isWide)),
                     sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
                 )
@@ -164,10 +170,18 @@ private fun insetsTakenByBar(bar: IntSize, isShown: Boolean, isWide: Boolean): W
     val bottomBar = WindowInsets(bottom = bar.height)
     return when {
         !isShown -> WindowInsets(0)
-        isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start).union(rail)
+        isWide -> WindowInsets.safeDrawing.only(WindowInsetsSides.Start).union(rail)
         else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom).union(bottomBar)
     }
 }
+
+@Composable
+private fun wideNavigationInsets(isWide: Boolean): WindowInsets =
+    if (isWide) {
+        WindowInsets.navigationBars.union(WindowInsets.mandatorySystemGestures).only(WindowInsetsSides.Bottom)
+    } else {
+        WindowInsets(0)
+    }
 
 /** Pliki zdjęć odtworzonych szkiców: zgłoszenia szybkiego w [routes] i C2 w [draft]. */
 internal fun keptPhotos(routes: List<NavKey>, draft: ReportDraft): Set<String> =
