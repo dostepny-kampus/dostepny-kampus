@@ -10,6 +10,8 @@ import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.marking.mapMarkingImage
 import io.github.dostepnykampus.core.designsystem.marking.mapSeverityImage
+import io.github.dostepnykampus.core.map.style.expression
+import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING

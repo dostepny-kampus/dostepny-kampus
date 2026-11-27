@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
@@ -34,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.TextAction
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
@@ -187,8 +187,8 @@ internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {
         onDismissRequest = onStay,
         title = { Text(stringResource(R.string.formularz_wyjsc_pytanie)) },
         text = { Text(stringResource(R.string.formularz_wyjsc_opis)) },
-        confirmButton = { TextButton(onClick = onConfirmExit) { Text(stringResource(R.string.formularz_wyjdz)) } },
-        dismissButton = { TextButton(onClick = onStay) { Text(stringResource(R.string.formularz_wroc)) } },
+        confirmButton = { TextAction(onClick = onConfirmExit) { Text(stringResource(R.string.formularz_wyjdz)) } },
+        dismissButton = { TextAction(onClick = onStay) { Text(stringResource(R.string.formularz_wroc)) } },
     )
 }
 

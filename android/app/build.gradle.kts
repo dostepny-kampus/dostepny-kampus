@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:map"))
     implementation(project(":core:model"))
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)

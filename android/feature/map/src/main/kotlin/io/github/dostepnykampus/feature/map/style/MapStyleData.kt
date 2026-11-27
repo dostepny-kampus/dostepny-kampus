@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.map.style.PATHS_SOURCE
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection

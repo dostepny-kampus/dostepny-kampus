@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -26,6 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
+import io.github.dostepnykampus.core.designsystem.card.TextAction
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.R
@@ -109,13 +109,13 @@ private fun PlaceQuestion(place: PlaceChoice, actions: PlaceActions, onPick: () 
                 Hint(place.hint)
                 PrimaryAction(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
                 OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
-                TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
+                TextAction(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             is PlaceChoice.Chosen -> {
                 Text(stringResource(R.string.budynek_wybrany, place.building.label()))
                 OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
-                TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
+                TextAction(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             PlaceChoice.Outside -> {
@@ -176,7 +176,7 @@ private fun NearestSection(
         OutlinedAction(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.budynek_poza))
         }
-        TextButton(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }
+        TextAction(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }
     }
 }
 

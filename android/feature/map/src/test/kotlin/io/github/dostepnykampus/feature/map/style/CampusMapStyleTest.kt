@@ -5,6 +5,14 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.map.style.BASEMAP
+import io.github.dostepnykampus.core.map.style.BASEMAP_GLYPHS
+import io.github.dostepnykampus.core.map.style.BASEMAP_LAYERS
+import io.github.dostepnykampus.core.map.style.BASEMAP_TILES
+import io.github.dostepnykampus.core.map.style.PATHS_SOURCE
+import io.github.dostepnykampus.core.map.style.PATH_EDGE_LAYER
+import io.github.dostepnykampus.core.map.style.PATH_INSIDE_LAYER
+import io.github.dostepnykampus.core.map.style.basemapNameLayers
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
