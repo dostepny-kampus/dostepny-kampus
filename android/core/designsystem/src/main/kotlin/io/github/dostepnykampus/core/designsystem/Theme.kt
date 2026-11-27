@@ -72,7 +72,7 @@ public object DostepnyKampusTheme {
      * Czy obowiązuje ciemny schemat kolorów z tokenów, wybrany w [DostepnyKampusTheme] przez `darkTheme`. Porównuje
      * schemat bieżącego [MaterialTheme] z ciemnym schematem modułu, a nie jasność koloru; poza motywem fałsz.
      */
-    internal val isDark: Boolean
+    public val isDark: Boolean
         @Composable @ReadOnlyComposable
         get() = MaterialTheme.colorScheme === DarkColorScheme
 }

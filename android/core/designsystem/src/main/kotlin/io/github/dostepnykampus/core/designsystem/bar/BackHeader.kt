@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -82,6 +83,7 @@ public fun BackHeader(
                 if (!isTitleBelow) titleText(Modifier.weight(1f))
             }
         }
+        HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         val below = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = Odstepy.m)
         if (isTitleBelow) titleText(below)
     }
