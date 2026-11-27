@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -20,13 +21,16 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.withBarriers
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.runBlocking
@@ -134,7 +138,43 @@ class CameraFlightDeviceTest {
         DeviceEvidence.record("v1-basic-no-floor-plan")
     }
 
-    private fun showMap(state: CampusMapUiState, focus: MapFocus.Building) {
+    @Test
+    fun barrierShowsBesidePin() {
+        val entries = runBlocking { catalog.catalog() }.copy(hasServerList = true)
+        val entrance = entries.entrances.first { it.buildingSymbol == "A-1" && it.isForVisitors }
+        val barrier =
+            AcceptedBarrier(
+                id = "bariera-wejscia-test",
+                location = entrance.location,
+                severity = Severity.HINDRANCE,
+                type = null,
+                buildingSymbol = entrance.buildingSymbol,
+                verifiedAt = null,
+                entranceId = entrance.id,
+            )
+        val barriers = listOf(barrier)
+        val data = campusMapData(entries).withBarriers(barriers)
+        showMap(
+            CampusMapUiState(catalog = entries, mapData = data, barriers = barriers),
+            MapFocus.Entrance(id = entrance.id, buildingSymbol = entrance.buildingSymbol),
+        )
+        val map = awaitReadyMap()
+        val location = LatLng(latitude = entrance.location.latitude, longitude = entrance.location.longitude)
+        composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(hasText("Bariery przy tym wejściu")) }
+        composeRule.waitUntil(READY_TIMEOUT_MS) {
+            composeRule.runOnUiThread {
+                val density = composeRule.activity.resources.displayMetrics.density
+                val anchor = map.projection.toScreenLocation(location)
+                val sign = PointF(anchor.x + BARRIER_PIN_GAP_DP * density, anchor.y)
+                val pin = PointF(anchor.x, anchor.y - PIN_BODY_DP * density)
+                map.queryRenderedFeatures(pin, "wejscie_pinezka").isNotEmpty() &&
+                    map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
+            }
+        }
+        DeviceEvidence.record("v1-barrier-beside-pin")
+    }
+
+    private fun showMap(state: CampusMapUiState, focus: MapFocus) {
         composeRule.activityRule.scenario.onActivity { activity ->
             val roles = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(activity).roles()
             activity.setContent {
@@ -227,6 +267,8 @@ class CameraFlightDeviceTest {
         const val TARGET_AREA = "Wittigowo"
         const val BUILDINGS_LAYER = "budynki"
         const val FLOOR_PLAN_ZOOM = 17.0
+        const val BARRIER_PIN_GAP_DP = 48f
+        const val PIN_BODY_DP = 24f
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L
