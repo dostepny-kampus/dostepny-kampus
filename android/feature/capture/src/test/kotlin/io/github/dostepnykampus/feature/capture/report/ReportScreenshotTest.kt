@@ -15,7 +15,6 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
@@ -25,7 +24,6 @@ import io.github.dostepnykampus.feature.capture.report.form.PlanFloors
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
-import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import org.junit.Rule
@@ -72,11 +70,13 @@ class ReportScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "w360dp-h1950dp-xhdpi")
     fun drawsEditedValues() {
         capture(editedState())
     }
 
     @Test
+    @Config(qualifiers = "w360dp-h1950dp-xhdpi")
     fun drawsSaveFailure() {
         capture(editedState().copy(stage = ReportStage.SAVE_FAILED))
     }
@@ -125,14 +125,7 @@ class ReportScreenshotTest {
     }
 
     private companion object {
-        val PLACE =
-            ReportPlace(
-                location = GeoPoint(longitude = 17.06, latitude = 51.1),
-                accuracyMeters = 0.8,
-                buildingSymbol = "A-1",
-                isManualCorrection = false,
-                buildingName = "Gmach Główny",
-            )
+        val PLACE = A1.copy(buildingName = "Gmach Główny")
         val NEW =
             ReportForm(
                 place =
