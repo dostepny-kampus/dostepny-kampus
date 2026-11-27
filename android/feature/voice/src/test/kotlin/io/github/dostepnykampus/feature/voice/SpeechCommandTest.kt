@@ -33,7 +33,7 @@ class SpeechCommandTest {
     }
 
     @Test
-    fun ignoresSilenceAndWordsInOtherUtterances() {
+    fun ignoresNonCommands() {
         listOf("", "  … ", "schody i windy", "nie anuluj", "tak, przy wejściu", "tak nie").forEach { phrase ->
             assertNull(recognizeSpeechCommand(phrase), "To nie jest samodzielne polecenie: $phrase")
         }
