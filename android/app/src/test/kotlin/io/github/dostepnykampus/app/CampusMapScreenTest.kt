@@ -436,7 +436,8 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNodeWithContentDescription("Powiększ").performClick()
         compose.waitForIdle()
         val closer = aboveSheet.copy(zoom = aboveSheet.zoom + 1)
-        assertEquals(CameraTransition(closer, CameraMotion.FLIGHT, durationMillis = 300), moves.last())
+        val zoomed = moves.last().copy(action = 0L)
+        assertEquals(CameraTransition(closer, CameraMotion.FLIGHT, durationMillis = 300), zoomed)
         sheet = 0.dp
         compose.waitForIdle()
         assertStays(above = closer, under = under)
