@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.tiles
 
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse

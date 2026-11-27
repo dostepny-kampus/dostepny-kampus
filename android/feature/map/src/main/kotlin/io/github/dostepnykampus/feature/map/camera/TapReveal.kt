@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 import kotlin.math.PI
 import kotlin.math.roundToLong
 

@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.style.Basemap
 import kotlin.math.PI
 import kotlin.math.abs

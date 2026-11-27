@@ -24,6 +24,7 @@ import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
@@ -31,7 +32,6 @@ import io.github.dostepnykampus.feature.capture.quick.QuickLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickReportModels
 import io.github.dostepnykampus.feature.capture.quick.QuickSendViewModel
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

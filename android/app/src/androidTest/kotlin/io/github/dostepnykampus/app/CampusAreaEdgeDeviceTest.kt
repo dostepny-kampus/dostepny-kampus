@@ -21,7 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue

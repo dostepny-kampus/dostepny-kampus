@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.map.area
 
 import io.github.dostepnykampus.core.geo.toPosition
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
 import org.maplibre.spatialk.turf.measurement.distance
