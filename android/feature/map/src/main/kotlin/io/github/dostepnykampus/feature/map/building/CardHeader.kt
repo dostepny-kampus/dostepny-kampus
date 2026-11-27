@@ -66,7 +66,7 @@ private fun EntrancesOrSpace(ready: BuildingCardUiState.Ready?) {
 @Composable
 private fun NameOrSpace(symbol: String, ready: BuildingCardUiState.Ready?) {
     if (ready != null) {
-        SymbolOverName(symbol = symbol, name = ready.name)
+        SymbolOverName(ready)
     } else {
         Column {
             Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
@@ -168,9 +168,9 @@ internal fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
     this == BuildingCardUiState.Loading && !isFullScreen
 
 @Composable
-private fun SymbolOverName(symbol: String, name: String?) {
-    val spoken =
-        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
+private fun SymbolOverName(ready: BuildingCardUiState.Ready) {
+    val shown = ready.symbols.joinToString(separator = " / ")
+    val spoken = spokenHeader(ready)
     val focus = remember { FocusRequester() }
     Column(
         modifier =
@@ -179,8 +179,21 @@ private fun SymbolOverName(symbol: String, name: String?) {
                 .focusRequester(focus)
                 .focusable(),
     ) {
-        Text(text = symbol, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
+        Text(text = shown, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
+        ready.name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
     }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
+
+@Composable
+@ReadOnlyComposable
+private fun spokenHeader(ready: BuildingCardUiState.Ready): String =
+    if (ready.symbols.size > 1) {
+        val joined = ready.symbols.joinToString(separator = ", ")
+        ready.name?.let { stringResource(R.string.karta_czytaj_wiele, joined, it) }
+            ?: stringResource(R.string.mapa_budynki, joined)
+    } else {
+        val single = ready.symbols.singleOrNull().orEmpty()
+        ready.name?.let { stringResource(R.string.karta_czytaj, single, it) }
+            ?: stringResource(R.string.mapa_budynek, single)
+    }

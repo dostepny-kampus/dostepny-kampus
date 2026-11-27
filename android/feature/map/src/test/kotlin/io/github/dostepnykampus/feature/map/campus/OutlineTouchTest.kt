@@ -39,7 +39,7 @@ class OutlineTouchTest {
         assertEquals(listOf("B-1", "B-2"), symbols, "kontury w zasięgu")
     }
 
-    /** Wiersz: V1, dotknięcie wewnątrz konturu wspólnego daje jego symbole do arkusza. */
+    /** Wiersz: V1, dotknięcie wewnątrz konturu wspólnego zwraca wszystkie jego symbole. */
     @Test
     fun choosesWithinSharedOutline() {
         val symbols = data.touchedSymbols(hit = listOf(2)) { listOf(1, 2) }

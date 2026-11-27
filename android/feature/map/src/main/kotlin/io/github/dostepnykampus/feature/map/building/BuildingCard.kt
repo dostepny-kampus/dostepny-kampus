@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.building
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -195,21 +196,40 @@ fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
     }
 
 /**
+ * Budynki wspólnego konturu bez planów pięter dla [symbol] w kolejności katalogu, a dla innego budynku sam ten
+ * budynek; pusta lista, gdy [symbol] nie ma w katalogu.
+ *
+ * Wymagania: US2, US3.2
+ */
+internal fun BuildingCatalog.sharedGroup(symbol: String): List<Building> {
+    val building = buildings.find { it.symbol == symbol } ?: return emptyList()
+    val outline = buildings.filter { it.outline == building.outline }
+    val hasPlans = outline.any { it.symbol in detailed }
+    return if (outline.size > 1 && !hasPlans) outline else listOf(building)
+}
+
+internal fun distinctEntrancesById(entrances: List<Entrance>): List<Entrance> =
+    entrances
+        .groupBy(Entrance::id)
+        .values
+        .map { group -> group.firstOrNull { it.assessment != null } ?: group.first() }
+
+/**
  * Stan karty budynku [symbol] z katalogu. Brak symbolu w katalogu to „budynku nie ma w telefonie”.
  *
- * Wymagania: US2, US2.7
+ * Wymagania: US2, US2.7, US3.2
  */
 fun buildingCard(catalog: BuildingCatalog, symbol: String): BuildingCardUiState {
-    val building = catalog.buildings.find { it.symbol == symbol }
-    val entrances = catalog.entrances.filter { it.buildingSymbol == symbol }
-    return if (building == null) {
-        BuildingCardUiState.Missing
-    } else {
-        BuildingCardUiState.Ready(
-            symbol = building.symbol,
-            name = building.name,
-            entrances = orderedEntrances(entrances),
-            isBasic = catalog.hasServerList && symbol !in catalog.detailed,
-        )
-    }
+    val group = catalog.sharedGroup(symbol)
+    if (group.isEmpty()) return BuildingCardUiState.Missing
+    val symbols = group.map(Building::symbol)
+    val primary = group.first()
+    val entrances = distinctEntrancesById(catalog.entrances.filter { it.buildingSymbol in symbols })
+    return BuildingCardUiState.Ready(
+        symbol = primary.symbol,
+        name = group.firstNotNullOfOrNull(Building::name),
+        entrances = orderedEntrances(entrances),
+        isBasic = catalog.hasServerList && symbols.none { it in catalog.detailed },
+        symbols = symbols,
+    )
 }

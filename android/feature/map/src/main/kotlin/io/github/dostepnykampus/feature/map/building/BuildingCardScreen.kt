@@ -136,7 +136,11 @@ fun BuildingCardContent(
     val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
     val column = modifier.readableWidth()
     Column(if (isFullScreen) column.fillMaxSize() else column) {
-        if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
+        if (mode == CardMode.Direct) {
+            val directTitle =
+                (card as? BuildingCardUiState.Ready)?.run { symbols.joinToString(separator = " / ") } ?: symbol
+            BackHeader(title = directTitle, onBack = onBack)
+        }
         if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
         Box(Modifier.weight(1f, isFullScreen)) {
             Column(

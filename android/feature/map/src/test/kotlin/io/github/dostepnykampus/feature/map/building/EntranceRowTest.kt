@@ -77,12 +77,12 @@ class EntranceRowTest {
         val repository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
                 listOf(
-                    building(symbol = "A-1"),
+                    building(symbol = "A-1", x = 0),
                     entrance(symbol = "A-1", tags = """"wheelchair":"no""""),
                     entrance(symbol = "A-1", tags = """"wheelchair":"yes""""),
-                    building(symbol = "B-4"),
+                    building(symbol = "B-4", x = 2),
                     entrance(symbol = "B-4", tags = """"wheelchair":"no""""),
-                    building(symbol = "C-13"),
+                    building(symbol = "C-13", x = 4),
                     entrance(symbol = "C-13", tags = """"wheelchair":"no""""),
                     entrance(symbol = "C-13", tags = """"ref":"Brama""""),
                 ).joinToString(
@@ -92,9 +92,9 @@ class EntranceRowTest {
                 )
             }
 
-        fun building(symbol: String): String =
+        fun building(symbol: String, x: Int): String =
             """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"osm_id":"way/$symbol"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
+                """"geometry":{"type":"Polygon","coordinates":[[[$x,0],[${x + 1},0],[${x + 1},1],[$x,0]]]}}"""
 
         fun entrance(symbol: String, tags: String): String =
             """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],""" +

@@ -79,8 +79,9 @@ private const val MAP_STATE = "map"
  *
  * Wymagania: US1, US1.1, NFR-19, US9.1, NFR-53, NFR-37, NFR-17, NFR-18, US2, US2.9, US3.3, US2.8
  *
- * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
- *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury
+ * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur albo
+ *   kontur wspólny bez planów, albo budynku wybranego w arkuszu „Który budynek?”, gdy trafiło dwa
+ *   kontury lub kontur wspólny z planami
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus zaznaczenie z trasy. Budynek dostaje obrys, np. po „Wstecz” z V2; sam obrys nie rusza kamery.
  * Budynek z poleceniem „Pokaż budynek na mapie”: kamera staje na nim raz na polecenie,

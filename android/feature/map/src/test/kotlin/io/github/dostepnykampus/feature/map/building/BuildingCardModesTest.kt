@@ -329,7 +329,7 @@ class BuildingCardModesTest {
                     entrance(id = "node/3", tags = """"entrance":"yes","wheelchair":"no""""),
                     """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],""" +
                         """"display_name":"Budynek B","osm_id":"way/4"},""" +
-                        """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
+                        """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,0]]]}}""",
                     entrance(id = "node/4", tags = """"wheelchair":"no","ref":"Zamknięte"""", symbol = "B-4"),
                 ).joinToString(
                     separator = ",",

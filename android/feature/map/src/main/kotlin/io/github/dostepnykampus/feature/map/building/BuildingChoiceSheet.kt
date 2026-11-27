@@ -45,7 +45,7 @@ import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
- * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp.
+ * Arkusz „Który budynek?” na dole mapy po dotknięciu dwóch konturów w zasięgu 24 dp albo konturu wspólnego z planami.
  * Każdy budynek to wiersz budynku w ramce na pełną szerokość, jak w innych arkuszach mapy, z nazwą z danych pod
  * napisem. Przy dużej czcionce arkusz się przewija. Nagłówek „Który budynek?” ma obok obrysowany przycisk
  * „Zamknij”.

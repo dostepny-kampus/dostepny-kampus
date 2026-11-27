@@ -20,6 +20,7 @@ import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EvacuationExit
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -67,6 +69,7 @@ sealed interface BuildingCardUiState {
      *   nie ma jeszcze listy budynków z serwera
      * @property evacuationExits wyjścia ewakuacyjne z planów PWr; pusta lista, gdy dane ich nie podają
      * @property ownBarrierIds identyfikatory własnych zgłoszeń zalogowanego konta
+     * @property symbols wszystkie symbole karty w kolejności katalogu; kilka przy konturze wspólnym bez planów
      */
     data class Ready(
         val symbol: String,
@@ -77,6 +80,7 @@ sealed interface BuildingCardUiState {
         val isBasic: Boolean = false,
         val evacuationExits: List<EvacuationExit> = emptyList(),
         val ownBarrierIds: Set<String> = emptySet(),
+        val symbols: List<String> = listOf(symbol),
     ) : BuildingCardUiState
 }
 
@@ -112,11 +116,12 @@ class BuildingCardViewModel
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
-        private val known = sources.serverEntrances.knownCard(symbol)
+        private val known =
+            initialCard(symbol = symbol, repository = repository, entrances = sources.serverEntrances)
 
         private val serverCard = MutableStateFlow(known ?: CardEntrances(emptyList()))
 
-        private val barriers = MutableStateFlow(sources.acceptedBarriers.known()?.let(::ofBuilding))
+        private val barriers = MutableStateFlow(sources.acceptedBarriers.known())
 
         private val floors = MutableStateFlow<FloorFacts?>(null)
 
@@ -169,10 +174,21 @@ class BuildingCardViewModel
                 if (sources.plans.download(symbol)) floors.value = storedFloorFacts(sources.plans, symbol)
             }
             viewModelScope.launch {
-                serverCard.value = sources.serverEntrances.cardEntrances(symbol)
+                val own = sources.serverEntrances.cardEntrances(symbol)
+                serverCard.value = own
+                val groupSymbols =
+                    withContext(sources.computeContext) { repository.catalog().sharedGroup(symbol).map { it.symbol } }
+                if (groupSymbols.size > 1) {
+                    val cards =
+                        groupSymbols.associateWith { item ->
+                            if (item == symbol) own else sources.serverEntrances.cardEntrances(item)
+                        }
+                    serverCard.value = mergeCardEntrances(symbols = groupSymbols, cards = cards)
+                }
             }
             viewModelScope.launch {
-                barriers.value = sources.acceptedBarriers.barriersOf(symbol)
+                val accepted = sources.acceptedBarriers.barriers()
+                barriers.value = sources.acceptedBarriers.syncedAt()?.let { accepted }
             }
         }
 
@@ -198,9 +214,6 @@ class BuildingCardViewModel
                 ),
         )
 
-        private fun ofBuilding(accepted: List<AcceptedBarrier>): List<AcceptedBarrier> =
-            accepted.filter { barrier -> barrier.buildingSymbol == symbol }
-
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie. Wymagania: NFR-10 */
         fun retry() {
             attempts.value++
@@ -214,20 +227,26 @@ class BuildingCardViewModel
             own: Set<String>,
         ): BuildingCardUiState =
             MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
-                val building = catalog.buildings.find { it.symbol == symbol }
-                if (building == null) {
+                val group = catalog.sharedGroup(symbol)
+                val primary = group.firstOrNull()
+                if (primary == null) {
                     BuildingCardUiState.Missing
                 } else {
-                    val raw = card.entrances.ifEmpty { catalog.entrances.filter { it.buildingSymbol == symbol } }
+                    val symbols = group.map(Building::symbol)
+                    val buildingBarriers = accepted?.filter { barrier -> barrier.buildingSymbol in symbols }
+                    val catalogEntrances =
+                        distinctEntrancesById(catalog.entrances.filter { it.buildingSymbol in symbols })
+                    val raw = card.entrances.ifEmpty { catalogEntrances }
                     BuildingCardUiState.Ready(
-                        symbol = building.symbol,
-                        name = building.name,
-                        entrances = orderedEntrancesFor(raw = raw, accepted = accepted),
-                        barriers = accepted,
+                        symbol = primary.symbol,
+                        name = group.firstNotNullOfOrNull(Building::name),
+                        entrances = orderedEntrancesFor(raw = raw, accepted = buildingBarriers),
+                        barriers = buildingBarriers,
                         floors = facts,
-                        isBasic = catalog.hasServerList && symbol !in catalog.detailed,
+                        isBasic = catalog.hasServerList && symbols.none { it in catalog.detailed },
                         evacuationExits = card.evacuationExits,
                         ownBarrierIds = own,
+                        symbols = symbols,
                     )
                 }
             }
@@ -275,4 +294,31 @@ internal object NoFloorPlans : FloorPlans {
     override suspend fun floors(symbol: String): FloorList? = null
 
     override suspend fun rooms(symbol: String, floor: String): RoomList? = null
+}
+
+internal fun initialCard(
+    symbol: String,
+    repository: BuildingCatalogRepository,
+    entrances: ServerEntrances,
+): CardEntrances? {
+    val group = repository.current()?.run { sharedGroup(symbol).map(Building::symbol) }.orEmpty()
+    val cards =
+        if (group.size > 1) {
+            group.mapNotNull { item -> entrances.knownCard(item)?.let { card -> item to card } }.toMap()
+        } else {
+            emptyMap()
+        }
+    return when {
+        group.size <= 1 -> entrances.knownCard(symbol)
+        cards.isEmpty() -> null
+        else -> mergeCardEntrances(symbols = group, cards = cards)
+    }
+}
+
+internal fun mergeCardEntrances(symbols: List<String>, cards: Map<String, CardEntrances>): CardEntrances {
+    val ordered = symbols.mapNotNull(cards::get)
+    return CardEntrances(
+        entrances = distinctEntrancesById(ordered.flatMap(CardEntrances::entrances)),
+        evacuationExits = ordered.flatMap(CardEntrances::evacuationExits).distinctBy(EvacuationExit::id),
+    )
 }

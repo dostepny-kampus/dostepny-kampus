@@ -101,8 +101,8 @@ data class CampusMapData(
 
 /**
  * Symbole budynków konturów o numerach [numbers] trafionych jednym dotknięciem, każdy raz; numeru spoza
- * [CampusMapData.outlines] nie ma w wyniku. Kontur wspólny „C-3/C-4” daje oba symbole, a wtedy ekran pyta
- * „Który budynek?”.
+ * [CampusMapData.outlines] nie ma w wyniku. Kontur wspólny daje wszystkie swoje symbole, aby warstwa
+ * wyboru mogła rozstrzygnąć między jedną kartą a arkuszem „Który budynek?”.
  */
 fun CampusMapData.symbolsAt(numbers: List<Int>): List<String> =
     numbers.flatMap { outlines.getOrElse(it) { emptyList() } }.distinct()

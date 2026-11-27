@@ -63,11 +63,12 @@ open class CampusMapScreenFixture {
     protected val showList = hasText("Pokaż listę") and hasClickAction()
     protected val showMap = hasText("Pokaż mapę") and hasClickAction()
     protected var ring = "[[0,0],[1,0],[1,1],[0,0]]"
+    protected var buildingSymbols = """["C-13","C-14"]"""
     protected var entrances = ""
     protected val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":$buildingSymbols,""" +
                 """"display_name":"Budynek testowy",""" +
                 """"osm_id":"way/1"},""" +
                 """"geometry":{"type":"Polygon","coordinates":[$ring]}}$entrances]}"""
