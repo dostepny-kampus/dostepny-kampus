@@ -26,6 +26,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.TextAction
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
@@ -145,7 +146,7 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
             fontWeight = Typografia.wyroznienieWaga,
         )
         if (state.stage == ReportStage.SAVE_FAILED) {
-            FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+            RetrySaveAction(onRetry)
         }
     }
 }
@@ -164,8 +165,13 @@ internal fun SendFailure(isRejected: Boolean, onRetry: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
         Text(stringResource(message), color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
-        FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+        RetrySaveAction(onRetry)
     }
+}
+
+@Composable
+private fun RetrySaveAction(onRetry: () -> Unit) {
+    OutlinedAction(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
 }
 
 /** „Wyjść bez zapisu?” po „Wstecz” z niezapisanymi zmianami. Wymagania: US7.4, NFR-23 */
