@@ -153,30 +153,26 @@ object MapLibreMapView : CampusMapView {
         val tiles = rememberMapTiles(context)
         val mapView = rememberMapView(context, background = colors.lad.toArgb(), tiles = tiles)
         val tileAreas = remember(tiles) { tiles.newView() }
-        var map by remember { mutableStateOf<MapLibreMap?>(null) }
         val area = styleAreaOf(selection = selection, basemap = frame.basemap)
         val areas = remember(tileAreas) { FlightArea(first = area, onTileAreas = tileAreas::update) }
         FollowScreenLifecycle(mapView, tileAreas)
         val reveal = remember { BasemapReveal() }
-        val currentMove by rememberUpdatedState(move)
-        val currentInset by rememberUpdatedState(inset)
+        val ready = ReadyMap.rememberReady(mapView = mapView, areas = areas, move = move, inset = inset)
+        val map = ready?.map
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
         val signTouch by rememberUpdatedState(onSignTouch)
         val currentLook by rememberUpdatedState(look)
-        DisposableEffect(mapView) {
-            mapView.getMapAsync { ready ->
-                ready.prefetchZoomDelta = 0
-                ready.cameraPosition = currentMove.camera.toPosition(currentInset)
-                ready.onPersonIdle { cameraIdle(it) }
+        DisposableEffect(map) {
+            if (map != null) {
+                map.onPersonIdle { cameraIdle(it) }
                 val onSign = { touch: MapTouch.Sign -> signTouch(touch.sign, touch.id) }
-                ready.onTouch(tolerance = tolerance, look = { currentLook }, onSign = onSign) { hit, near ->
+                map.onTouch(tolerance = tolerance, look = { currentLook }, onSign = onSign) { hit, near ->
                     currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
-                map = ready
             }
-            onDispose { map = null }
+            onDispose {}
         }
         map.FollowStyle(
             data = data,
@@ -189,28 +185,26 @@ object MapLibreMapView : CampusMapView {
         )
         map.FollowBasemapReveal(mapView = mapView, reveal = reveal, area = areas.shown)
         map.FollowEachMoveOnce(
+            controller = ready?.controller,
             move = move,
             inset = inset,
             limits = frame.restLimits(),
             area = area,
             areas = areas,
-            view = mapView,
         )
         AndroidView(factory = { mapView }, modifier = modifier)
     }
 
     @Composable
     private fun MapLibreMap?.FollowEachMoveOnce(
+        controller: CameraController?,
         move: CameraTransition,
         inset: MapInset,
         limits: MapLimits?,
         area: StyleArea,
         areas: FlightArea,
-        view: View,
     ) {
         val map = this
-        val controller =
-            remember(map) { map?.let { CameraController(MapLibreCamera(map = it, areas = areas, view = view)) } }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(map, controller) {
@@ -449,6 +443,29 @@ object MapLibreMapView : CampusMapView {
         addOnCameraIdleListener {
             if (isByPerson) report(cameraPosition.toCamera())
             isByPerson = false
+        }
+    }
+
+    private data class ReadyMap(val map: MapLibreMap, val controller: CameraController) {
+        companion object {
+            @Composable
+            fun rememberReady(mapView: MapView, areas: FlightArea, move: CameraTransition, inset: MapInset): ReadyMap? {
+                var ready by remember(mapView) { mutableStateOf<ReadyMap?>(null) }
+                val currentMove by rememberUpdatedState(move)
+                val currentInset by rememberUpdatedState(inset)
+                DisposableEffect(mapView) {
+                    mapView.getMapAsync { map ->
+                        map.prefetchZoomDelta = 0
+                        val controller =
+                            CameraController(MapLibreCamera(map = map, areas = areas, view = mapView)).apply {
+                                place(currentMove.camera, currentInset)
+                            }
+                        ready = ReadyMap(map, controller)
+                    }
+                    onDispose { ready = null }
+                }
+                return ready
+            }
         }
     }
 
