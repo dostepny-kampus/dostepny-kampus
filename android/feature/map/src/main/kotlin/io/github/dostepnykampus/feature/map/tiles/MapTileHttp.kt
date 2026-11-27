@@ -77,24 +77,24 @@ class MapTileHttp
          */
         internal inner class ViewAreas {
             private var bounds: List<CampusBounds> = emptyList()
-            private var visible = false
+            private var isShown = false
 
             /** Zapisuje bieżące granice widoku, także gdy widok jest ukryty. */
             fun update(areas: List<CampusBounds>) {
                 if (bounds == areas) return
                 bounds = areas.toList()
-                if (visible) publish()
+                if (isShown) publish()
             }
 
             /** Pokazuje bieżące granice klientowi HTTP albo wycofuje udział tego widoku. */
             fun setVisible(isVisible: Boolean) {
-                if (visible == isVisible) return
-                visible = isVisible
+                if (isShown == isVisible) return
+                isShown = isVisible
                 publish()
             }
 
             private fun publish() {
-                val shown = bounds.takeIf { visible && it.isNotEmpty() }
+                val shown = bounds.takeIf { isShown && it.isNotEmpty() }
                 activeAreas.updateAndGet { active ->
                     if (shown == null) active - this else active + (this to shown)
                 }

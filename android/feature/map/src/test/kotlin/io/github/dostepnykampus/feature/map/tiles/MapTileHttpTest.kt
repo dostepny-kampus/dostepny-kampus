@@ -86,6 +86,9 @@ class MapTileHttpTest {
 
     private fun code(http: MapTileHttp, path: String): Int {
         val request = Request.Builder().url(server.url(path)).build()
-        return http.calls.newCall(request).execute().use { it.code }
+        return http.calls
+            .newCall(request)
+            .execute()
+            .use { it.code }
     }
 }
