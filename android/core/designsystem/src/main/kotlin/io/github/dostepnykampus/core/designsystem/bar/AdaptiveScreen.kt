@@ -16,8 +16,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -48,16 +50,22 @@ public fun AdaptiveScreen(
     var headerHeight by remember { mutableIntStateOf(0) }
     var actionsHeight by remember { mutableIntStateOf(0) }
     val scroll = key(contentKey) { rememberScrollState() }
+    val currentHeader by rememberUpdatedState(header)
+    val currentActions by rememberUpdatedState(actions)
+    val top = remember {
+        movableContentOf {
+            Box(Modifier.fillMaxWidth().onSizeChanged { headerHeight = it.height }) { currentHeader() }
+        }
+    }
+    val bottom = remember {
+        movableContentOf {
+            Box(Modifier.fillMaxWidth().onSizeChanged { actionsHeight = it.height }) { currentActions?.invoke() }
+        }
+    }
     BoxWithConstraints(modifier.fillMaxSize()) {
         val outside = (windowHeight - constraints.maxHeight).coerceAtLeast(0)
         val budget = (windowHeight * FIXED_HEIGHT_FRACTION - outside).coerceAtLeast(0f)
         val isPinned = !isLarge && headerHeight > 0 && headerHeight + actionsHeight <= budget
-        val top: @Composable () -> Unit = {
-            Box(Modifier.fillMaxWidth().onSizeChanged { headerHeight = it.height }) { header() }
-        }
-        val bottom: @Composable () -> Unit = {
-            Box(Modifier.fillMaxWidth().onSizeChanged { actionsHeight = it.height }) { actions?.invoke() }
-        }
         Column {
             if (isPinned) top()
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scroll)) {
