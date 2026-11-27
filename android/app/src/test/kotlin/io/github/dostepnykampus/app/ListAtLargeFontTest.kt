@@ -48,7 +48,7 @@ class ListAtLargeFontTest {
     private val choice = TestMapListChoice().apply { savedChoice.value = true }
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { ONE_BUILDING_CATALOG }
     private val selected = mutableListOf<String?>()
-    private val fakeMap = CampusMapView { _, selection, _, _, _, _, _, _ -> selected += selection.building }
+    private val fakeMap = CampusMapView { _, selection, _, _, _, _, _, _, _ -> selected += selection.building }
 
     /**
      * Budynek z listy otwiera od razu pełny opis bez mapy; „Pokaż budynek na mapie” prowadzi do mapy z zaznaczonym

@@ -77,7 +77,7 @@ class LowCardOverMapTest {
     private val choice = TestMapListChoice()
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _, _, _, _, _, onBuildingsTouch, _, modifier ->
+        CampusMapView { _, _, _, _, _, _, onBuildingsTouch, _, modifier ->
             touch = onBuildingsTouch
             Box(modifier.testTag(MAP_TAG))
         }

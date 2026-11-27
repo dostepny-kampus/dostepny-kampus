@@ -8,7 +8,6 @@ package io.github.dostepnykampus.app
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -93,7 +92,7 @@ class EntranceOnMapTest {
     private val choice = TestMapListChoice()
     private lateinit var navigator: AppNavigator
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, move, inset, onCameraIdle, onBuildingsTouch, _, _: Modifier ->
+        CampusMapView { data, selection, move, inset, _, onCameraIdle, onBuildingsTouch, _, _ ->
             shown += data to move.camera
             selections += selection
             moves += move to inset

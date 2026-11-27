@@ -42,7 +42,7 @@ class GuestQuickReportTest {
 
     private val app = RuntimeEnvironment.getApplication()
     private val roles = TestRoles()
-    private val noMap = CampusMapView { _, _, _, _, _, _, _, _ -> }
+    private val noMap = CampusMapView { _, _, _, _, _, _, _, _, _ -> }
 
     /**
      * Gość na mapie wybiera „Zgłoś barierę” i dostaje prośbę o logowanie albo założenie konta, a krok ze zdjęciem

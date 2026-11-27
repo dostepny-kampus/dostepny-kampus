@@ -72,7 +72,7 @@ internal class CardToMap(private val compose: ComposeContentTestRule, private va
         private set
 
     private val view =
-        CampusMapView { _: CampusMapData, selection, move, inset, _, _, _, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, move, inset, _, _, _, _, _: Modifier ->
             pinned = selection.entrance
             camera = move to inset
         }

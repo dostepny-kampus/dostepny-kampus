@@ -53,7 +53,7 @@ class FarFromBuildingsTest {
 
     private var outlines = emptyMap<String, CampusBounds>()
     private var lookup: QuickLookup by mutableStateOf(QuickLookup.Locating)
-    private val fakeMap = CampusMapView { shown, _, _, _, _, _, _, _ -> outlines = shown.outlinesBySymbol }
+    private val fakeMap = CampusMapView { shown, _, _, _, _, _, _, _, _ -> outlines = shown.outlinesBySymbol }
 
     /**
      * Odwiedzający na terenie PWr, 60 m od najbliższego konturu, widzi mapę z konturami budynków PWr, a pozycja

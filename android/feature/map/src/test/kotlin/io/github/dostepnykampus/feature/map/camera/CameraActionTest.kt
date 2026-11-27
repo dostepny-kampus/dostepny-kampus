@@ -134,6 +134,27 @@ class CameraActionTest {
     }
 
     /**
+     * Wiersz: V1 i V2, granice kamery w spoczynku: nad kartą V2 cała wysokość mapy, po zamknięciu karty tylko część
+     * pod paskiem, przy tej samej szerokości.
+     *
+     * Wymagania: NFR-39, BR-G5
+     */
+    @Test
+    fun restLimitsFollowCard() {
+        showMap()
+        open("A-2")
+        val overCard = requireNotNull(camera.limits.last())
+        compose.runOnIdle { cover = 0.dp }
+        compose.waitForIdle()
+        val closed = requireNotNull(camera.limits.last())
+        assertEquals("Ta sama szerokość", overCard.widthDp, closed.widthDp, 1e-9)
+        assertTrue(
+            "Nad kartą cała mapa: ${overCard.heightDp} > ${closed.heightDp}",
+            overCard.heightDp > closed.heightDp,
+        )
+    }
+
+    /**
      * Wiersz: V1, wybór z listy budynków: mapa od razu na budynku, bez klatek ruchu.
      *
      * Wymagania: US2.8, NFR-19, NFR-56

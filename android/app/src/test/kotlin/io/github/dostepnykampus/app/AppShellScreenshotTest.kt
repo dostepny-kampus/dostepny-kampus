@@ -70,7 +70,7 @@ class AppShellScreenshotTest {
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private val landOnly =
-        CampusMapView { _: CampusMapData, _, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { _: CampusMapData, _, _, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
             touch = onBuildingsTouch
             Box(modifier = modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad))
         }
