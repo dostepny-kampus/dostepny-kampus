@@ -14,17 +14,16 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  # brak pełnego testu: #3734
-  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  @US4.6 @BR-8 @BR-14 @aplikacja
   Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz otworzył arkusz wejścia głównego A-1 na mapie
+    Oraz otworzył arkusz wejścia głównego A-7 na mapie
     Jeżeli wybierze „Zgłoś barierę przy wejściu”
-    Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: Wejście główne”, bez cudzysłowu, bo to nie nazwa z danych
+    Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: główne”, bez cudzysłowu, bo to nie nazwa z danych
     Oraz aplikacja nie prosi o zgodę na lokalizację i nie ustala bieżącej pozycji
     Jeżeli zrobi zdjęcie, wybierze grupę barier „wejście i drzwi” i wyśle zgłoszenie
     Wtedy aplikacja nie pyta o piętro
-    Oraz miejscem zgłoszenia jest punkt wejścia głównego A-1, a budynkiem A-1
+    Oraz miejscem zgłoszenia jest punkt wejścia głównego A-7, a budynkiem A-7
 
   @US4.6 @BR-27 @aplikacja
   Scenariusz: Napis wejścia bez nazwy w danych ma opis położenia
