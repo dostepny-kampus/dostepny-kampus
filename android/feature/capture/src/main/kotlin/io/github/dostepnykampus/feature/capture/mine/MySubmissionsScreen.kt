@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +30,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.CardAction
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
@@ -120,7 +120,7 @@ private fun ListTop(list: MySubmissions, onMeasure: () -> Unit, onSync: (() -> U
                 CardAction(text = waiting, onClick = onSync, opensScreen = true)
             }
         }
-        Button(onClick = onMeasure) {
+        PrimaryAction(onClick = onMeasure) {
             Text(stringResource(R.string.pomiar_naglowek))
         }
     }

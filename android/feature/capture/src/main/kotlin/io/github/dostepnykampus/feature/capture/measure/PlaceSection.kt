@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.capture.measure
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,6 +25,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.R
@@ -107,7 +107,7 @@ private fun PlaceQuestion(place: PlaceChoice, actions: PlaceActions, onPick: () 
 
             is PlaceChoice.Suggested -> {
                 Hint(place.hint)
-                Button(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
+                PrimaryAction(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
                 OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
                 TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
