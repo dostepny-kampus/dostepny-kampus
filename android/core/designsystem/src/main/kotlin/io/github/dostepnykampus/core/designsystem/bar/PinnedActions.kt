@@ -34,6 +34,7 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
  * [CeleDotyku.odstep]. Jedyny przycisk zajmuje całą szerokość pasa; przy kilku szerokość ustala wywołujący:
  * [PinnedActionScope.weight] w wierszu, `fillMaxWidth()` albo szerokość napisu. Przycisk, który się nie mieści,
  * np. przy dużej czcionce, przechodzi do następnego wiersza; słowo napisu przycisku z wagą nie łamie się w środku.
+ * Przyciski z wagą rosną do wysokości wiersza. Przyciski bez wagi są wyśrodkowane w pionie.
  *
  * Wymagania: NFR-17, NFR-20, NFR-52
  */

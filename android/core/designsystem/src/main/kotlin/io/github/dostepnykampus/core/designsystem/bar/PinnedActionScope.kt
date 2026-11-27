@@ -121,7 +121,7 @@ private fun MeasureScope.layoutRows(measurables: List<Measurable>, constraints: 
         placed.forEachIndexed { row, line ->
             var x = 0
             line.forEach { placeable ->
-                placeable.placeRelative(x, y)
+                placeable.placeRelative(x, y + (heights[row] - placeable.height) / 2)
                 x += placeable.width + gap
             }
             y += heights[row] + gap
@@ -144,15 +144,31 @@ private fun fitsInOneRow(line: List<Action>, width: Int, gap: Int): Boolean {
 }
 
 private fun measureRow(line: List<Action>, width: Int, gap: Int): List<Placeable> {
+    val widths = rowWidths(line, width, gap)
+    val height =
+        if (line.size > 1) {
+            line.indices.maxOf { index ->
+                val action = line[index]
+                action.placeable?.height ?: action.measurable.minIntrinsicHeight(widths[index])
+            }
+        } else {
+            0
+        }
+    return line.mapIndexed { index, action ->
+        action.placeable ?: action.measurable.measure(Constraints.fixedWidth(widths[index]).copy(minHeight = height))
+    }
+}
+
+private fun rowWidths(line: List<Action>, width: Int, gap: Int): List<Int> {
     val free = widthLeftForWeights(line, width, gap)
     val total = line.sumOf { it.weight.toDouble() }.toFloat()
     val last = line.lastOrNull { it.placeable == null }
     var left = free
     return line.map { action ->
-        action.placeable ?: run {
+        action.placeable?.width ?: run {
             val actionWidth = if (action === last) left else weightedShare(action, free, total)
             left -= actionWidth
-            action.measurable.measure(Constraints.fixedWidth(actionWidth.coerceAtLeast(0)))
+            actionWidth.coerceAtLeast(0)
         }
     }
 }
