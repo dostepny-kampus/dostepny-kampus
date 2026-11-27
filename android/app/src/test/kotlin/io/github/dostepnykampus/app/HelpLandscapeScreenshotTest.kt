@@ -51,7 +51,7 @@ class HelpLandscapeScreenshotTest {
 
     @Test
     @Config(fontScale = 2f)
-    fun drawsScrolledHelpOutsideSystemInsetsAtFont200() {
+    fun drawsScrolledHelpAtFont200() {
         showHelp()
         compose.onNodeWithText("Pomiń instrukcję").performScrollTo()
         checkBounds()
@@ -67,7 +67,8 @@ class HelpLandscapeScreenshotTest {
             }
         }
         val bars =
-            WindowInsetsCompat.Builder()
+            WindowInsetsCompat
+                .Builder()
                 .setInsets(Type.statusBars(), Insets.of(0, STATUS_BAR_PX, 0, 0))
                 .setInsets(Type.displayCutout(), Insets.of(CUTOUT_PX, 0, 0, 0))
                 .setInsets(Type.mandatorySystemGestures(), Insets.of(0, 0, 0, GESTURE_BAR_PX))

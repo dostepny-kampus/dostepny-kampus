@@ -41,12 +41,12 @@ class HelpLandscapeDeviceTest {
     val compose = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun helpOutsideSystemBarsAtStandardFont() {
+    fun keepsHelpOutsideSystemBars() {
         checkHelpInLandscape(fontScale = 1f)
     }
 
     @Test
-    fun scrolledHelpOutsideSystemBarsAtFont200() {
+    fun keepsHelpClearAtFont200() {
         checkHelpInLandscape(fontScale = 2f)
     }
 
@@ -70,16 +70,20 @@ class HelpLandscapeDeviceTest {
             assertInsideSystemBars()
             DeviceEvidence.record("pomoc-poziom-$fontScale")
         } finally {
-            if (previous == null) DeviceEvidence.shell("settings delete system font_scale")
-            else DeviceEvidence.shell("settings put system font_scale $previous")
+            if (previous == null) {
+                DeviceEvidence.shell("settings delete system font_scale")
+            } else {
+                DeviceEvidence.shell("settings put system font_scale $previous")
+            }
         }
     }
 
     private fun assertInsideSystemBars() {
         val type = Type.statusBars() or Type.navigationBars() or Type.displayCutout() or Type.mandatorySystemGestures()
-        val insets = compose.runOnUiThread {
-            requireNotNull(ViewCompat.getRootWindowInsets(compose.activity.window.decorView)).getInsets(type)
-        }
+        val insets =
+            compose.runOnUiThread {
+                requireNotNull(ViewCompat.getRootWindowInsets(compose.activity.window.decorView)).getInsets(type)
+            }
         val tab = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
         val map = compose.onNode(hasText("Mapa") and tab).getUnclippedBoundsInRoot()
         val skip = compose.onNodeWithText("Pomiń instrukcję").getUnclippedBoundsInRoot()
@@ -87,7 +91,10 @@ class HelpLandscapeDeviceTest {
         with(compose.density) {
             assertTrue("Mapa jest pod paskiem stanu", map.top >= root.top + insets.top.toDp())
             assertTrue("Mapa omija lewą krawędź systemu", map.left >= root.left + insets.left.toDp())
-            assertTrue("Pomiń instrukcję omija dolną krawędź systemu", skip.bottom <= root.bottom - insets.bottom.toDp())
+            assertTrue(
+                "Pomiń instrukcję omija dolną krawędź systemu",
+                skip.bottom <= root.bottom - insets.bottom.toDp(),
+            )
         }
     }
 }
