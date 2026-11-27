@@ -7,7 +7,7 @@ $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Kampus główny ▾")
-$mapa("plan 2 piętra A-1 z wyróżnioną windą; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
+$mapa("plan A-1 z pinezką i podpisem Winda; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
 $ramka()
 { <b>Winda</b> | [Zamknij] }
 $wiersz_budynku()
