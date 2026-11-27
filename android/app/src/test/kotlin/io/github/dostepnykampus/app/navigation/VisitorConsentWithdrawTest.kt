@@ -47,7 +47,7 @@ class VisitorConsentWithdrawTest {
      * Scenariusz: uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
      */
     @Test
-    fun withdrawsConsentAndAsksSignInAgain() {
+    fun asksSignInAfterWithdrawal() {
         val roles = TestRoles(Account.SignedIn())
         val restoration = StateRestorationTester(compose)
         restoration.setContent {

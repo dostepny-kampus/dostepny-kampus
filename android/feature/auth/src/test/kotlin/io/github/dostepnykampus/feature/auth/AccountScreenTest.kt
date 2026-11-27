@@ -14,6 +14,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.unit.height
+import androidx.compose.ui.unit.width
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -72,7 +74,7 @@ class AccountScreenTest {
 
     /** Sekcja „Konto”: klauzula, „Wycofaj zgodę”, „Wyloguj się”; klauzula otwiera treść z odnośnikiem i wraca. */
     @Test
-    fun showsPrivacyNoticeAndReturnsOnBack() {
+    fun showsPrivacyNoticeAndReturns() {
         show(Account.SignedIn())
         val privacy = compose.onNodeWithText("Informacja o danych osobowych").performScrollTo().assertIsDisplayed()
         val withdraw = compose.onNodeWithText("Wycofaj zgodę").performScrollTo().assertIsDisplayed()
@@ -101,7 +103,7 @@ class AccountScreenTest {
 
     /** „Wycofaj zgodę” otwiera potwierdzenie; „Zostaw zgodę” i „Wstecz” wracają, a potwierdzenie wylogowuje. */
     @Test
-    fun withdrawsConsentAfterConfirmation() {
+    fun withdrawsConsentWhenConfirmed() {
         show(Account.SignedIn())
         compose.onNodeWithText("Wycofaj zgodę").performScrollTo().performClick()
         assertClauseDisplayed("Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe.")

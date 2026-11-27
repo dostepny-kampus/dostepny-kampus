@@ -104,12 +104,12 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
         Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(title), onBack = onBack)
             key(view) {
-                val space = if (view == AccountView.PRIVACY_NOTICE) Arrangement.spacedBy(Odstepy.m) else Arrangement.Top
-                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m), space) {
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
                     when (view) {
-                        AccountView.MENU -> AccountMenu(account, actions) { view = it }
+                        AccountView.MENU -> AccountMenu(account = account, actions = actions) { view = it }
                         AccountView.PRIVACY_NOTICE -> AccountPrivacyNotice()
-                        AccountView.WITHDRAW_CONSENT -> AccountWithdrawConsent(actions.onSignOut, returnToMenu)
+                        AccountView.WITHDRAW_CONSENT ->
+                            AccountWithdrawConsent(onWithdraw = actions.onSignOut, onKeep = returnToMenu)
                     }
                 }
             }
@@ -148,34 +148,36 @@ private fun AccountMenu(account: Account.SignedIn, actions: AccountActions, onOp
 @Composable
 private fun AccountPrivacyNotice() {
     val body = MaterialTheme.typography.bodyLarge
-    Text(
-        text = stringResource(R.string.konto_klauzula),
-        modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleLarge,
-    )
-    InfoPanel {
-        Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
-            ClauseSection(R.string.konto_klauzula_administrator_naglowek) {
-                Text(stringResource(R.string.konto_klauzula_administrator_tresc), style = body)
-            }
-            ClauseSection(R.string.konto_klauzula_kontakt_naglowek) {
-                Text(stringResource(R.string.konto_klauzula_kontakt_wstep), style = body)
-                RepositoryLink()
-            }
-            ClauseSection(R.string.konto_klauzula_dane_naglowek) {
-                ClauseDataItems.forEach { item ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                        Text(text = "–", style = body)
-                        Text(text = stringResource(item), style = body)
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+        Text(
+            text = stringResource(R.string.konto_klauzula),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        InfoPanel {
+            Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+                ClauseSection(R.string.konto_klauzula_administrator_naglowek) {
+                    Text(stringResource(R.string.konto_klauzula_administrator_tresc), style = body)
+                }
+                ClauseSection(R.string.konto_klauzula_kontakt_naglowek) {
+                    Text(stringResource(R.string.konto_klauzula_kontakt_wstep), style = body)
+                    RepositoryLink()
+                }
+                ClauseSection(R.string.konto_klauzula_dane_naglowek) {
+                    ClauseDataItems.forEach { item ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+                            Text(text = "–", style = body)
+                            Text(text = stringResource(item), style = body)
+                        }
                     }
                 }
-            }
-            ClauseSections.forEach { (title, text) ->
-                ClauseSection(title) { Text(stringResource(text), style = body) }
+                ClauseSections.forEach { (title, text) ->
+                    ClauseSection(title) { Text(stringResource(text), style = body) }
+                }
             }
         }
+        Text(text = stringResource(R.string.konto_klauzula_rejestracja), style = body)
     }
-    Text(text = stringResource(R.string.konto_klauzula_rejestracja), style = body)
 }
 
 @Composable
@@ -202,7 +204,10 @@ private fun AccountWithdrawConsent(onWithdraw: () -> Unit, onKeep: () -> Unit) {
 }
 
 @Composable
-private fun ClauseSection(@StringRes title: Int, content: @Composable ColumnScope.() -> Unit) {
+private fun ClauseSection(
+    @StringRes title: Int,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         Text(stringResource(title), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
         content()
