@@ -9,9 +9,16 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
@@ -19,6 +26,9 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.dp
@@ -34,6 +44,8 @@ import io.github.dostepnykampus.feature.map.MapAreaFixtures.twoAreas
 import io.github.dostepnykampus.feature.map.area.center
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.overlay.OSM_COPYRIGHT
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -135,6 +147,52 @@ class MapOverlayControlsTest {
         compose.onRoot().captureRoboImage()
     }
 
+    @Test
+    @Config(fontScale = 2f)
+    fun wrapsAttributionInNarrowMap() {
+        compose.setContent {
+            Overlay(modifier = Modifier.width(160.dp), hasControls = false, hasPanels = true)
+        }
+        val layouts = mutableListOf<TextLayoutResult>()
+        val attribution = compose.onNodeWithText(OSM)
+        attribution
+            .assertIsDisplayed()
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        val text = layouts.single()
+        assertTrue("podpis przechodzi do następnego wiersza", text.lineCount > 1)
+        assertFalse("mieści się cały podpis", text.hasVisualOverflow)
+        val info = compose.onNodeWithContentDescription(INFO)
+        assertFalse(
+            "podpis poza przyciskiem informacji",
+            attribution.getUnclippedBoundsInRoot().overlaps(info.getUnclippedBoundsInRoot()),
+        )
+        attribution.captureRoboImage()
+    }
+
+    @Test
+    fun opensOsmCopyright() {
+        val opened = mutableListOf<String>()
+        val handler =
+            object : UriHandler {
+                override fun openUri(uri: String) {
+                    opened += uri
+                }
+            }
+        compose.setContent {
+            CompositionLocalProvider(LocalUriHandler provides handler) { Overlay() }
+        }
+        val attribution = compose.onNodeWithText(OSM)
+        val semantics = attribution.fetchSemanticsNode().config
+        assertEquals("rola podpisu", Role.Button, semantics[SemanticsProperties.Role])
+        assertEquals(
+            "czynność odnośnika",
+            "Otwórz stronę praw autorskich OpenStreetMap",
+            semantics[SemanticsActions.OnClick].label,
+        )
+        attribution.performClick()
+        assertEquals("strona praw autorskich", listOf(OSM_COPYRIGHT), opened)
+    }
+
     /** Wybrane piętro mieści się nad kartą sali. Wymagania: US16.1, US18.2 */
     @Test
     fun keepsFloorAboveRoomCard() {
@@ -166,16 +224,22 @@ class MapOverlayControlsTest {
         left < other.right && other.left < right && top < other.bottom && other.top < bottom
 
     @Composable
-    private fun Overlay(controlsCover: Dp = 0.dp) {
+    private fun Overlay(
+        modifier: Modifier = Modifier,
+        controlsCover: Dp = 0.dp,
+        hasControls: Boolean = true,
+        hasPanels: Boolean = hasControls,
+    ) {
         DostepnyKampusTheme {
             MapOverlay(
                 camera = MapCamera(center = main.bounds.center, zoom = START_ZOOM),
-                hasControls = true,
+                hasControls = hasControls,
+                hasPanels = hasPanels,
                 dataDay = null,
                 onCameraChange = {},
                 areas = areas,
                 onAreaShow = {},
-                modifier = Modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
+                modifier = modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
                 controlsCover = controlsCover,
                 start = {
                     FloorPicker(

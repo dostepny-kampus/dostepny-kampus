@@ -6,7 +6,7 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 
 ## Pakiety
 
-- `feature.map` — ekran mapy kampusu, jego model widoku, nakładka mapy, wyszukiwanie i widok MapLibre.
+- `feature.map` — ekran mapy kampusu, jego model widoku, nakładka z odnośnikiem OSM, wyszukiwanie i widok MapLibre.
 - `feature.map.area` — wybór terenu kampusu i komunikat o pokazywanym terenie.
 - `feature.map.barrier` — bariery na mapie, ich wybór, arkusz bariery ze zdjęciem i wiersz bariery wejścia.
 - `feature.map.building` — karta budynku, lista i wyszukiwanie budynków, wejścia i grupa barier.
