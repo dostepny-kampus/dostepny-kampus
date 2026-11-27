@@ -90,9 +90,10 @@ Wymagania: [C1 Pomiar pozycji](../wymagania-ekranow.md#c1-pomiar-pozycji). Nagł
 
 ## C2 Formularz zgłoszenia
 
-Pierwszą wersję makiet C2 właściciel zatwierdził 30.10.2026. Wersja z 27.11.2026 pokazuje sześć stanów formularza według kodu aplikacji.
+Pierwszą wersję makiet C2 właściciel zatwierdził w październiku. Listopadowa aktualizacja pokazuje sześć stanów formularza według kodu aplikacji.
 
 Przycisk „Wybierz typ bariery” otwiera panel na cały ekran. „Zapisz” pozostaje na dole także przy czcionce 200%.
+
 Długie obrazy pokazują całą przewijaną treść. W aplikacji widać jej fragment nad przypiętym przyciskiem.
 Makiety pokazują docelowy obrys przycisków zdjęcia i ponowienia zapisu.
 
@@ -158,7 +159,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista zgłoszeń: Czeka na wysłanie: 2 i przycisk wypełniony Zmierz i zgłoś barierę, potem karty z ramką, w każdej status słowem z ikoną, typ, Budynek i piętro, data: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz ze strzałką; Odrzucone, Próg z Powód odrzucenia: Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Zmiana czeka na wysłanie, Ciężkie drzwi; Wysłane, Próg z Dwie wersje: wybierz jedną i Otwórz; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
+| [![Lista zgłoszeń: Czeka na wysłanie: 2 i przycisk wypełniony Zmierz i zgłoś barierę, potem karty z ramką, w każdej status słowem z ikoną, typ, Budynek i piętro, data: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz ze strzałką; Odrzucone, Próg z Powód odrzucenia: Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Zmiana czeka na wysłanie, Ciężkie drzwi; Wysłane, Próg z jedną czynnością „Dwie wersje: wybierz jedną” ze strzałką; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
 
 ### C3: odrzucone jako „Nieaktualne”
 
