@@ -126,15 +126,11 @@ class ReportScreenshotTest {
 
     private companion object {
         val PLACE = A1.copy(buildingName = "Gmach Główny")
-        val NEW =
-            ReportForm(
-                place =
-                    PLACE.copy(
-                        floors = PlanFloors(
-                            items = listOf(PlanFloor("a1-0", "Parter"), PlanFloor("a1-1", "1 piętro")),
-                            source = "Politechnika Wrocławska",
-                        ),
-                    ),
+        val PLAN =
+            PlanFloors(
+                items = listOf(PlanFloor(id = "a1-0", label = "Parter"), PlanFloor(id = "a1-1", label = "1 piętro")),
+                source = "Politechnika Wrocławska",
             )
+        val NEW = ReportForm(place = PLACE.copy(floors = PLAN))
     }
 }
