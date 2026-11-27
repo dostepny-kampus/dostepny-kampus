@@ -176,13 +176,13 @@ Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
 
 ### V1: winda na planie
 
-![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, wierszem Budynek A-1, piętrem, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze i przyciskiem Zgłoś barierę przy windzie](../../_generated/m-v1-mapa-plan-winda.svg)
+![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: pinezka z podpisem Winda oraz arkusz z nagłówkiem Winda i przyciskiem Zamknij, wierszem Budynek A-1, piętrem, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze i przyciskiem Zgłoś barierę przy windzie](../../_generated/m-v1-mapa-plan-winda.svg)
 
 Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Dotknięcie windy na planie otwiera arkusz „Winda” z klatkami, przy których stoi | US16.1, US18.2 |
+| Dotknięcie windy pokazuje pinezkę z podpisem „Winda” pod znakiem i otwiera arkusz z klatkami, przy których stoi | US16.1, US18.2, NFR-21 |
 | Pod nagłówkiem wiersz budynku „Budynek A-1”, jak w arkuszu toalety: otwiera V2 na niskiej wysokości. Pod nim piętro osobnym wierszem, np. „2 piętro” | US2.8, US16.1, decyzja z 19.11.2026 |
 | „Jedzie na: …” z piętrami windy; przy bieżącym piętrze „(tutaj jesteś)” | US16.1, US18.2, NFR-18 |
 | „Zamknij” w nagłówku; przy dużej czcionce arkusz na cały ekran | NFR-53, NFR-20 |
@@ -213,13 +213,13 @@ Czynność główna: dotknięcie znaku bariery, jak bez planu.
 
 ### V1: bariera na mapie
 
-![Makieta V1 po dotknięciu znaku bariery: mapa z wybranym znakiem przy A-1, przyciski mapy, a pod mapą arkusz z napisem Blokada i Zamknij, wierszem Budynek A-1, typem bariery, miejscem i datą sprawdzenia](../../_generated/m-v1-mapa-bariera.svg)
+![Makieta V1 po dotknięciu znaku bariery: przy A-1 pinezka z podpisem Schody przy wejściu, przyciski mapy, a pod mapą arkusz z napisem Blokada i Zamknij, wierszem Budynek A-1, typem bariery, miejscem i datą sprawdzenia](../../_generated/m-v1-mapa-bariera.svg)
 
 Czynność główna: przeczytanie, jaka to bariera. Wiersz budynku „Budynek A-1” pod nagłówkiem otwiera V2 na niskiej wysokości.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Dotknięcie znaku bariery otwiera arkusz; znak ma nazwę dla TalkBack | US1.3, NFR-18 |
+| Dotknięcie znaku bariery pokazuje pinezkę z typem bariery pod znakiem i otwiera arkusz. TalkBack czyta, która bariera jest zaznaczona | US1.3, NFR-18, NFR-21 |
 | Znak bariery przy wejściu stoi w punkcie wejścia, gdy znaku wejścia nie widać. Gdy go widać, stoi tuż obok niego, na zewnątrz ściany, i oba znaki się stykają | US2.2, BR-8, NFR-17, decyzja z 19.11.2026 |
 | Typ bariery jako zastępnik, uciążliwość napisem i ikoną | US1.3, BR-7, NFR-21 |
 | Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |

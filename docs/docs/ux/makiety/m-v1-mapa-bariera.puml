@@ -7,7 +7,7 @@ $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Kampus główny ▾")
-$mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, znaki barier; wybrany znak przy A-1", "", "info")
+$mapa("mapa ulic OpenStreetMap i znaki barier; przy A-1 pinezka z podpisem Schody przy wejściu", "", "info")
 $ramka()
 { $blokada()$dk_spacje(14) | [Zamknij] }
 $wiersz_budynku()
