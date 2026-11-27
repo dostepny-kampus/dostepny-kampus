@@ -7,16 +7,14 @@ package io.github.dostepnykampus.app
 
 import android.os.Looper
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import io.github.dostepnykampus.app.navigation.MySubmissions
-import io.github.dostepnykampus.app.navigation.measure
-import io.github.dostepnykampus.app.navigation.openReportForm
+import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.mySubmissionsActions
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.NearestEntrance
@@ -28,7 +26,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
@@ -142,18 +140,23 @@ class SavedReportTest {
 
     private fun showMineAfterSave() {
         val viewModel = offlineOwnList(store)
-        val form = ReportFormRoute(A1.location.longitude, A1.location.latitude, A1.accuracyMeters, A1.buildingSymbol)
+        val form =
+            ReportFormRoute(
+                longitude = A1.location.longitude,
+                latitude = A1.location.latitude,
+                accuracyMeters = A1.accuracyMeters,
+                buildingSymbol = A1.buildingSymbol,
+            )
+        val navigator = AppNavigator(backStack = mutableListOf(MapRoute(), form), roles = TestRoles())
+        navigator.reportSaved()
+        assertEquals("Po zapisie otwiera się C3", MySubmissionsRoute, navigator.current)
         compose.setContent {
             DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                    when (route) {
-                        is MapRoute -> SideEffect { if (current == route) measure() }
-                        MeasureRoute -> SideEffect { if (current == route) openReportForm(form) }
-                        is ReportFormRoute -> SideEffect { if (current == route) reportSaved() }
-                        MySubmissionsRoute -> MySubmissions(viewModel = viewModel)
-                        else -> Unit
-                    }
-                }
+                MySubmissionsScreen(
+                    actions = navigator.mySubmissionsActions(),
+                    viewModel = viewModel,
+                    hasJustSaved = navigator.hasJustSavedReport,
+                )
             }
         }
     }

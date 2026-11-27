@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.app.navigation
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -170,10 +169,9 @@ class AppNavigator(
     restarts: MutableList<Int> = mutableListOf(),
     private val onChooseMap: () -> Unit = {},
     internal val reportDraft: ReportDraft = ReportDraft(),
-    savedReport: MutableState<Boolean> = mutableStateOf(false),
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
     /** Czy powrót do własnych zgłoszeń nastąpił po zapisie formularza albo oznaczenia wejścia. */
-    internal var hasJustSavedReport by savedReport
+    internal var hasJustSavedReport by mutableStateOf(false)
 
     /** Ruchy mapy V1 do budynku, z których karta V2 bierze czas wjazdu. Wymagania: NFR-56 */
     internal val mapMotion: MapMotion = MapMotion()

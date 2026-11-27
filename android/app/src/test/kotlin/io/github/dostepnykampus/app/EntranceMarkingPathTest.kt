@@ -25,7 +25,7 @@ import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
-import io.github.dostepnykampus.app.navigation.MySubmissions
+import io.github.dostepnykampus.app.navigation.mySubmissionsActions
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.DataModule
@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
@@ -197,7 +198,13 @@ class EntranceMarkingPathTest {
                 EditMarking(route = route, takePhoto = takePhoto, onFinish = { reportSaved() }, onBack = { back() })
             }
 
-            MySubmissionsRoute -> MySubmissions(viewModel = mine)
+            MySubmissionsRoute -> {
+                MySubmissionsScreen(
+                    actions = mySubmissionsActions(),
+                    viewModel = mine,
+                    hasJustSaved = hasJustSavedReport,
+                )
+            }
 
             else -> {
                 AppScreen(route)

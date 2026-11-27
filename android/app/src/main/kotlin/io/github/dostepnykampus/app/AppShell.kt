@@ -89,7 +89,6 @@ fun AppShell(
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
-    val savedReport = rememberSaveable { mutableStateOf(false) }
     val draft = rememberCaptureDraft(routes = backStack, onRestore = onRestore)
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
     val currentOnChooseMap by rememberUpdatedState(onChooseMap)
@@ -102,7 +101,6 @@ fun AppShell(
                 restarts = restarts,
                 onChooseMap = { currentOnChooseMap() },
                 reportDraft = draft,
-                savedReport = savedReport,
             )
         }
     val items = bottomBarItems(hasWork = roles.hasWork())
