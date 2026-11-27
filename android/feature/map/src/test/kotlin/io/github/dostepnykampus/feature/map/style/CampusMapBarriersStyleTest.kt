@@ -63,9 +63,9 @@ class CampusMapBarriersStyleTest {
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf("podpisy"))
     }
 
-    /** Wymagania: US1.5, NFR-21 */
+    /** Wybrany znak ma pinezkę i podpis, a styl znaku pozostaje ten sam. Wymagania: US1.5, NFR-21 */
     @Test
-    fun pinsChosenBarrierWithoutChangingItsSign() {
+    fun pinsBarrierWithSameSign() {
         val data = campusMapData(catalog).withBarriers(barriers)
         val chosen = barriers.first().id
         val plain = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
@@ -78,14 +78,22 @@ class CampusMapBarriersStyleTest {
         val pin = style.layer(ENTRANCE_PIN_LAYER).obj("layout")
         assertEquals(JsonPrimitive("bottom"), pin["icon-anchor"])
         assertEquals(JsonPrimitive("top"), style.layer(ENTRANCE_CAPTION_LAYER).obj("layout")["icon-anchor"])
-        val point = style.obj("sources").obj(CHOSEN_SOURCE).obj("data").getValue("features").jsonArray.single().jsonObject
+        val point =
+            style
+                .obj("sources")
+                .obj(CHOSEN_SOURCE)
+                .obj("data")
+                .getValue("features")
+                .jsonArray
+                .single()
+                .jsonObject
         assertEquals(style.points().first().jsonObject["geometry"], point["geometry"])
         assertEquals("Schody przy wejściu", point.obj("properties").text("label"))
     }
 
-    /** Wymagania: US1.5, US16.1, BR-14 */
+    /** Podpis uwzględnia „?” i znika ze znakiem na innym piętrze. Wymagania: US1.5, US16.1, BR-14 */
     @Test
-    fun keepsUnknownFloorSignAndHidesPinForAnotherFloor() {
+    fun pinsOnlyVisibleFloorSign() {
         val unknown = barriers.first()
         val known = unknown.copy(id = "known", floor = SubmissionFloor(floorId = "P0"))
         val data = campusMapData(catalog).withBarriers(listOf(unknown, known))
@@ -95,7 +103,8 @@ class CampusMapBarriersStyleTest {
         val look = selectionLook(data, selected)
         assertEquals(BARRIER_NO_FLOOR_DP / 2.0 + 2, look.chosenPoint.barrierCaptionOffset)
         val hidden = selectionLook(data, selected.copy(barrier = known.id))
-        assertEquals(emptyList<JsonObject>(), hidden.chosenPoint.data.getValue("features").jsonArray)
+        val points = hidden.chosenPoint.data.getValue("features").jsonArray
+        assertEquals(emptyList<JsonObject>(), points)
     }
 
     /**

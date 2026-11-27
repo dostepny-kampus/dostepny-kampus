@@ -375,14 +375,7 @@ private fun CampusMap(
             val pinned = signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
             mapView.Show(
                 data = state.scene.data,
-                selection =
-                    signs.overlay(
-                        base = state.scene.selection,
-                        plan = plan.shown,
-                        room = room,
-                        pin = pinned,
-                        barrierCaption = barriers.caption(signs.barrierId),
-                    ),
+                selection = signs.overlay(state.scene.selection, plan.shown, room, pinned, barriers),
                 move = move,
                 inset = state.inset,
                 frame = state.frame,
@@ -420,18 +413,25 @@ private fun CampusMap(
     }
 }
 
+@Composable
 private fun SignSheetState.overlay(
     base: MapSelection,
     plan: ShownPlan?,
     room: OpenRoom?,
     pin: SelectedEntrance?,
-    barrierCaption: String?,
+    barriers: ShownBarriers,
 ): MapSelection {
     val card = room?.card
     val building = card?.run { found.building }
     val floor = plan?.takeIf { it.building == building }?.floor
     val markers = floor?.let { card?.markersOn(it) }.orEmpty()
-    return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers, barrierCaption = barrierCaption)
+    return base.copy(
+        entrance = pin,
+        barrier = barrierId,
+        plan = plan,
+        roomSteps = markers,
+        barrierCaption = barriers.caption(barrierId),
+    )
 }
 
 private fun SignSheetState.signTouch(

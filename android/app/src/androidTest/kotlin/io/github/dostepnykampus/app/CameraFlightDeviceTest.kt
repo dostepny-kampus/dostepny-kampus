@@ -189,14 +189,15 @@ class CameraFlightDeviceTest {
     }
 
     private fun tapMap(map: MapLibreMap, location: LatLng, dx: Float = 0f) {
-        val point = composeRule.runOnUiThread {
-            val root = composeRule.activity.findViewById<View>(android.R.id.content)
-            val view = requireNotNull(findAttachedMapView(root))
-            val origin = IntArray(2).also(view::getLocationOnScreen)
-            val anchor = map.projection.toScreenLocation(location)
-            val density = view.resources.displayMetrics.density
-            PointF(anchor.x + origin[0] + dx * density, anchor.y + origin[1])
-        }
+        val point =
+            composeRule.runOnUiThread {
+                val root = composeRule.activity.findViewById<View>(android.R.id.content)
+                val view = requireNotNull(findAttachedMapView(root))
+                val origin = IntArray(2).also(view::getLocationOnScreen)
+                val anchor = map.projection.toScreenLocation(location)
+                val density = view.resources.displayMetrics.density
+                PointF(anchor.x + origin[0] + dx * density, anchor.y + origin[1])
+            }
         DeviceEvidence.shell("input tap ${point.x.toInt()} ${point.y.toInt()}")
     }
 

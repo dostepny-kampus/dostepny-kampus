@@ -20,10 +20,10 @@ import io.github.dostepnykampus.core.model.GeoArea
  * @property bounds teren pokazany na mapie: teren wybrany przez osobę, bez wyboru teren zaznaczonego
  *   budynku, a bez niego teren startowy z [CampusMapData.bounds]; `null` bez budynków
  * @property barrier identyfikator bariery z otwartym arkuszem, albo `null`
- * @property barrierCaption podpis zaznaczonej bariery, albo `null` bez podpisu
  * @property boundary wielokąt granicy terenu pokazanego na mapie; `null`, gdy granicą jest prostokąt [bounds]
  * @property plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
  * @property roomSteps numery kroków na widocznym piętrze
+ * @property barrierCaption podpis zaznaczonej bariery, albo `null` bez podpisu
  */
 data class MapSelection(
     val building: String? = null,

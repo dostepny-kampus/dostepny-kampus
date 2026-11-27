@@ -61,7 +61,7 @@
     <string name="mapa_bariera_typ">%1$s: %2$s</string>
     <string name="mapa_bariera_w_budynku">%1$s, budynek %2$s</string>
     <string name="mapa_zaznaczona_bariera">Zaznaczona bariera: %1$s</string>
-    <string name="mapa_wybrana_bariera_typ">%1$s, %2$s</string>
+    <string name="mapa_zaznaczona_bariera_typ">Zaznaczona bariera: %1$s, %2$s</string>
     <string name="mapa_bariera_poza_budynkiem">%1$s, poza budynkiem</string>
     <string name="mapa_bariera_pietro_nieznane">%1$s, piętro nieznane</string>
     <string name="mapa_bariera_bez_typu">Bariera</string>

@@ -49,7 +49,7 @@ class MapBarrierNamesTest {
         compose.onNodeWithContentDescription("Tylko z pomocą, budynek C-13").assertExists()
     }
 
-    /** Wymagania: NFR-18 */
+    /** Nazwa wybranego znaku bariery zapowiada zaznaczenie. Wymagania: NFR-18 */
     @Test
     fun namesTheSelectedBarrier() {
         compose.setContent {
@@ -58,7 +58,8 @@ class MapBarrierNamesTest {
             }
         }
 
-        compose.onNodeWithContentDescription("Zaznaczona bariera: Blokada, schody przy wejściu, budynek A-1").assertExists()
+        val selected = "Zaznaczona bariera: Blokada, schody przy wejściu, budynek A-1"
+        compose.onNodeWithContentDescription(selected).assertExists()
         compose.onNodeWithContentDescription("Utrudnienie: krawężnik, poza budynkiem").assertExists()
     }
 

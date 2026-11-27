@@ -18,6 +18,7 @@ import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -37,18 +38,25 @@ import org.maplibre.spatialk.geojson.Point
 internal const val CHOSEN_SOURCE = "wejscie"
 
 private val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
+private const val FEATURES = "features"
+private const val PROPERTIES = "properties"
+private const val LABEL = "label"
+private const val IMAGE = "image"
+private const val ICON_OFFSET = "icon-offset"
+private const val LITERAL = "literal"
 internal const val BARRIER_CAPTION_OFFSET = "caption_offset"
+
 internal data class ChosenPoint(val data: JsonObject, val barrierCaptionOffset: Double? = null)
 
 private fun entrancePoint(chosen: SelectedEntrance): JsonObject {
     val properties =
         buildJsonObject {
-            put(key = "label", value = chosen.label)
-            put(key = "image", value = pointCaptionImage(chosen.label))
+            put(key = LABEL, value = chosen.label)
+            put(key = IMAGE, value = pointCaptionImage(chosen.label))
         }
     val point = Point(chosen.location.toPosition())
     val features: List<Feature<Geometry, JsonObject?>> = listOf(Feature(point, properties))
-    return featureCollection(features).jsonObject.getValue("features").jsonArray.single().jsonObject
+    return featureCollection(features).points().single().jsonObject
 }
 
 /** Zaznaczony punkt z [selection] i odpowiadający mu podpis. Wymagania: US3.3, US1.5 */
@@ -57,42 +65,48 @@ internal fun CampusMapData.chosenPoint(selection: MapSelection): ChosenPoint {
     val collection =
         buildJsonObject {
             put("type", "FeatureCollection")
-            put("features", JsonArray(listOfNotNull(point?.data)))
+            put(FEATURES, JsonArray(listOfNotNull(point?.data)))
         }
     return ChosenPoint(collection, point?.barrierCaptionOffset)
 }
 
 private fun CampusMapData.barrierPoint(selection: MapSelection): ChosenPoint? {
-    val id = selection.barrier ?: return null
-    val label = selection.barrierCaption ?: return null
-    val point =
-        barriers.jsonObject.getValue("features").jsonArray.firstOrNull {
-            it.jsonObject.getValue("properties").jsonObject[BARRIER_ID]?.jsonPrimitive?.content == id
-        }?.jsonObject ?: return null
-    val properties = point.getValue("properties").jsonObject
+    val id = selection.barrier
+    val label = selection.barrierCaption
+    if (id == null || label == null) return null
+    val point = barriers.points().firstOrNull { it.jsonObject.properties()[BARRIER_ID] == JsonPrimitive(id) }
+    return point?.jsonObject?.withCaption(label, selection.plan)
+}
+
+private fun JsonElement.points(): JsonArray = jsonObject.getValue(FEATURES).jsonArray
+
+private fun JsonObject.properties(): JsonObject = getValue(PROPERTIES).jsonObject
+
+private fun JsonObject.withCaption(label: String, plan: ShownPlan?): ChosenPoint? {
+    val properties = properties()
     val floor = properties[BARRIER_FLOOR]?.jsonPrimitive?.content
     val building = properties[BARRIER_BUILDING]?.jsonPrimitive?.content
-    val onPlan = selection.plan != null && selection.plan.building == building
-    if (onPlan && floor != null && floor != selection.plan.floor) return null
+    val onPlan = plan != null && plan.building == building
+    if (onPlan && floor != null && floor != plan.floor) return null
     val height = if (onPlan && floor == null) BARRIER_NO_FLOOR_DP else BARRIER_SIGN_DP
     val offset = properties[BARRIER_OFFSET]?.jsonArray
     val gap = height / 2.0 + 2
     val x = offset?.get(0)?.jsonPrimitive?.double ?: 0.0
     val y = offset?.get(1)?.jsonPrimitive?.double ?: 0.0
     val caption = numbers(x, y + gap)
-    val captionProperties =
-        properties + mapOf(
-            "label" to JsonPrimitive(label),
-            "image" to JsonPrimitive(pointCaptionImage(label)),
-            BARRIER_CAPTION_OFFSET to caption,
-        )
-    return ChosenPoint(JsonObject(point + ("properties" to JsonObject(captionProperties))), gap)
+    val captionProperties = buildJsonObject {
+        properties.forEach { (key, value) -> put(key, value) }
+        put(LABEL, label)
+        put(IMAGE, pointCaptionImage(label))
+        put(BARRIER_CAPTION_OFFSET, caption)
+    }
+    return ChosenPoint(JsonObject(this + (PROPERTIES to captionProperties)), gap)
 }
 
 /** Warstwy zaznaczenia punktu: pinezka czubkiem w znaku i podpis pod znakiem. Wymagania: US3.3, US1.5 */
 internal fun chosenLayers(look: SelectionLook): List<JsonObject> {
     val pin = JsonPrimitive(ENTRANCE_PIN_IMAGE)
-    val caption = property("image")
+    val caption = property(IMAGE)
     val below = "icon-anchor" to JsonPrimitive("bottom")
     val above = "icon-anchor" to JsonPrimitive("top")
     return listOf(
@@ -102,7 +116,7 @@ internal fun chosenLayers(look: SelectionLook): List<JsonObject> {
             image = pin,
             below,
             OVERLAP,
-            "icon-offset" to pinOffset(look),
+            ICON_OFFSET to pinOffset(look),
         ),
         symbolLayer(
             id = ENTRANCE_CAPTION_LAYER,
@@ -110,7 +124,7 @@ internal fun chosenLayers(look: SelectionLook): List<JsonObject> {
             image = caption,
             above,
             OVERLAP,
-            "icon-offset" to captionOffset(look),
+            ICON_OFFSET to captionOffset(look),
         ),
     )
 }
@@ -119,9 +133,9 @@ internal fun pinOffset(look: SelectionLook): JsonElement =
     if (look.chosenPoint.barrierCaptionOffset != null) {
         look.besideEntrance.signOffset()
     } else {
-        expression("literal", numbers(0.0, 0.0))
+        expression(LITERAL, numbers(0.0, 0.0))
     }
 
 internal fun captionOffset(look: SelectionLook): JsonElement =
     look.chosenPoint.barrierCaptionOffset?.let(look.besideEntrance::captionOffset)
-        ?: expression("literal", numbers(0.0, CAPTION_OFFSET_DP.toDouble()))
+        ?: expression(LITERAL, numbers(0.0, CAPTION_OFFSET_DP.toDouble()))

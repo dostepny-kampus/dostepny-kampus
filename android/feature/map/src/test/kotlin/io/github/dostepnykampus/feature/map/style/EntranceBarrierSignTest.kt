@@ -183,23 +183,29 @@ class EntranceBarrierSignTest {
         )
     }
 
-    private fun signOffsets(selection: MapSelection): List<String> =
-        iconOffsets(selection, listOf(BARRIERS_LAYER))
-
-    /** Wymagania: US1.5, US2.2, NFR-21 */
+    /** Pinezka dzieli przesunięcie znaku bariery przy wejściu. Wymagania: US1.5, US2.2, NFR-21 */
     @Test
-    fun pinFollowsBarrierOffsetBesideEntrance() {
+    fun offsetsPinBesideEntrance() {
         val shown = data.withBarriers(listOf(barrier("b", Severity.BLOCKING, entrance = "w1")))
         val selected = shown.selection().copy(barrier = "b", barrierCaption = "Schody przy wejściu")
         val look = selectionLook(shown, selected)
-        val properties = look.chosenPoint.data.getValue("features").jsonArray.single().jsonObject
-            .getValue("properties").jsonObject
+        val properties =
+            look.chosenPoint.data
+                .getValue("features")
+                .jsonArray
+                .single()
+                .jsonObject
+                .getValue("properties")
+                .jsonObject
         val sign = properties.getValue(BARRIER_OFFSET).jsonArray
         val label = properties.getValue(BARRIER_CAPTION_OFFSET).jsonArray
-        assertEquals(look.besideEntrance.signOffset(), pinOffset(look))
-        assertEquals(sign[0], label[0])
-        assertEquals(sign[1].jsonPrimitive.double + BARRIER_SIGN_DP / 2.0 + 2, label[1].jsonPrimitive.double)
+        assertEquals(look.besideEntrance.signOffset(), pinOffset(look), "pinezka ma przesunięcie znaku")
+        assertEquals(sign[0], label[0], "podpis jest w osi znaku")
+        val gap = label[1].jsonPrimitive.double - sign[1].jsonPrimitive.double
+        assertEquals(BARRIER_SIGN_DP / 2.0 + 2, gap, 1e-9, "podpis jest poniżej znaku")
     }
+
+    private fun signOffsets(selection: MapSelection): List<String> = iconOffsets(selection, listOf(BARRIERS_LAYER))
 
     private fun iconOffsets(selection: MapSelection, ids: List<String>): List<String> {
         val style = Json.parseToJsonElement(campusMapStyle(data, selection, styleColors())).jsonObject
