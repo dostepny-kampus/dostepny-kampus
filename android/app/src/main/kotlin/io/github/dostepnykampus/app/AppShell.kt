@@ -155,10 +155,7 @@ fun AppShell(
 }
 
 @Composable
-private fun RouteContent(
-    route: NavKey,
-    content: @Composable () -> Unit,
-) {
+private fun RouteContent(route: NavKey, content: @Composable () -> Unit) {
     val frame =
         if (route is MapRoute || route is BuildingRoute) {
             Modifier
@@ -186,11 +183,7 @@ private fun ShellBar(
 }
 
 @Composable
-private fun insetsTakenByBar(
-    bar: IntSize,
-    isShown: Boolean,
-    isWide: Boolean,
-): WindowInsets {
+private fun insetsTakenByBar(bar: IntSize, isShown: Boolean, isWide: Boolean): WindowInsets {
     val rail = WindowInsets(left = bar.width, right = bar.width).only(WindowInsetsSides.Start)
     val bottomBar = WindowInsets(bottom = bar.height)
     return when {
@@ -209,16 +202,11 @@ private fun wideNavigationInsets(isWide: Boolean): WindowInsets =
     }
 
 /** Pliki zdjęć odtworzonych szkiców: zgłoszenia szybkiego w [routes] i C2 w [draft]. */
-internal fun keptPhotos(
-    routes: List<NavKey>,
-    draft: ReportDraft,
-): Set<String> = (routes.mapNotNull { (it as? ReportRoute)?.photoPath } + draft.photoPaths()).toSet()
+internal fun keptPhotos(routes: List<NavKey>, draft: ReportDraft): Set<String> =
+    (routes.mapNotNull { (it as? ReportRoute)?.photoPath } + draft.photoPaths()).toSet()
 
 @Composable
-private fun rememberCaptureDraft(
-    routes: NavBackStack<NavKey>,
-    onRestore: (Set<String>) -> Unit,
-): ReportDraft {
+private fun rememberCaptureDraft(routes: NavBackStack<NavKey>, onRestore: (Set<String>) -> Unit): ReportDraft {
     val draft = rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() }
     if (routes.none { it.isCaptureRoute() }) SideEffect { draft.clear() }
     val currentOnRestore by rememberUpdatedState(onRestore)

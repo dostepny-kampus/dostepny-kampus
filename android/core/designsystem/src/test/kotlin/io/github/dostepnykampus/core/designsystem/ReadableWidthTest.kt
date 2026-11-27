@@ -30,10 +30,7 @@ class ReadableWidthTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private fun check(
-        width: Float,
-        left: Float,
-    ) {
+    private fun check(width: Float, left: Float) {
         compose.setContent { Box(Modifier.readableWidth()) { Box(Modifier.fillMaxSize().testTag("column")) } }
         val bounds = compose.onNodeWithTag("column").getUnclippedBoundsInRoot()
         assertEquals("Reading column width", width, (bounds.right - bounds.left).value, 1f)

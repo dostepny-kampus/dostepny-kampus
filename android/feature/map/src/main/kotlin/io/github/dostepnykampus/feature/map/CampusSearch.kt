@@ -226,10 +226,7 @@ private fun SearchHeader(
 }
 
 @Composable
-private fun TitleRow(
-    isList: Boolean,
-    onListChange: (Boolean) -> Unit,
-) {
+private fun TitleRow(isList: Boolean, onListChange: (Boolean) -> Unit) {
     val title: @Composable () -> Unit = {
         Text(
             text = stringResource(R.string.mapa_kampusu),
@@ -251,11 +248,7 @@ private fun TitleRow(
 }
 
 @Composable
-private fun ViewButton(
-    isList: Boolean,
-    hasIcon: Boolean,
-    onListChange: (Boolean) -> Unit,
-) {
+private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean) -> Unit) {
     TextButton(onClick = { onListChange(!isList) }, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
         if (hasIcon) {
             Icon(imageVector = if (isList) NavigationIcons.Map else ListIcon, contentDescription = null)
@@ -270,14 +263,12 @@ private fun ViewButton(
 }
 
 @Composable
-private fun SymbolField(
-    state: TextFieldState,
-    onTap: () -> Unit,
-    onLeave: () -> Unit,
-) {
+private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
-    LaunchedEffect(interactions) { interactions.interactions.collect { if (it is PressInteraction.Release) tap() } }
+    LaunchedEffect(interactions) {
+        interactions.interactions.collect { if (it is PressInteraction.Release) tap() }
+    }
     val scheme = MaterialTheme.colorScheme
     val colors =
         OutlinedTextFieldDefaults.colors(
@@ -311,9 +302,10 @@ private fun SymbolField(
     BasicTextField(
         state = state,
         modifier =
-            Modifier.fillMaxWidth().defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight).onFocusChanged {
-                if (!it.isFocused) onLeave()
-            },
+            Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
+                .onFocusChanged { if (!it.isFocused) onLeave() },
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
@@ -330,11 +322,7 @@ private fun SymbolField(
 }
 
 @Composable
-private fun FieldWithHint(
-    isEmpty: Boolean,
-    style: TextStyle,
-    content: @Composable () -> Unit,
-) {
+private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composable () -> Unit) {
     val isWrapped = isEmpty && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Box(contentAlignment = Alignment.CenterStart, propagateMinConstraints = true) {
         Text(
@@ -351,5 +339,7 @@ private fun FieldWithHint(
 
 @Composable
 private fun ClearButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) { Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole)) }
+    IconButton(onClick = onClick) {
+        Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
+    }
 }

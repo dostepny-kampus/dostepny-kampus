@@ -117,11 +117,7 @@ private data class Choice(
 )
 
 @Composable
-private fun Message(
-    state: SignInUiState,
-    isForReport: Boolean,
-    onLeave: () -> Unit,
-) {
+private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         when {
             !state.isOnline -> {
