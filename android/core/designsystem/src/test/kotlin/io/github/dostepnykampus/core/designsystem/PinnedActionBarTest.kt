@@ -92,6 +92,31 @@ class PinnedActionBarTest {
         assertEquals("Przyciski mają stać w tym samym wierszu", report.top, shown.top)
     }
 
+    /** Zawinięty napis wyznacza wysokość przycisków w swoim wierszu. Wymagania: NFR-17 */
+    @Test
+    fun matchesHeightOfWrappedButton() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                PinnedActionBar {
+                    PinnedButton(text = "Dalej", onClick = {}, modifier = Modifier.weight(1f))
+                    PinnedButton(
+                        text = "Pomiń instrukcję",
+                        onClick = {},
+                        modifier = Modifier.weight(1f),
+                        kind = PinnedButtonKind.Outlined,
+                    )
+                }
+            }
+        }
+
+        val next = compose.onNodeWithText("Dalej").getUnclippedBoundsInRoot()
+        val skip = compose.onNodeWithText("Pomiń instrukcję").getUnclippedBoundsInRoot()
+        assertTrue("„Pomiń instrukcję” stoi obok „Dalej”", skip.left > next.right)
+        assertTrue("Zawinięty napis podnosi wysokość przycisku", skip.bottom - skip.top > CeleDotyku.przypiety)
+        assertEquals("Przyciski mają wspólną górną krawędź", skip.top, next.top)
+        assertEquals("Przyciski mają wspólną dolną krawędź", skip.bottom, next.bottom)
+    }
+
     /** Czcionka 200 %: słowo nie mieści się w udziale przycisku, więc przyciski stoją jeden pod drugim. */
     @Test
     fun stacksWhenWordDoesNotFit() {
