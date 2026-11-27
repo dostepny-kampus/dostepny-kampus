@@ -230,7 +230,7 @@ internal fun assetRepository(
 
 internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
 
-private suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? =
+internal suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? =
     try {
         block()
     } catch (cancelled: CancellationException) {
