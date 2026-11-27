@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.layout
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +31,8 @@ class ReadableWidthTest {
             Box(Modifier.readableWidth()) { Box(Modifier.fillMaxSize().testTag("column")) }
         }
         val bounds = compose.onNodeWithTag("column").getUnclippedBoundsInRoot()
-        assertEquals(width, bounds.width.value, 1f)
-        assertEquals(left, bounds.left.value, 1f)
+        assertEquals("Reading column width", width, (bounds.right - bounds.left).value, 1f)
+        assertEquals("Centered column position", left, bounds.left.value, 1f)
     }
 
     @Test

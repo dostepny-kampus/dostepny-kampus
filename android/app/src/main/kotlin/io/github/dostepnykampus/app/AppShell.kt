@@ -65,7 +65,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BottomBarItem
 import io.github.dostepnykampus.core.designsystem.bar.BottomBarItems
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.bar.SideBar
-import io.github.dostepnykampus.core.designsystem.readableWidth
+import io.github.dostepnykampus.core.designsystem.layout.readableWidth
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.report.ReportDraft

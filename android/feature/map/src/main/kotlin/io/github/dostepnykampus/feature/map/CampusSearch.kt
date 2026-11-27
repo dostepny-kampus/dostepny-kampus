@@ -76,7 +76,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.pathIcon
-import io.github.dostepnykampus.core.designsystem.readableWidth
+import io.github.dostepnykampus.core.designsystem.layout.readableWidth
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaOrder
