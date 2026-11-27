@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.auth
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,7 +43,7 @@ class AccountScreenTest {
         val roles = compose.onNodeWithText("Twoje role: Odwiedzający, Zbierający, Koordynator").assertIsDisplayed()
         assertTrue(
             "nazwa nad rolami",
-            name.fetchSemanticsNode().boundsInRoot.bottom <= roles.fetchSemanticsNode().boundsInRoot.top,
+            name.getUnclippedBoundsInRoot().bottom <= roles.getUnclippedBoundsInRoot().top,
         )
         compose.onNodeWithText("Zmierz i zgłoś barierę").performScrollTo().performClick()
         compose.onNodeWithText("Moje zgłoszenia").performScrollTo().performClick()

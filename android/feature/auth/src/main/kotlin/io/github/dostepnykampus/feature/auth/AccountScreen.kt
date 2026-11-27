@@ -86,7 +86,9 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
 private fun PersonCard(account: Account.SignedIn) {
     val names = listOf(stringResource(R.string.rola_odwiedzajacy)) + roleNames(account)
     InfoPanel {
-        account.displayName?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+        if (account.displayName.isNotBlank()) {
+            Text(text = account.displayName, style = MaterialTheme.typography.titleMedium)
+        }
         Text(
             text = stringResource(R.string.konto_twoje_role, names.joinToString(separator = ", ")),
             style = MaterialTheme.typography.bodyLarge,

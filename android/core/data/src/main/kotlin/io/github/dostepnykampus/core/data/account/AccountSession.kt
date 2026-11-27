@@ -138,6 +138,6 @@ public fun accountOf(token: String): Account? {
     val claims = accountClaimsOf(token) ?: return null
     return Account.SignedIn(
         staffRoles = StaffRole.entries.filter { it.name in claims.realmRoles }.toSet(),
-        displayName = claims.displayName,
+        displayName = claims.displayName.orEmpty(),
     )
 }

@@ -28,9 +28,9 @@ public sealed interface Account {
      * Wymagania: RO-ODW, BR-1, US14.3
      *
      * @property staffRoles dodatkowe role pracownicze
-     * @property displayName nazwa osoby albo `null`, gdy jest niedostępna
+     * @property displayName nazwa osoby albo pusty tekst, gdy jest niedostępna
      */
-    public data class SignedIn(val staffRoles: Set<StaffRole> = emptySet(), val displayName: String? = null) : Account
+    public data class SignedIn(val staffRoles: Set<StaffRole> = emptySet(), val displayName: String = "") : Account
 }
 
 /** Czy osoba jest zalogowana, czyli może zgłosić barierę i otworzyć konto L2. Wymagania: US14.2 */
