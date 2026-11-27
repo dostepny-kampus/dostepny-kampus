@@ -170,9 +170,10 @@ class CameraFlightDeviceTest {
             MapFocus.Entrance(id = entrance.id, buildingSymbol = entrance.buildingSymbol),
         )
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(hasText("Bariery przy tym wejściu")) }
-        awaitPinAndBarrier(map = awaitReadyMap(), entrance = entrance, barrierId = barrier.id)
+        val map = awaitReadyMap()
+        awaitPinAndBarrier(map = map, entrance = entrance, barrierId = barrier.id)
         showMapForEvidence(data = data, entrance = entrance)
-        awaitPinAndBarrier(map = awaitReadyMap(), entrance = entrance, barrierId = barrier.id)
+        awaitPinAndBarrier(map = awaitReadyMap(previous = map), entrance = entrance, barrierId = barrier.id)
         DeviceEvidence.record("v1-barrier-beside-pin")
     }
 
@@ -256,14 +257,15 @@ class CameraFlightDeviceTest {
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(area) }
     }
 
-    private fun awaitReadyMap(): MapLibreMap {
+    private fun awaitReadyMap(previous: MapLibreMap? = null): MapLibreMap {
         val mapRef = AtomicReference<MapLibreMap?>(null)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
                 val root = composeRule.activity.findViewById<View>(android.R.id.content)
                 findAttachedMapView(root)?.getMapAsync(mapRef::set)
             }
-            mapRef.get()?.let { map -> composeRule.runOnUiThread { map.style?.isFullyLoaded == true } } == true
+            val map = mapRef.get()
+            map != null && map !== previous && composeRule.runOnUiThread { map.style?.isFullyLoaded == true }
         }
         composeRule.waitForIdle()
         return requireNotNull(mapRef.get())
