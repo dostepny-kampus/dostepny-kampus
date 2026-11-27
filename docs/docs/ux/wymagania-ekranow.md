@@ -76,9 +76,17 @@ Układ ekranów w szerokim oknie z NFR-51 nie ma jeszcze makiet i zostanie zapro
 
 ### Zaznaczenie na mapie {#zaznaczenie-na-mapie}
 
-Wybrany budynek albo salę na planie wskazuje grubszy kontur. Na V1 wybrane wejście, barierę, windę, toaletę dostosowaną albo schody wskazuje pinezka, gdy arkusz tego punktu jest otwarty. Czubek pinezki stoi w punkcie znaku, także wtedy, gdy znaki się stykają. Znak zachowuje rozmiar, obwódkę i „?”, jeśli go miał. Pod znakiem stoi nazwa wejścia (lub „Wejście”), typ bariery albo nazwa znaku na planie. Pinezka i podpis znikają po zamknięciu arkusza oraz po zmianie piętra, jeśli wybrany znak znika z mapy. Kształt i podpis pokazują wybór także bez koloru (NFR-21).
+Wybrany budynek albo salę na planie wskazuje grubszy kontur. Na V1 wybrane wejście, barierę, windę, toaletę dostosowaną albo schody wskazuje pinezka, gdy arkusz tego punktu jest otwarty. Czubek pinezki stoi w punkcie znaku, także wtedy, gdy znaki się stykają. Znak zachowuje rozmiar, obwódkę i „?”, jeśli go miał.
 
-TalkBack czyta wybór wraz z danymi znaku, na przykład „Zaznaczone wejście: Wejście dostosowane, budynek A-1”, „Zaznaczona bariera: Blokada, schody przy wejściu, budynek A-1” albo „Zaznaczona winda: 2 piętro, budynek A-1” (NFR-18, NFR-19). Znaczniki kroków do sali pozostają kółkami z numerami i nie otwierają arkuszy. Na R1 pozostaje pinezka zgłoszenia opisana w [wymaganiach R1](#r1-kolejka-weryfikacji).
+Pod znakiem stoi nazwa wejścia (lub „Wejście”), typ bariery albo nazwa znaku na planie. Pinezka i podpis znikają po zamknięciu arkusza oraz po zmianie piętra, jeśli wybrany znak znika z mapy. Kształt i podpis pokazują wybór także bez koloru (NFR-21).
+
+TalkBack czyta wybór wraz z danymi znaku (NFR-18, NFR-19).
+
+- „Zaznaczone wejście: Wejście dostosowane, budynek A-1”
+- „Zaznaczona bariera: Blokada, schody przy wejściu, budynek A-1”
+- „Zaznaczona winda: 2 piętro, budynek A-1”
+
+Znaczniki kroków do sali pozostają kółkami z numerami i nie otwierają arkuszy. Na R1 pozostaje pinezka zgłoszenia opisana w [wymaganiach R1](#r1-kolejka-weryfikacji).
 
 ### Duża czcionka {#duza-czcionka}
 
