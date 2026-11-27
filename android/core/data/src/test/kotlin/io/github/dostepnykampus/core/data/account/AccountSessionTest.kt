@@ -31,7 +31,7 @@ class AccountSessionTest {
     }
 
     @Test
-    fun signsInWithNameAndRolesFromToken() {
+    fun readsNameAndRoles() {
         val tokens = AccessTokens()
         val session = sessionOf(tokens)
         val roles = """{"roles":["COLLECTOR","VERIFIER","offline_access"]}"""
@@ -50,7 +50,7 @@ class AccountSessionTest {
             """{"name":["Jan"],"preferred_username":"jk"}""",
         ],
     )
-    fun usesPreferredUsernameWithoutDisplayName(claims: String) {
+    fun fallsBackToUsername(claims: String) {
         val session = sessionOf()
         assertTrue(runBlocking { session.signIn(jwtOf(claims)) }, "zalogowanie")
         assertEquals(Account.SignedIn(displayName = "jk"), session.account.value, "nazwa użytkownika")
