@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
@@ -68,7 +68,7 @@ internal fun RoomStepByStep(room: OpenRoom, roomTitle: String, onDetails: ((Room
                 Icon(imageVector = MapControlIcons.Left, contentDescription = null)
                 Text(stringResource(R.string.mapa_sala_krok_wstecz))
             }
-            Button(onClick = { room.onStep(index + 1) }, modifier = button, enabled = card.hasNext) {
+            PrimaryAction(onClick = { room.onStep(index + 1) }, modifier = button, enabled = card.hasNext) {
                 Text(stringResource(R.string.mapa_sala_krok_dalej))
                 Icon(imageVector = MapControlIcons.Right, contentDescription = null)
             }

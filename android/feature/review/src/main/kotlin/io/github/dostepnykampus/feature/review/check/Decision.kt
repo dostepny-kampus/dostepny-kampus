@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -38,6 +37,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -110,7 +110,7 @@ internal fun Decision(
             Notice(title = R.string.sprawdzenie_bez_sieci, body = R.string.sprawdzenie_bez_sieci_ponownie)
         }
         if (notice == CheckNotice.TYPE_MISSING) ProblemText(text = stringResource(R.string.sprawdzenie_ustal_typ))
-        Button(onClick = actions.onAccept, modifier = Modifier.fillMaxWidth()) {
+        PrimaryAction(onClick = actions.onAccept, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.sprawdzenie_przyjmij))
         }
         Text(

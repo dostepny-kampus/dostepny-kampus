@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,6 +38,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
@@ -285,10 +285,10 @@ private fun QuickSendStep(
 
 @Composable
 private fun MainButton(text: String, onClick: () -> Unit, isEnabled: Boolean = true) {
-    Button(
+    PrimaryAction(
         onClick = onClick,
         enabled = isEnabled,
-        modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Text(text)
     }

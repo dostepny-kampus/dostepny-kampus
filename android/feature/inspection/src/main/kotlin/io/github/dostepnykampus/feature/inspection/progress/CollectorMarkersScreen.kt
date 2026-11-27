@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,12 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.CardAction
 import io.github.dostepnykampus.core.designsystem.card.ListItemCard
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.feature.inspection.R
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
@@ -167,10 +165,7 @@ private fun Inspected(
         if (isAsking) {
             HorizontalDivider()
             Text(collectorQuestionText(row.label), fontWeight = FontWeight.Bold)
-            Button(
-                onClick = actions.onConfirm,
-                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-            ) {
+            PrimaryAction(onClick = actions.onConfirm, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.znaczniki_cofnij))
             }
             OutlinedAction(onClick = actions.onKeep, modifier = Modifier.fillMaxWidth()) {
