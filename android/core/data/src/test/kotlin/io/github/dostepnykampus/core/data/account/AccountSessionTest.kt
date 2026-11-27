@@ -18,7 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 /**
- * Sesja konta: rola konta z tokenu, wylogowanie do Gościa i token, którego nie da się odczytać.
+ * Sesja konta: role i nazwa z tokenu, wylogowanie do Gościa i token, którego nie da się odczytać.
  *
  * Wymagania: US14.1, BR-1, NFR-35
  */
@@ -31,14 +31,29 @@ class AccountSessionTest {
     }
 
     @Test
-    fun signsInWithRolesFromToken() {
+    fun signsInWithNameAndRolesFromToken() {
         val tokens = AccessTokens()
         val session = sessionOf(tokens)
-        val token = jwtOf("""{"realm_access":{"roles":["COLLECTOR","VERIFIER","offline_access"]}}""")
+        val roles = """{"roles":["COLLECTOR","VERIFIER","offline_access"]}"""
+        val token = jwtOf("""{"name":"Jan Kowalski","preferred_username":"jk","realm_access":$roles}""")
         assertTrue(runBlocking { session.signIn(token) }, "zalogowanie")
-        val expected = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.VERIFIER))
-        assertEquals(expected, session.account.value, "role konta z tokenu")
+        val expected = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.VERIFIER), displayName = "Jan Kowalski")
+        assertEquals(expected, session.account.value, "dane konta z tokenu")
         assertEquals(token, tokens.token, "token do żądań")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            """{"preferred_username":"jk"}""",
+            """{"name":" ","preferred_username":"jk"}""",
+            """{"name":["Jan"],"preferred_username":"jk"}""",
+        ],
+    )
+    fun usesPreferredUsernameWithoutDisplayName(claims: String) {
+        val session = sessionOf()
+        assertTrue(runBlocking { session.signIn(jwtOf(claims)) }, "zalogowanie")
+        assertEquals(Account.SignedIn(displayName = "jk"), session.account.value, "nazwa użytkownika")
     }
 
     @ParameterizedTest

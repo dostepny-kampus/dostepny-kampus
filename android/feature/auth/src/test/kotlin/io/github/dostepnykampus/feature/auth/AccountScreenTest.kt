@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,9 +36,14 @@ class AccountScreenTest {
     /** Zbierający i Koordynator: wszystkie role na karcie i czynności obu ról. */
     @Test
     fun staffSeesRolesAndWork() {
-        show(Account.SignedIn(setOf(StaffRole.COORDINATOR, StaffRole.COLLECTOR)))
+        show(Account.SignedIn(setOf(StaffRole.COORDINATOR, StaffRole.COLLECTOR), displayName = "Jan Kowalski"))
         compose.onNodeWithText("Konto i praca").assertIsDisplayed()
-        compose.onNodeWithText("Twoje role: Odwiedzający, Zbierający, Koordynator").assertIsDisplayed()
+        val name = compose.onNodeWithText("Jan Kowalski").assertIsDisplayed()
+        val roles = compose.onNodeWithText("Twoje role: Odwiedzający, Zbierający, Koordynator").assertIsDisplayed()
+        assertTrue(
+            "nazwa nad rolami",
+            name.fetchSemanticsNode().boundsInRoot.bottom <= roles.fetchSemanticsNode().boundsInRoot.top,
+        )
         compose.onNodeWithText("Zmierz i zgłoś barierę").performScrollTo().performClick()
         compose.onNodeWithText("Moje zgłoszenia").performScrollTo().performClick()
         compose.onNodeWithText("Postęp inwentaryzacji").performScrollTo().performClick()
@@ -50,6 +56,7 @@ class AccountScreenTest {
     @Test
     fun signsOutAndGoesBack() {
         show(Account.SignedIn())
+        compose.onNodeWithText("Twoje role: Odwiedzający").assertIsDisplayed()
         compose.onNodeWithText("Wyloguj się").performScrollTo().performClick()
         compose.onNodeWithText("Wstecz").performClick()
         assertEquals("wylogowanie i powrót", listOf("signOut", "back"), events)
