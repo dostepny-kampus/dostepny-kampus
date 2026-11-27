@@ -106,10 +106,17 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
             key(view) {
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
                     when (view) {
-                        AccountView.MENU -> AccountMenu(account = account, actions = actions) { view = it }
-                        AccountView.PRIVACY_NOTICE -> AccountPrivacyNotice()
-                        AccountView.WITHDRAW_CONSENT ->
+                        AccountView.MENU -> {
+                            AccountMenu(account = account, actions = actions) { view = it }
+                        }
+
+                        AccountView.PRIVACY_NOTICE -> {
+                            AccountPrivacyNotice()
+                        }
+
+                        AccountView.WITHDRAW_CONSENT -> {
                             AccountWithdrawConsent(onWithdraw = actions.onSignOut, onKeep = returnToMenu)
+                        }
                     }
                 }
             }

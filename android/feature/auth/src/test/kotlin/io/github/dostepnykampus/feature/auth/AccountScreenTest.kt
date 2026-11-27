@@ -88,7 +88,7 @@ class AccountScreenTest {
         assertClauseDisplayed("Politechnika Wrocławska nie jest administratorem Twoich danych.")
         val link = compose.onNodeWithText("repozytorium projektu na GitHub", substring = true).performScrollTo()
         val linkText = link.fetchSemanticsNode().config[SemanticsProperties.Text].single()
-        val urls = linkText.getLinkAnnotations(0, linkText.length).map { (it.item as LinkAnnotation.Url).url }
+        val urls = linkText.getLinkAnnotations(start = 0, end = linkText.length).map { (it.item as LinkAnnotation.Url).url }
         assertEquals("odnośnik kontaktu w klauzuli", listOf(REPOSITORY_URL), urls)
         assertClauseDisplayed("Twoja zgoda (art. 6 ust. 1 lit. a RODO), wyrażona przy zakładaniu konta.")
         assertClauseDisplayed("Ta sama informacja jest na stronie zakładania konta.")
