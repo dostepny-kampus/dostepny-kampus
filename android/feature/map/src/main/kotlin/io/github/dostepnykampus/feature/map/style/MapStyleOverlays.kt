@@ -40,7 +40,6 @@ internal const val CHOSEN_SOURCE = "wejscie"
 private val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 private const val FEATURES = "features"
 private const val PROPERTIES = "properties"
-private const val LABEL = "label"
 private const val IMAGE = "image"
 private const val ICON_OFFSET = "icon-offset"
 private const val LITERAL = "literal"

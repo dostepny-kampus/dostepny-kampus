@@ -7,6 +7,8 @@ package io.github.dostepnykampus.app
 
 import android.graphics.PointF
 import android.graphics.RectF
+import android.os.SystemClock
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -175,9 +177,9 @@ class CameraFlightDeviceTest {
         }
         tapMap(map, location, dx = BARRIER_PIN_GAP_DP)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
-            nodeExists(hasContentDescription("Zaznaczona bariera:", substring = true)) &&
-                hasRenderedPin(map, barrierId = barrier.id)
+            nodeExists(hasContentDescription("Zaznaczona bariera:", substring = true))
         }
+        composeRule.waitUntil(READY_TIMEOUT_MS) { hasRenderedPin(map, barrierId = barrier.id) }
         DeviceEvidence.record("v1-barrier-selected")
 
         tapMap(map, location)
@@ -189,16 +191,22 @@ class CameraFlightDeviceTest {
     }
 
     private fun tapMap(map: MapLibreMap, location: LatLng, dx: Float = 0f) {
-        val point =
-            composeRule.runOnUiThread {
-                val root = composeRule.activity.findViewById<View>(android.R.id.content)
-                val view = requireNotNull(findAttachedMapView(root))
-                val origin = IntArray(2).also(view::getLocationOnScreen)
-                val anchor = map.projection.toScreenLocation(location)
-                val density = view.resources.displayMetrics.density
-                PointF(anchor.x + origin[0] + dx * density, anchor.y + origin[1])
+        composeRule.runOnUiThread {
+            val root = composeRule.activity.findViewById<View>(android.R.id.content)
+            val view = requireNotNull(findAttachedMapView(root))
+            val anchor = map.projection.toScreenLocation(location)
+            val x = anchor.x + dx * view.resources.displayMetrics.density
+            val time = SystemClock.uptimeMillis()
+            val down = MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, x, anchor.y, 0)
+            val up = MotionEvent.obtain(time, time, MotionEvent.ACTION_UP, x, anchor.y, 0)
+            try {
+                view.dispatchTouchEvent(down)
+                view.dispatchTouchEvent(up)
+            } finally {
+                down.recycle()
+                up.recycle()
             }
-        DeviceEvidence.shell("input tap ${point.x.toInt()} ${point.y.toInt()}")
+        }
     }
 
     private fun hasRenderedPin(map: MapLibreMap, barrierId: String?): Boolean =
