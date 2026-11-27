@@ -16,7 +16,7 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 - `feature.capture.report` — ekran pełnego zgłoszenia: szkic, akcje, model widoku formularza i zapis stanu.
 - `feature.capture.report.edit` — edycja wysłanego zgłoszenia.
 - `feature.capture.report.form` — stan edycji, pola, wybory i komunikaty formularza z czynnością ponowienia zapisu.
-- `feature.capture.report.marking` — zgłoszenie zmiany oznaczenia wejścia.
+- `feature.capture.report.marking` — zgłoszenie zmiany oznaczenia wejścia i komunikaty o brakach w formularzu.
 - `feature.capture.report.removed` — zgłoszenie usunięcia bariery z przyjętego zgłoszenia.
 - `feature.capture.sync` — widok i model widoku synchronizacji bez konfliktu: kolejka, postęp i „Synchronizuj teraz”.
 

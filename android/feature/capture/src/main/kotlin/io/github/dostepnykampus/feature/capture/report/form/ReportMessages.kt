@@ -36,23 +36,23 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoWarning
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
- * się zapisać (PW-8). [error] stoi nad „Zrób zdjęcie”.
+ * się zapisać (PW-8).
  *
  * Wymagania: US7.1, NFR-25, NFR-50
  *
  * @param photos zrobione zdjęcia do podglądu
  * @param camera aparat „Zrób zdjęcie”
  * @param title nagłówek sekcji; `null` daje sekcję bez nagłówka
- * @param error komunikat walidacji nad „Zrób zdjęcie”; `null` bez komunikatu
  * @param isTakeShown czy „Zrób zdjęcie” stoi w sekcji; bez niego ekran stawia przycisk sam
+ * @param content treść komunikatu walidacji nad „Zrób zdjęcie”
  */
 @Composable
 internal fun PhotoSection(
     photos: PhotoPaths,
     camera: PhotoCamera,
     title: String? = stringResource(R.string.formularz_zdjecie),
-    error: String? = null,
     isTakeShown: Boolean = true,
+    content: @Composable () -> Unit = {},
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         title?.let { SectionTitle(it) }
@@ -61,9 +61,7 @@ internal fun PhotoSection(
             Text(stringResource(R.string.formularz_wazne_widoczne))
         }
         PhotoPreviews(photos)
-        if (error != null) {
-            Text(text = error, color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
-        }
+        content()
         if (isTakeShown) {
             FilledTonalButton(
                 onClick = camera.onTake,
