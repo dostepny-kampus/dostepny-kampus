@@ -42,10 +42,9 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 
 /**
- * L2 „Konto” zalogowanej osoby: karta z rolami, czynności posiadanych ról i sekcja konta.
+ * L2 „Konto” zalogowanej osoby: dane konta i czynności posiadanych ról.
  *
  * TODO(#3773): klauzula informacyjna i wycofanie zgody.
- * TODO(#3774): nazwa wyświetlana na karcie osoby.
  *
  * Wymagania: US14.1, US14.3, US14.4, BR-1
  *
@@ -87,6 +86,9 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
 private fun PersonCard(account: Account.SignedIn) {
     val names = listOf(stringResource(R.string.rola_odwiedzajacy)) + roleNames(account)
     InfoPanel {
+        if (account.displayName.isNotBlank()) {
+            Text(text = account.displayName, style = MaterialTheme.typography.titleMedium)
+        }
         Text(
             text = stringResource(R.string.konto_twoje_role, names.joinToString(separator = ", ")),
             style = MaterialTheme.typography.bodyLarge,
