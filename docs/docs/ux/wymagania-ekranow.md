@@ -76,7 +76,9 @@ Układ ekranów w szerokim oknie z NFR-51 nie ma jeszcze makiet i zostanie zapro
 
 ### Zaznaczenie na mapie {#zaznaczenie-na-mapie}
 
-Wybrany budynek albo salę na planie wskazuje grubszy kontur. Na V1 wybrane wejście, barierę, windę, toaletę dostosowaną albo schody wskazuje pinezka, gdy arkusz tego punktu jest otwarty. Czubek pinezki stoi w punkcie znaku, także wtedy, gdy znaki się stykają. Znak zachowuje rozmiar, obwódkę i „?”, jeśli go miał.
+Wybrany budynek albo salę na planie wskazuje grubszy kontur. Na V1 wybrane wejście, barierę, windę, toaletę dostosowaną albo schody wskazuje pinezka, gdy arkusz tego punktu jest otwarty.
+
+Czubek pinezki stoi w punkcie znaku, także wtedy, gdy znaki się stykają. Znak zachowuje rozmiar i obwódkę. Przy nieznanym piętrze zostaje znak zapytania.
 
 Pod znakiem stoi nazwa wejścia (lub „Wejście”), typ bariery albo nazwa znaku na planie. Pinezka i podpis znikają po zamknięciu arkusza oraz po zmianie piętra, jeśli wybrany znak znika z mapy. Kształt i podpis pokazują wybór także bez koloru (NFR-21).
 
