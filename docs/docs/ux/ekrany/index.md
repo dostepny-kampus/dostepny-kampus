@@ -214,7 +214,7 @@ Wymagania: [C4 Synchronizacja i wybór wersji](../wymagania-ekranow.md#c4-synchr
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Konflikt: Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta, napis Różni się: uciążliwość, karta Moja wersja, Próg, C-13, piętro 1, Uciążliwość Tylko z pomocą, karta Wersja z serwera z Uciążliwość Blokada, pod nimi Zostaw moją wersję, Weź wersję z serwera i Zdecyduję później](obrazy/m-c4-synchronizacja-konflikt-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny.webp) | [![Ten sam konflikt w motywie ciemnym](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wersje jedna pod drugą, trzy przyciski na końcu](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp) |
+| [![Konflikt: Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta, napis Różni się: uciążliwość, karta Moja wersja, Urządzenie poza zasięgiem, Budynek C-13 · piętro 1, Uciążliwość: znak pomarańczowej tarczy i Tylko z pomocą, karta Wersja z serwera z czerwoną tablicą z poziomą belką i Blokada, pod nimi trzy obrysowane przyciski Zostaw moją wersję, Weź wersję z serwera i Zdecyduję później](obrazy/m-c4-synchronizacja-konflikt-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny.webp) | [![Ten sam konflikt w motywie ciemnym](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wersje jedna pod drugą, trzy przyciski na końcu](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp) |
 
 ### C4: wszystko wysłane
 
@@ -247,6 +247,14 @@ Wymagania: [C4 Synchronizacja i wybór wersji](../wymagania-ekranow.md#c4-synchr
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Błąd serwera: Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później, pod nim karta Czeka na wysłanie: 3](obrazy/m-c4-synchronizacja-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny.webp) | [![Ten sam błąd serwera w motywie ciemnym](obrazy/m-c4-synchronizacja-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c4-synchronizacja-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny-200.webp) |
+
+### C4: wygasłe logowanie
+
+`m-c4-synchronizacja-logowanie` · odwołania: US9.4, US14.4, BR-26, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wygasłe logowanie: Czeka na wysłanie: 3, 2 zgłoszenia i 1 znacznik piętra, Ostatnia synchronizacja, panel Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same, przycisk Zaloguj się](obrazy/m-c4-synchronizacja-logowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c4-synchronizacja-logowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c4-synchronizacja-logowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-jasny-200.webp) |
 
 ### C4: mało miejsca w telefonie
 
