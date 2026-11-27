@@ -99,16 +99,19 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
     var view by rememberSaveable { mutableStateOf(AccountView.MENU) }
     val returnToMenu = { view = AccountView.MENU }
     BackHandler(enabled = view != AccountView.MENU, onBack = returnToMenu)
-    val onBack = if (view == AccountView.MENU) actions.onBack else returnToMenu
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(title), onBack = onBack)
+            BackHeader(stringResource(title), onBack = if (view == AccountView.MENU) actions.onBack else returnToMenu)
             key(view) {
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
                     when (view) {
-                        AccountView.MENU -> { AccountMenu(account = account, actions = actions) { view = it } }
+                        AccountView.MENU -> {
+                            AccountMenu(account = account, actions = actions) { view = it }
+                        }
 
-                        AccountView.PRIVACY_NOTICE -> { AccountPrivacyNotice() }
+                        AccountView.PRIVACY_NOTICE -> {
+                            AccountPrivacyNotice()
+                        }
 
                         AccountView.WITHDRAW_CONSENT -> {
                             AccountWithdrawConsent(onWithdraw = actions.onSignOut, onKeep = returnToMenu)

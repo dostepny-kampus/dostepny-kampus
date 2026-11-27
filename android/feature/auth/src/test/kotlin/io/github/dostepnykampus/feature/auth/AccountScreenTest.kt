@@ -79,16 +79,16 @@ class AccountScreenTest {
         val privacy = compose.onNodeWithText("Informacja o danych osobowych").performScrollTo().assertIsDisplayed()
         val withdraw = compose.onNodeWithText("Wycofaj zgodę").performScrollTo().assertIsDisplayed()
         val signOut = compose.onNodeWithText("Wyloguj się").performScrollTo().assertIsDisplayed()
-        val privacyBottom = privacy.getUnclippedBoundsInRoot().bottom
         val withdrawBounds = withdraw.getUnclippedBoundsInRoot()
-        assertTrue("klauzula nad wycofaniem", privacyBottom <= withdrawBounds.top)
+        assertTrue("klauzula nad wycofaniem", privacy.getUnclippedBoundsInRoot().bottom <= withdrawBounds.top)
         assertTrue("wycofanie nad wylogowaniem", withdrawBounds.bottom <= signOut.getUnclippedBoundsInRoot().top)
         privacy.performClick()
         assertClauseDisplayed("Informacja o danych osobowych")
         assertClauseDisplayed("Politechnika Wrocławska nie jest administratorem Twoich danych.")
         val link = compose.onNodeWithText("repozytorium projektu na GitHub", substring = true).performScrollTo()
         val linkText = link.fetchSemanticsNode().config[SemanticsProperties.Text].single()
-        val urls = linkText.getLinkAnnotations(start = 0, end = linkText.length).map { (it.item as LinkAnnotation.Url).url }
+        val annotations = linkText.getLinkAnnotations(start = 0, end = linkText.length)
+        val urls = annotations.map { (it.item as LinkAnnotation.Url).url }
         assertEquals("odnośnik kontaktu w klauzuli", listOf(REPOSITORY_URL), urls)
         assertClauseDisplayed("Twoja zgoda (art. 6 ust. 1 lit. a RODO), wyrażona przy zakładaniu konta.")
         assertClauseDisplayed("Ta sama informacja jest na stronie zakładania konta.")

@@ -42,8 +42,7 @@ class VisitorConsentWithdrawTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     /**
-     * Zalogowany Odwiedzający po wznowieniu otwiera od razu V4, a po wylogowaniu albo wycofaniu zgody wraca do V1
-     * i znów prosi o logowanie.
+     * Zalogowany po wznowieniu otwiera od razu V4, a po wycofaniu zgody wraca do V1 i znów musi się zalogować.
      * Scenariusz: uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
      */
     @Test
