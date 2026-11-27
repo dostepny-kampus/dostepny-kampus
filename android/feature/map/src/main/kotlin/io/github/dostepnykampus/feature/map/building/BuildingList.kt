@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.R
@@ -64,7 +65,7 @@ internal fun BuildingList(
         }
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
     LazyColumn(
-        modifier = modifier.fillMaxWidth().windowInsetsPadding(insets),
+        modifier = modifier.readableWidth().fillMaxWidth().windowInsetsPadding(insets),
         contentPadding = PaddingValues(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
