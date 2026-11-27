@@ -32,7 +32,8 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
 class HelpScreenshotTest {
-    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule
+    val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture(isFirstStep: Boolean) {
         compose.setContent {
