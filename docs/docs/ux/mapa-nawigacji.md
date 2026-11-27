@@ -102,7 +102,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 z małą kartą V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2.8, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy się nie zmieniają: zostaje widok z chwili zamknięcia, także po wyborze z wyszukiwania | wszystkie | US2.8, NFR-19, NFR-53, NFR-56, decyzje 83, 116, 118, 153 |
 | V2, mała karta | dotknięcie uchwytu „Wysokość karty”, przewinięcie albo przeciągnięcie w górę | V2 rozwinięta: cały ekran bez mapy | wszystkie | US2.8, NFR-53 |
-| V2 rozwinięta po małej karcie | „Wstecz”; dotknięcie uchwytu „Wysokość karty” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
+| V2 rozwinięta po małej karcie | „Wstecz” telefonu; dotknięcie uchwytu „Wysokość karty” | V2, mała karta tego samego budynku, nadal zaznaczonego na mapie | wszystkie | NFR-15, decyzja 115 |
 | V1 | dotknięcie konturu wspólnego bez planów, np. „T-18/T-22”, albo wybór symbolu z niego w wyszukiwaniu | V2 wspólna karta obu symboli, np. „T-18 / T-22”, na niskiej wysokości, bez arkusza „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1 | dotknięcie obok dwóch różnych konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1, arkusz „Który budynek?” | wiersz budynku, np. „Budynek A-1”; „Zamknij” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu; V1 | wszystkie | US2, NFR-53 |
