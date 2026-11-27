@@ -13,6 +13,7 @@ import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.time.Duration
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -29,8 +30,8 @@ annotation class MapUserAgent
  * aplikacji [http] przez `newBuilder()` i dzieli z nim pulę połączeń. Każde żądanie ma nagłówek [userAgent].
  * Kafelki nie mają limitu całego wywołania klienta aplikacji, tylko domyślne 10 s na połączenie, jak
  * wcześniej. Token konta idzie tylko do serwera aplikacji, nie do serwera kafelków. Kafelek wektorowy w całości
- * poza prostokątami `basemapAreas` nie idzie do serwera: żądanie tylko z pamięci podręcznej, na które OkHttp
- * odpowiada bez sieci (504).
+ * poza prostokątami wszystkich widocznych widoków jest odczytywany tylko z pamięci podręcznej. Gdy nie ma
+ * kopii, OkHttp odpowiada bez sieci (504).
  *
  * Wymagania: NFR-39
  *
@@ -44,9 +45,7 @@ class MapTileHttp
         http: OkHttpClient,
         @MapUserAgent userAgent: String,
     ) {
-        /** Prostokąty terenów, w których wolno pobierać kafelki podkładu; pusta lista nie ogranicza. */
-        @Volatile
-        internal var basemapAreas: List<CampusBounds> = emptyList()
+        private val activeAreas = AtomicReference<Map<ViewAreas, List<CampusBounds>>>(emptyMap())
 
         /** Klient kafelków z pulą połączeń klienta aplikacji i domyślnymi limitami czasu OkHttp. */
         internal val client: OkHttpClient =
@@ -64,10 +63,43 @@ class MapTileHttp
         val calls: Call.Factory =
             Call.Factory { request ->
                 val sent = request.newBuilder().header(name = "User-Agent", value = userAgent)
-                val isBlocked = isOutside(url = request.url.toString(), areas = basemapAreas)
+                val isBlocked = isOutside(url = request.url.toString(), areas = activeAreas.get().values.flatten())
                 if (isBlocked) sent.cacheControl(CacheControl.FORCE_CACHE)
                 client.newCall(sent.build())
             }
+
+        /** Tworzy rejestrację prostokątów jednego widoku mapy, początkowo ukrytego. */
+        internal fun newView(): ViewAreas = ViewAreas()
+
+        /**
+         * Granice jednego widoku mapy, aktualizowane na wątku interfejsu. Klient HTTP widzi tylko granice
+         * widocznych widoków i odczytuje jeden stan wszystkich rejestracji dla każdego żądania.
+         */
+        internal inner class ViewAreas {
+            private var bounds: List<CampusBounds> = emptyList()
+            private var isShown = false
+
+            /** Zapisuje bieżące granice widoku, także gdy widok jest ukryty. */
+            fun update(areas: List<CampusBounds>) {
+                if (bounds == areas) return
+                bounds = areas.toList()
+                if (isShown) publish()
+            }
+
+            /** Pokazuje bieżące granice klientowi HTTP albo wycofuje udział tego widoku. */
+            fun setVisible(isVisible: Boolean) {
+                if (isShown == isVisible) return
+                isShown = isVisible
+                publish()
+            }
+
+            private fun publish() {
+                val shown = bounds.takeIf { isShown && it.isNotEmpty() }
+                activeAreas.updateAndGet { active ->
+                    if (shown == null) active - this else active + (this to shown)
+                }
+            }
+        }
     }
 
 /** Dostęp widoku mapy do [MapTileHttp]: widok jest obiektem, więc nie ma wstrzykiwania przez konstruktor. */

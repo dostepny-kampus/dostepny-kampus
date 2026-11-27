@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit
 
 private const val AGENT = "DostepnyKampus/1.0 (io.example.test)"
 private const val TILE = "/20251119_001001_pt/14/8968/5477.pbf"
+private const val OTHER_TILE = "/20251119_001001_pt/14/8975/5484.pbf"
+private const val OUTSIDE_TILE = "/20251119_001001_pt/14/8969/5477.pbf"
 
 /** Klient kafelków mapy z grafu Hilt na serwerze testowym, nie na serwerze OSM. Wymagania: NFR-39 */
 class MapTileHttpTest {
@@ -53,24 +55,40 @@ class MapTileHttpTest {
     }
 
     /**
-     * Kafelek podkładu w całości poza prostokątami terenów nie idzie do serwera: odpowiedź przychodzi bez sieci.
-     * Kafelek nad terenem idzie do serwera.
+     * Żądania z dwóch widocznych map korzystają z obu terenów. Ukrycie mapy usuwa tylko jej teren.
      *
      * Wymagania: NFR-39
      */
     @Test
-    fun skipsTileOutsideAreas() {
-        server.enqueue(MockResponse().setBody("kafelek"))
+    fun keepsTilesOfVisibleMaps() {
+        repeat(7) { server.enqueue(MockResponse().setBody("kafelek")) }
         val http = MapTileHttp(http = app, userAgent = AGENT)
-        http.basemapAreas = listOf(CampusBounds(west = 17.2, south = 51.0, east = 17.21, north = 51.01))
-        val outside = http.calls.newCall(tileRequest()).execute()
-        assertEquals(504, outside.code, "odpowiedź bez sieci")
-        outside.close()
-        http.basemapAreas = listOf(CampusBounds(west = 17.06, south = 51.10, east = 17.07, north = 51.11))
-        val inside = http.calls.newCall(tileRequest()).execute()
-        inside.close()
-        assertEquals(1, server.requestCount, "tylko kafelek nad terenem do serwera")
+        val first = http.newView()
+        val second = http.newView()
+        first.update(listOf(CampusBounds(west = 17.06, south = 51.10, east = 17.07, north = 51.11)))
+        second.update(listOf(CampusBounds(west = 17.2, south = 51.0, east = 17.21, north = 51.01)))
+        first.setVisible(true)
+        second.setVisible(true)
+
+        assertEquals(200, code(http, TILE), "teren pierwszej mapy")
+        assertEquals(200, code(http, OTHER_TILE), "teren drugiej mapy")
+        assertEquals(504, code(http, OUTSIDE_TILE), "kafelek poza obiema mapami")
+
+        second.setVisible(false)
+        assertEquals(504, code(http, OTHER_TILE), "teren drugiej mapy po zamknięciu")
+        assertEquals(200, code(http, TILE), "pierwsza mapa nadal widoczna")
+        first.setVisible(false)
+        assertEquals(504, code(http, TILE), "bez widocznych map")
+        second.setVisible(true)
+        assertEquals(200, code(http, OTHER_TILE), "teren po ponownym pokazaniu mapy")
+        assertEquals(4, server.requestCount, "tylko kafelki widocznych terenów trafiły do serwera")
     }
 
-    private fun tileRequest() = Request.Builder().url(server.url(TILE)).build()
+    private fun code(http: MapTileHttp, path: String): Int {
+        val request = Request.Builder().url(server.url(path)).build()
+        return http.calls
+            .newCall(request)
+            .execute()
+            .use { it.code }
+    }
 }
