@@ -5,6 +5,7 @@
 Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z nazwą, rolami i wylogowaniem (L2).
 
 L1 zachowuje wspólną szerokość tekstu i czynności w szerokim oknie.
+L1 korzysta ze wspólnego układu, który przenosi nagłówek i czynności do przewijanej treści po przekroczeniu budżetu wysokości.
 
 ## Pakiety
 

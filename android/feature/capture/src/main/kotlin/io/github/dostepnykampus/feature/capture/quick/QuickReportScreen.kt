@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
@@ -49,11 +48,11 @@ import kotlinx.coroutines.flow.filter
 import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
- * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
- * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro.
- * „Wstecz” z kroku 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa
- * zdjęcie i wraca z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`). Kroki
+ * przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie przy wejściu
+ * albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro. „Wstecz” z kroku
+ * 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa zdjęcie i wraca z kroku 1
+ * do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -70,22 +69,25 @@ fun QuickReportScreen(
     models: QuickReportModels = QuickReportModels(),
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
-            var isLeaving by rememberSaveable { mutableStateOf(false) }
-            BackHandler(enabled = isPhotoTaken || isLeaving) { isLeaving = !isLeaving }
-            val back: () -> Unit = {
-                if (isPhotoTaken) {
-                    isLeaving = true
-                } else {
-                    actions.onBack()
-                }
+        val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
+        var isLeaving by rememberSaveable { mutableStateOf(false) }
+        BackHandler(enabled = isPhotoTaken || isLeaving) { isLeaving = !isLeaving }
+        val back: () -> Unit = {
+            if (isPhotoTaken) {
+                isLeaving = true
+            } else {
+                actions.onBack()
             }
-            BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+        }
+        val slot = remember { QuickPinnedSlot() }
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back) },
+            actions = { slot.content?.let { PinnedActionBar(content = it) } },
+        ) {
             if (route.step == ReportStep.SENT && route.isSavedOffline) QuickOfflineLine(models.offline)
-            val slot = remember { QuickPinnedSlot() }
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 when {
@@ -109,7 +111,6 @@ fun QuickReportScreen(
                     }
                 }
             }
-            slot.content?.let { PinnedActionBar(content = it) }
         }
     }
 }
@@ -216,8 +217,7 @@ private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onComplete: (Bool
     }
 }
 
-@Composable
-private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltViewModel()
+@Composable private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltViewModel()
 
 @Composable
 private fun QuickPositionWarmUp(where: QuickSendViewModel) {

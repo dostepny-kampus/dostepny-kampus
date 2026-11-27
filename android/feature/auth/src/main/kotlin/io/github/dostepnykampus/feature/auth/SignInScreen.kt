@@ -14,15 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -31,10 +28,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.data.account.SignInEntry
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
@@ -91,21 +87,19 @@ fun SignInContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    val choices: @Composable (Boolean) -> Unit = { isPinned ->
-        Choices(state = state, onLeave = actions.onLeave, onOpen = onOpen, onRetry = onRetry, isPinned = isPinned)
-    }
+    val choices = @Composable { Choices(state = state, onLeave = actions.onLeave, onOpen = onOpen, onRetry = onRetry) }
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.logowanie_naglowek), onBack = actions.onBack)
+        AdaptiveScreen(
+            modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.logowanie_naglowek), onBack = actions.onBack) },
+            actions = choices,
+        ) {
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 Message(state = state, isForReport = isForReport, onLeave = actions.onLeave)
-                if (isInContent) choices(false)
             }
-            if (!isInContent) choices(true)
         }
     }
 }
@@ -172,13 +166,7 @@ private fun SignInPanel(
 }
 
 @Composable
-private fun Choices(
-    state: SignInUiState,
-    onLeave: () -> Unit,
-    onOpen: (SignInEntry) -> Unit,
-    onRetry: () -> Unit,
-    isPinned: Boolean,
-) {
+private fun Choices(state: SignInUiState, onLeave: () -> Unit, onOpen: (SignInEntry) -> Unit, onRetry: () -> Unit) {
     val buttons =
         when {
             !state.isOnline -> {
@@ -210,9 +198,5 @@ private fun Choices(
             )
         }
     }
-    if (isPinned) {
-        PinnedActionBar { each(Modifier.fillMaxWidth()) }
-    } else {
-        Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) { each(Modifier.fillMaxWidth()) }
-    }
+    PinnedActionBar { each(Modifier.fillMaxWidth()) }
 }

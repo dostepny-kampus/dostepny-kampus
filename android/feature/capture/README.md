@@ -4,6 +4,8 @@
 
 Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłoszenie wejścia i lista własnych zgłoszeń.
 
+Ekrany z paskiem czynności korzystają ze wspólnego pomiaru wysokości; nagłówek i czynności mogą przewijać się z treścią.
+
 ## Pakiety
 
 - `feature.capture.conflict` — widok i model widoku wyboru jednej z dwóch wersji zgłoszenia po konflikcie wersji.

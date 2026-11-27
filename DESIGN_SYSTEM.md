@@ -28,6 +28,10 @@ their width. Text, fields, and actions share constraints at 100% and 200% font s
 Standard content padding remains 16 dp. The app shell applies the column to non-map routes;
 map lists, search, and sheets apply it separately. Maps and floor plans retain the viewport.
 
+AdaptiveScreen measures the header and actions against 25% of the current window height.
+When they exceed the remaining budget, or at large font sizes, they scroll with the content.
+Help resets scroll position when its step changes.
+
 ## 6. Component system
 
 Reuse `core:designsystem`: BackHeader, PinnedActionBar, PinnedButton, and the shared card actions.

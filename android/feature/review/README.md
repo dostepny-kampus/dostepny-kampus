@@ -4,6 +4,8 @@
 
 Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wziętymi przeze mnie” i sprawdzenie zgłoszenia (R2).
 
+Ekran zasłaniania zdjęcia korzysta ze wspólnego pomiaru wysokości nagłówka i czynności.
+
 ## Pakiety
 
 - `feature.review.check` — ekran, stan, ViewModel i decyzja sprawdzenia zgłoszenia.

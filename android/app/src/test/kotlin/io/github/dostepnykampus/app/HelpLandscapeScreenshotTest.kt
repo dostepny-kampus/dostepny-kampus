@@ -45,6 +45,7 @@ class HelpLandscapeScreenshotTest {
     @Test
     fun drawsHelpOutsideSystemInsets() {
         showHelp()
+        compose.onNodeWithText("Pomiń instrukcję").performScrollTo()
         checkBounds()
         compose.onRoot().captureRoboImage()
     }

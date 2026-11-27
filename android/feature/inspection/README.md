@@ -4,6 +4,8 @@
 
 Postęp inwentaryzacji: lista budynków z postępem dla Koordynatora (K1), znaczniki budynku do cofnięcia (C5 Koordynatora) i piętra do oznaczenia jako obejrzane (C5 Zbierającego) oraz eksport barier dla Koordynatora (K3).
 
+K2 i K3 korzystają ze wspólnego pomiaru wysokości nagłówka i czynności.
+
 ## Pakiety
 
 - `feature.inspection.export` — ekran eksportu K3, jego stan i ViewModel.

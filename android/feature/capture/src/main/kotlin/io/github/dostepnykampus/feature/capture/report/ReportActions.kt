@@ -7,13 +7,9 @@ package io.github.dostepnykampus.feature.capture.report
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,9 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.marking.BarrierTypeField
 import io.github.dostepnykampus.core.designsystem.marking.SeverityChoice
 import io.github.dostepnykampus.feature.capture.R
@@ -43,6 +36,7 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISS
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_FLOOR
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_PHOTO
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_SEVERITY
+import io.github.dostepnykampus.feature.capture.report.form.ReportFrame
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import io.github.dostepnykampus.feature.capture.report.form.rememberMissingFields
@@ -87,10 +81,14 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
     val errors = state.errors
     val fields = rememberMissingFields(firstError = errors.firstOrNull(), attempts = state.missingAttempts)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = title, onBack = actions.onBack)
+        ReportFrame(
+            title = title,
+            onBack = actions.onBack,
+            actionText = stringResource(R.string.formularz_zapisz),
+            onSubmit = actions.onSave,
+        ) {
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 ReplaceNotice(state.form.replacesSubmissionId)
@@ -129,9 +127,6 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
             }
             if (state.stage == ReportStage.EXIT_ASKED) {
                 ExitDialog(onConfirmExit = actions.onConfirmExit, onStay = actions.onStay)
-            }
-            PinnedActionBar {
-                PinnedButton(text = stringResource(R.string.formularz_zapisz), onClick = actions.onSave)
             }
         }
     }

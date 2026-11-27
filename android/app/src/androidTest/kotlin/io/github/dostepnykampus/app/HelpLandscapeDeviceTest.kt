@@ -13,6 +13,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -65,7 +66,7 @@ class HelpLandscapeDeviceTest {
                 compose.onAllNodesWithText("Pomiń instrukcję").fetchSemanticsNodes().isNotEmpty()
             }
             val skip = compose.onNodeWithText("Pomiń instrukcję")
-            if (fontScale > 1f) skip.performScrollTo()
+            if (!skip.isDisplayed()) skip.performScrollTo()
             skip.assertIsDisplayed()
             assertInsideSystemBars()
             DeviceEvidence.record("pomoc-poziom-$fontScale")

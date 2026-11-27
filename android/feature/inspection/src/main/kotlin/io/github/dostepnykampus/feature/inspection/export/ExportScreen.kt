@@ -11,7 +11,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,10 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
@@ -32,19 +29,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
@@ -100,31 +96,31 @@ fun ExportContent(
 ) {
     val problem = problemOf(state.stage)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.eksport_naglowek), onBack = actions.onBack)
+        AdaptiveScreen(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            header = { BackHeader(title = stringResource(R.string.eksport_naglowek), onBack = actions.onBack) },
+            actions = { if (problem == null) PinnedActionBar { DownloadButton(onDownload) } },
+        ) {
             if (problem != null) {
                 val onAction = if (problem == StaffProblem.FORBIDDEN) actions.onLeave else onDownload
                 StaffProblemMessage(problem = problem, onAction = onAction)
             } else {
-                ExportBody(state = state, onChoose = onChoose, onDownload = onDownload)
+                ExportBody(state = state, onChoose = onChoose)
             }
         }
     }
 }
 
 @Composable
-private fun ColumnScope.ExportBody(state: ExportUiState, onChoose: (ExportFormat) -> Unit, onDownload: () -> Unit) {
-    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+private fun ExportBody(state: ExportUiState, onChoose: (ExportFormat) -> Unit) {
     Column(
-        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+        modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
     ) {
         Message(state.stage)
         Formats(chosen = state.format, onChoose = onChoose)
         Text(text = stringResource(R.string.eksport_zawartosc), style = MaterialTheme.typography.bodyLarge)
-        if (isInContent) DownloadButton(onDownload)
     }
-    if (!isInContent) PinnedActionBar { DownloadButton(onDownload) }
 }
 
 private fun problemOf(stage: ExportStage): StaffProblem? =
@@ -180,11 +176,7 @@ private fun labelOf(format: ExportFormat): Int =
     }
 
 @Composable
-private fun FormatOption(
-    @StringRes label: Int,
-    isChosen: Boolean,
-    onClick: () -> Unit,
-) {
+private fun FormatOption(@StringRes label: Int, isChosen: Boolean, onClick: () -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onClick),
         border =

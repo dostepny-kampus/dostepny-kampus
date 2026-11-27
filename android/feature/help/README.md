@@ -5,6 +5,7 @@
 Pomoc: ekran z krokami obsługi i jego pokazanie przy pierwszym uruchomieniu.
 
 V5 zachowuje wspólną szerokość tekstu i czynności w szerokim oknie.
+V5 korzysta ze wspólnego układu, który mierzy wysokość nagłówka i czynności w bieżącym oknie.
 
 ## Pakiety
 
