@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map.style
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.campus.BARRIER_FLOOR
-import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.campusMapData
@@ -62,23 +61,24 @@ class CampusMapBarriersStyleTest {
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf("podpisy"))
     }
 
-    /** Wiersz: V1, wybrana bariera ma osobną warstwę z większym znakiem nad pozostałymi. Wymagania: US1.5, NFR-21 */
+    /** Wymagania: US1.5, NFR-21 */
     @Test
-    fun layersChosenBarrier() {
+    fun pinsChosenBarrierWithoutChangingItsSign() {
         val data = campusMapData(catalog).withBarriers(barriers)
         val chosen = barriers.first().id
         val plain = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
-        val marked = data.selection().copy(barrier = chosen)
+        val marked = data.selection().copy(barrier = chosen, barrierCaption = "Schody przy wejściu")
         val style = Json.parseToJsonElement(campusMapStyle(data, marked, colors)).jsonObject
         val order = style.getValue("layers").jsonArray.map { it.jsonObject.text("id") }
-        assertEquals("""["!",true]""", plain.layer(CHOSEN_BARRIER_LAYER).getValue("filter").toString())
-        assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf(CHOSEN_BARRIER_LAYER))
-        val layer = style.layer(CHOSEN_BARRIER_LAYER)
-        assertEquals("""["==",["get","$BARRIER_ID"],"$chosen"]""", layer.getValue("filter").toString())
-        val layout = layer.obj("layout")
-        val images = layout.getValue("icon-image").jsonArray.map { it.toString() }
-        val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
-        assertEquals(true, images.containsAll(expected))
+        assertEquals(false, "bariera_wybrana" in order)
+        assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf(ENTRANCE_PIN_LAYER))
+        assertEquals(plain.layer(BARRIERS_LAYER), style.layer(BARRIERS_LAYER))
+        val pin = style.layer(ENTRANCE_PIN_LAYER).obj("layout")
+        assertEquals(JsonPrimitive("bottom"), pin["icon-anchor"])
+        assertEquals(JsonPrimitive("top"), style.layer(ENTRANCE_CAPTION_LAYER).obj("layout")["icon-anchor"])
+        val point = style.obj("sources").obj(CHOSEN_SOURCE).obj("data").getValue("features").jsonArray.single().jsonObject
+        assertEquals(style.points().first().jsonObject["geometry"], point["geometry"])
+        assertEquals("Schody przy wejściu", point.obj("properties").text("label"))
     }
 
     /**
