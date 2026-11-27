@@ -25,7 +25,7 @@ import io.github.dostepnykampus.feature.auth.WorkAction
  * Ekran konta: L1 „Prośba o logowanie” albo L2 „Konto” zalogowanej osoby. Po wylogowaniu L2 nie rysuje niczego,
  * dopóki nawigator nie otworzy V1.
  *
- * Wymagania: US14.1, US14.2, US14.4
+ * Wymagania: US14.1, US14.2, US14.4, NFR-29, NFR-30
  *
  * @param route L1 albo L2
  * @param signIn stan L1; `null` bierze go z grafu Hilt

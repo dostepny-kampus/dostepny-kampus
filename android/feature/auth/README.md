@@ -2,9 +2,9 @@
 
 ## Zadanie
 
-Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z nazwą, rolami i wylogowaniem (L2).
+Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z nazwą, rolami, klauzulą informacyjną, wycofaniem zgody i wylogowaniem (L2).
 
-L1 zachowuje wspólną szerokość tekstu i czynności w szerokim oknie.
+L1 i L2 zachowują wspólną szerokość tekstu i czynności w szerokim oknie.
 
 ## Pakiety
 

@@ -14,6 +14,31 @@ internal object AccountIcons {
     val Forward: ImageVector =
         pathIcon(path = "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z", name = "ChevronRight", autoMirror = true)
 
+    /** Informacja o danych osobowych. */
+    val PrivacyNotice: ImageVector =
+        pathIcon(
+            "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2" +
+                "zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z",
+            name = "Description",
+        )
+
+    /** Wycofanie zgody. */
+    val WithdrawConsent: ImageVector =
+        pathIcon(
+            "M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm3.5 12.09-1.41 1.41" +
+                "L12 13.41l-2.09 2.09-1.41-1.41L10.59 12 8.5 9.91 9.91 8.5 12 10.59l2.09-2.09 1.41 1.41" +
+                "L13.41 12l2.09 2.09z",
+            name = "GppBad",
+        )
+
+    /** Odnośnik zewnętrzny otwierany w przeglądarce. */
+    val ExternalLink: ImageVector =
+        pathIcon(
+            "M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59" +
+                "l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z",
+            name = "OpenInNew",
+        )
+
     /** Wylogowanie. */
     val SignOut: ImageVector =
         pathIcon(
