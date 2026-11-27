@@ -5,11 +5,12 @@
  */
 package io.github.dostepnykampus.app
 
-import android.graphics.Bitmap
 import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -25,11 +26,20 @@ import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
+import io.github.dostepnykampus.feature.map.MapLibreMapView
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.withBarriers
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -40,8 +50,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.maplibre.android.camera.CameraPosition
-import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -161,9 +169,15 @@ class CameraFlightDeviceTest {
             CampusMapUiState(catalog = entries, mapData = data, barriers = barriers),
             MapFocus.Entrance(id = entrance.id, buildingSymbol = entrance.buildingSymbol),
         )
-        val map = awaitReadyMap()
-        val location = LatLng(latitude = entrance.location.latitude, longitude = entrance.location.longitude)
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(hasText("Bariery przy tym wejściu")) }
+        awaitPinAndBarrier(map = awaitReadyMap(), entrance = entrance, barrierId = barrier.id)
+        showMapForEvidence(data = data, entrance = entrance)
+        awaitPinAndBarrier(map = awaitReadyMap(), entrance = entrance, barrierId = barrier.id)
+        DeviceEvidence.record("v1-barrier-beside-pin")
+    }
+
+    private fun awaitPinAndBarrier(map: MapLibreMap, entrance: Entrance, barrierId: String) {
+        val location = LatLng(latitude = entrance.location.latitude, longitude = entrance.location.longitude)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
                 val density = composeRule.activity.resources.displayMetrics.density
@@ -171,28 +185,36 @@ class CameraFlightDeviceTest {
                 val sign = PointF(anchor.x + BARRIER_PIN_GAP_DP * density, anchor.y)
                 val pin = PointF(anchor.x, anchor.y - PIN_BODY_DP * density)
                 map.queryRenderedFeatures(pin, "wejscie_pinezka").isNotEmpty() &&
-                    map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
+                    map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrierId }
             }
         }
-        recordMap(map = map, location = location)
     }
 
-    private fun recordMap(map: MapLibreMap, location: LatLng) {
-        val snapshot = AtomicReference<Bitmap>()
-        composeRule.runOnUiThread {
-            val camera =
-                CameraPosition
-                    .Builder(map.cameraPosition)
-                    .target(location)
-                    .padding(doubleArrayOf(0.0, 0.0, 0.0, 0.0))
-                    .build()
-            map.moveCamera(CameraUpdateFactory.newCameraPosition(camera))
-            map.triggerRepaint()
+    private fun showMapForEvidence(data: CampusMapData, entrance: Entrance) {
+        val pin =
+            SelectedEntrance(
+                id = entrance.id,
+                location = entrance.location,
+                label = entrance.name ?: "Wejście",
+                buildingSymbol = entrance.buildingSymbol,
+            )
+        val camera = MapCamera(center = entrance.location, zoom = PIN_ZOOM)
+        composeRule.activityRule.scenario.onActivity { activity ->
+            activity.setContent {
+                DostepnyKampusTheme {
+                    MapLibreMapView.Show(
+                        data = data,
+                        selection = MapSelection(entrance = pin),
+                        move = CameraTransition(camera = camera, motion = CameraMotion.NONE, durationMillis = 0L),
+                        inset = MapInset(),
+                        onCameraIdle = {},
+                        onBuildingsTouch = {},
+                        onSignTouch = { _, _ -> },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
         }
-        Thread.sleep(SETTLE_PAUSE_MS)
-        composeRule.runOnUiThread { map.snapshot(snapshot::set) }
-        composeRule.waitUntil(READY_TIMEOUT_MS) { snapshot.get() != null }
-        DeviceEvidence.record(label = "v1-barrier-beside-pin", bitmap = requireNotNull(snapshot.get()))
     }
 
     private fun showMap(state: CampusMapUiState, focus: MapFocus) {
@@ -290,6 +312,7 @@ class CameraFlightDeviceTest {
         const val FLOOR_PLAN_ZOOM = 17.0
         const val BARRIER_PIN_GAP_DP = 48f
         const val PIN_BODY_DP = 24f
+        const val PIN_ZOOM = 19.0
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L
