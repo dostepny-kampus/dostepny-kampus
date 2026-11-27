@@ -64,7 +64,10 @@ class QuickEntranceFileTest {
     private val app = RuntimeEnvironment.getApplication()
     private val catalog =
         BuildingCatalogRepository(EmptyCoroutineContext) {
-            app.assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
+            app.assets
+                .open(BUILDINGS_ASSET)
+                .bufferedReader()
+                .use { it.readText() }
         }
     private val saved = mutableListOf<SubmissionContent>()
     private var positionReads = 0
@@ -98,6 +101,8 @@ class QuickEntranceFileTest {
     @Test
     fun showsMainEntranceName() {
         val viewModel = viewModel()
+        val entrances = QuickEntranceViewModel(catalog)
+        val transcoder = PhotoTranscoder()
         compose.setContent {
             DostepnyKampusTheme {
                 QuickReportScreen(
@@ -105,8 +110,8 @@ class QuickEntranceFileTest {
                     actions = QuickReportActions(onNext = {}, onSent = {}, onBack = {}, onBackToMap = {}),
                     models =
                         QuickReportModels(
-                            photoTranscoder = PhotoTranscoder(),
-                            entrances = QuickEntranceViewModel(catalog),
+                            photoTranscoder = transcoder,
+                            entrances = entrances,
                             send = viewModel,
                         ),
                 )
