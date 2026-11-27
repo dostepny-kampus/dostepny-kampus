@@ -187,8 +187,10 @@ class CameraFlightDeviceTest {
                     .padding(doubleArrayOf(0.0, 0.0, 0.0, 0.0))
                     .build()
             map.moveCamera(CameraUpdateFactory.newCameraPosition(camera))
-            map.snapshot(snapshot::set)
+            map.triggerRepaint()
         }
+        Thread.sleep(SETTLE_PAUSE_MS)
+        composeRule.runOnUiThread { map.snapshot(snapshot::set) }
         composeRule.waitUntil(READY_TIMEOUT_MS) { snapshot.get() != null }
         DeviceEvidence.record(label = "v1-barrier-beside-pin", bitmap = requireNotNull(snapshot.get()))
     }
