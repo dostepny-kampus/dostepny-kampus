@@ -23,7 +23,6 @@ private const val DATA_TIMEOUT = 5_000L
 
 /**
  * Kontur wspólny bez planów pięter na mapie V1 z prawdziwych danych PWr.
- *
  * Wymagania: US2, US3.2, US1.1, NFR-18
  */
 @RunWith(RobolectricTestRunner::class)
