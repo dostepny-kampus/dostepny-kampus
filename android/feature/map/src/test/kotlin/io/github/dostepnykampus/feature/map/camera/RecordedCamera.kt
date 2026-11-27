@@ -74,9 +74,10 @@ internal class RecordedCamera {
                 density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
             }
         val controller = remember { CameraController(Port(move.camera, inset, density.density)) }
+        val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
-        DisposableEffect(controller, move) {
-            controller.move(move, currentInset)
+        DisposableEffect(controller, move.action) {
+            controller.move(currentMove, currentInset)
             onDispose {}
         }
         DisposableEffect(controller, bounds) {

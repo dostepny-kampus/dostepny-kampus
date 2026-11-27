@@ -213,6 +213,7 @@ object MapLibreMapView : CampusMapView {
         val map = this
         val controller =
             remember(map) { map?.let { CameraController(MapLibreCamera(map = it, areas = areas, view = view)) } }
+        val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(map, controller) {
             val gesture =
@@ -222,8 +223,8 @@ object MapLibreMapView : CampusMapView {
             map?.addOnCameraMoveStartedListener(gesture)
             onDispose { map?.removeOnCameraMoveStartedListener(gesture) }
         }
-        DisposableEffect(controller, move) {
-            controller?.move(move, currentInset)
+        DisposableEffect(controller, move.action) {
+            controller?.move(currentMove, currentInset)
             onDispose {}
         }
         DisposableEffect(controller, limits) {

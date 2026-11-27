@@ -43,6 +43,7 @@ import io.github.dostepnykampus.feature.map.camera.landed
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.pickView
+import io.github.dostepnykampus.feature.map.camera.rememberAction
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.camera.rememberPrevious
 import io.github.dostepnykampus.feature.map.camera.rememberSeen
@@ -186,7 +187,10 @@ internal fun rememberMapSceneState(
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val toArea = last.landingMove(target = uncovered, view = view, closed = closed, free = fit, scale = scale)
-    val move = above ?: toArea ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
+    val move =
+        rememberAction(
+            above ?: toArea ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump),
+        )
     val inset =
         cameraInset(held = heldInset, isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet)
     SideEffect { last.keep(shown = move?.camera, inset = inset) }
