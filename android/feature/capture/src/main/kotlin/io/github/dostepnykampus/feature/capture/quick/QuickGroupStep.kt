@@ -149,7 +149,12 @@ private fun BigChoice(text: String, onClick: () -> Unit, isSelected: Boolean = f
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk).semantics { selected = isSelected },
-        border = if (isSelected) BorderStroke(Obramowania.wybrane, colors.onPrimaryContainer) else null,
+        border =
+            if (isSelected) {
+                BorderStroke(Obramowania.wybrane, colors.onPrimaryContainer)
+            } else {
+                BorderStroke(Obramowania.pole, colors.outline)
+            },
         colors =
             if (isSelected) {
                 ButtonDefaults.outlinedButtonColors(
