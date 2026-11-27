@@ -42,11 +42,11 @@ import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.StaffResultMessage
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.inspection.R
 
@@ -120,7 +120,11 @@ fun InvitationContent(
 }
 
 @Composable
-private fun InvitationBody(state: InvitationUiState, onEdit: (String) -> Unit, onChoose: (StaffRole) -> Unit) {
+private fun InvitationBody(
+    state: InvitationUiState,
+    onEdit: (String) -> Unit,
+    onChoose: (StaffRole) -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -136,10 +140,7 @@ private fun problemOf(stage: InvitationStage): StaffProblem? =
         InvitationStage.OFFLINE -> StaffProblem.OFFLINE
         InvitationStage.SERVER_ERROR -> StaffProblem.SERVER
         InvitationStage.FORBIDDEN -> StaffProblem.FORBIDDEN
-        InvitationStage.IDLE,
-        InvitationStage.SENDING,
-        InvitationStage.SENT,
-        InvitationStage.ROLE_ADDED -> null
+        InvitationStage.IDLE, InvitationStage.SENDING, InvitationStage.SENT, InvitationStage.ROLE_ADDED -> null
     }
 
 @Composable
@@ -197,7 +198,9 @@ private fun Roles(chosen: StaffRole?, isMissing: Boolean, onChoose: (StaffRole) 
 }
 
 @Composable
-private fun SectionTitle(@StringRes text: Int) {
+private fun SectionTitle(
+    @StringRes text: Int,
+) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { heading() },

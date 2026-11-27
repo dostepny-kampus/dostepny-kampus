@@ -139,7 +139,8 @@ private fun MarkingOption(
 ) {
     OutlinedCard(
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .heightIn(min = CeleDotyku.przycisk)
                 .selectable(selected = isChosen, role = Role.RadioButton, onClick = onChoose),
         border =

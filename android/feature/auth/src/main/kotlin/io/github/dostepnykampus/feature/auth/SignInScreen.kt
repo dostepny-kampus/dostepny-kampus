@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import io.github.dostepnykampus.core.designsystem.readableWidth
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -31,12 +30,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.data.account.SignInEntry
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
+import io.github.dostepnykampus.core.designsystem.readableWidth
 
 /**
  * L1 „Prośba o logowanie” ze stanem z modelu widoku.
@@ -104,10 +104,18 @@ fun SignInContent(
     }
 }
 
-private data class Choice(@param:StringRes val text: Int, val onClick: () -> Unit, val kind: PinnedButtonKind)
+private data class Choice(
+    @param:StringRes val text: Int,
+    val onClick: () -> Unit,
+    val kind: PinnedButtonKind,
+)
 
 @Composable
-private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> Unit) {
+private fun Message(
+    state: SignInUiState,
+    isForReport: Boolean,
+    onLeave: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         when {
             !state.isOnline -> {
@@ -162,7 +170,12 @@ private fun SignInPanel(
 }
 
 @Composable
-private fun Choices(state: SignInUiState, onLeave: () -> Unit, onOpen: (SignInEntry) -> Unit, onRetry: () -> Unit) {
+private fun Choices(
+    state: SignInUiState,
+    onLeave: () -> Unit,
+    onOpen: (SignInEntry) -> Unit,
+    onRetry: () -> Unit,
+) {
     val buttons =
         when {
             !state.isOnline -> {

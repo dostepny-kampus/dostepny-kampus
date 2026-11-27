@@ -10,8 +10,8 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -36,7 +36,10 @@ class HelpScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(isFirstStep: Boolean, scrollToEnd: Boolean = false) {
+    private fun capture(
+        isFirstStep: Boolean,
+        scrollToEnd: Boolean = false,
+    ) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = isFirstStep, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
@@ -101,6 +104,7 @@ class HelpScreenshotTest {
     fun drawsWideContentAtFont200() {
         capture(isFirstStep = true)
     }
+
     @Test
     @Config(qualifiers = "w840dp-h360dp-xhdpi")
     fun drawsLandscapeContent() {

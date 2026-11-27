@@ -33,15 +33,15 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
-import io.github.dostepnykampus.core.designsystem.R as DesignR
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.feature.review.R
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * Zasłanianie twarzy i tablic na zdjęciu [photoId] zgłoszenia [submissionId] ze stanem z modelu widoku.
@@ -120,7 +120,10 @@ private fun Loading() {
 }
 
 @Composable
-private fun Ready(state: CoverUiState.Ready, actions: CoverActions) {
+private fun Ready(
+    state: CoverUiState.Ready,
+    actions: CoverActions,
+) {
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
 
     Column(
@@ -142,7 +145,10 @@ private fun Ready(state: CoverUiState.Ready, actions: CoverActions) {
 }
 
 @Composable
-private fun SaveButton(state: CoverUiState.Ready, actions: CoverActions) {
+private fun SaveButton(
+    state: CoverUiState.Ready,
+    actions: CoverActions,
+) {
     PinnedButton(
         text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
         onClick = actions.onSave,

@@ -69,7 +69,10 @@ class AdaptiveScreenTest {
         assertEquals(
             "Header returns when scrolling to the start",
             0f,
-            compose.onNodeWithTag("header").getUnclippedBoundsInRoot().top.value,
+            compose
+                .onNodeWithTag("header")
+                .getUnclippedBoundsInRoot()
+                .top.value,
             1f,
         )
     }

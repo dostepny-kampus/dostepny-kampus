@@ -33,19 +33,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import java.io.File
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
+import java.io.File
 
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`). Kroki
@@ -194,10 +194,14 @@ private fun QuickStep(
             QuickGroupStep(route = route, onNext = actions.onNext, where = where)
         }
 
-        ReportStep.SEND,
-        ReportStep.SENT -> {
+        ReportStep.SEND, ReportStep.SENT -> {
             route.quickReport()?.let { report ->
-                QuickSendStep(route = route, report = report, onGiveUp = onGiveUp, viewModel = where)
+                QuickSendStep(
+                    route = route,
+                    report = report,
+                    onGiveUp = onGiveUp,
+                    viewModel = where,
+                )
             }
         }
     }
@@ -240,24 +244,17 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
-        QuickGroupQuestion(
-            selected = route.group,
-            onGroup = { chosen ->
-                val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
-                if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
-            },
-        )
+        QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
+            val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
+            if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
+        })
     } else {
         BackHandler { asked = null }
-        QuickFloorQuestion(
-            group = group,
-            floors = QuickFloors(floors),
-            onFloor = { answer ->
-                val floor = answer.floor
-                val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
-                onNext(answered.copy(group = group, isFloorAsked = true))
-            },
-        )
+        QuickFloorQuestion(group = group, floors = QuickFloors(floors), onFloor = { answer ->
+            val floor = answer.floor
+            val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
+            onNext(answered.copy(group = group, isFloorAsked = true))
+        })
     }
 }
 
@@ -288,5 +285,11 @@ private fun QuickSendStep(
 
 @Composable
 private fun MainButton(text: String, onClick: () -> Unit, isEnabled: Boolean = true) {
-    PrimaryAction(onClick = onClick, enabled = isEnabled, modifier = Modifier.fillMaxWidth()) { Text(text) }
+    PrimaryAction(
+        onClick = onClick,
+        enabled = isEnabled,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(text)
+    }
 }

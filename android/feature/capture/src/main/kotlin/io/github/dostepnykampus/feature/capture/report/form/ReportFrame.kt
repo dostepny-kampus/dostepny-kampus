@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 
 /** Układ formularza z nagłówkiem [title], powrotem [onBack] i czynnością [actionText] wywołującą [onSubmit]. */
 @Composable

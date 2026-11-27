@@ -40,11 +40,11 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.StaffResultMessage
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.feature.inspection.R
 
@@ -112,7 +112,10 @@ fun ExportContent(
 }
 
 @Composable
-private fun ExportBody(state: ExportUiState, onChoose: (ExportFormat) -> Unit) {
+private fun ExportBody(
+    state: ExportUiState,
+    onChoose: (ExportFormat) -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -128,11 +131,7 @@ private fun problemOf(stage: ExportStage): StaffProblem? =
         ExportStage.OFFLINE -> StaffProblem.OFFLINE
         ExportStage.SERVER_ERROR -> StaffProblem.SERVER
         ExportStage.FORBIDDEN -> StaffProblem.FORBIDDEN
-        ExportStage.IDLE,
-        ExportStage.LOADING,
-        ExportStage.SAVED,
-        ExportStage.SAVED_CHOSEN,
-        ExportStage.EMPTY -> null
+        ExportStage.IDLE, ExportStage.LOADING, ExportStage.SAVED, ExportStage.SAVED_CHOSEN, ExportStage.EMPTY -> null
     }
 
 @Composable
@@ -152,10 +151,7 @@ private fun Message(stage: ExportStage) {
             ExportStage.SAVED -> R.string.eksport_zapisany
             ExportStage.SAVED_CHOSEN -> R.string.eksport_zapisany_wybrane
             ExportStage.EMPTY -> R.string.eksport_pusty
-            ExportStage.IDLE,
-            ExportStage.OFFLINE,
-            ExportStage.SERVER_ERROR,
-            ExportStage.FORBIDDEN -> null
+            ExportStage.IDLE, ExportStage.OFFLINE, ExportStage.SERVER_ERROR, ExportStage.FORBIDDEN -> null
         } ?: return
     val message = if (stage == ExportStage.EMPTY) stringResource(R.string.eksport_pusty_plik) else null
     StaffResultMessage(title = stringResource(title), message = message)
@@ -183,7 +179,11 @@ private fun labelOf(format: ExportFormat): Int =
     }
 
 @Composable
-private fun FormatOption(@StringRes label: Int, isChosen: Boolean, onClick: () -> Unit) {
+private fun FormatOption(
+    @StringRes label: Int,
+    isChosen: Boolean,
+    onClick: () -> Unit,
+) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onClick),
         border =

@@ -35,10 +35,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
-import io.github.dostepnykampus.core.designsystem.bar.AdaptiveScreen
 import io.github.dostepnykampus.feature.capture.R
 
 private val LOCATION = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -138,7 +138,11 @@ internal fun LocationPermissionGate(
     if (current == null) {
         content()
     } else {
-        permission(current, { request.launch(LOCATION) }, { context.startActivity(context.appSettings()) })
+        permission(
+            current,
+            { request.launch(LOCATION) },
+            { context.startActivity(context.appSettings()) },
+        )
     }
 }
 
