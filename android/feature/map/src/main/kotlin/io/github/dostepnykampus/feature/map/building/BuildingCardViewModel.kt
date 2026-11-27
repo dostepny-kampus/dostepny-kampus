@@ -301,7 +301,7 @@ internal fun initialCard(
     repository: BuildingCatalogRepository,
     entrances: ServerEntrances,
 ): CardEntrances? {
-    val group = repository.current()?.let { catalog -> catalog.sharedGroup(symbol).map(Building::symbol) }.orEmpty()
+    val group = repository.current()?.sharedGroup(symbol)?.map(Building::symbol).orEmpty()
     val cards =
         if (group.size > 1) {
             group.mapNotNull { item -> entrances.knownCard(item)?.let { card -> item to card } }.toMap()

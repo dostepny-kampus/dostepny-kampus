@@ -63,5 +63,5 @@ internal fun singleTouchedBuilding(
 ): String? {
     if (symbols.size <= 1) return symbols.singleOrNull()
     val outline = data?.outlineOf(symbols.first()).orEmpty()
-    return outline.firstOrNull().takeIf { symbols.all { it in outline } && outline.none { it in detailed } }
+    return outline.firstOrNull().takeIf { symbols.all(outline::contains) && outline.none(detailed::contains) }
 }
