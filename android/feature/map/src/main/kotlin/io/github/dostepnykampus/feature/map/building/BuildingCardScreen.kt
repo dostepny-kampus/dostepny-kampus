@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -133,7 +134,8 @@ fun BuildingCardContent(
     val isFullScreen = mode != CardMode.Compact
     val isHeaderFixed = mode == CardMode.Expanded
     val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
-    Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
+    val column = modifier.readableWidth()
+    Column(if (isFullScreen) column.fillMaxSize() else column) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
         Box(Modifier.weight(1f, isFullScreen)) {

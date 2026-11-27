@@ -40,7 +40,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.readableWidth
 
 /**
  * L1 „Prośba o logowanie” ze stanem z modelu widoku.

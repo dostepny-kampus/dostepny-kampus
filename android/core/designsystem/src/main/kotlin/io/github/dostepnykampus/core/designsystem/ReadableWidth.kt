@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem.layout
+package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout

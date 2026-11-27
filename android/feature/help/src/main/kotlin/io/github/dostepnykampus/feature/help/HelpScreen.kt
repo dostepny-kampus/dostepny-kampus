@@ -51,7 +51,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 

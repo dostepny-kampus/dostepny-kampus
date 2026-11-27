@@ -65,10 +65,11 @@ import io.github.dostepnykampus.core.designsystem.bar.BottomBarItem
 import io.github.dostepnykampus.core.designsystem.bar.BottomBarItems
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.bar.SideBar
-import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
@@ -123,7 +124,7 @@ fun AppShell(
                         contentKey = navigator.contentKey(index),
                         metadata = SheetSceneStrategy.metadata(route),
                     ) { route ->
-                        if (route is MapRoute) {
+                        if (route is MapRoute || route is BuildingRoute) {
                             navigator.content(route)
                         } else {
                             Box(

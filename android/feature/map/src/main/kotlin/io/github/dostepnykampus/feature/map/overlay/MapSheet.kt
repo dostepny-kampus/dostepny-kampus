@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.readableWidth
 
 /**
  * Arkusz na dole mapy V1 z treścią [content] w przewijanej kolumnie, więc przy dużej czcionce treść się mieści.
