@@ -13,8 +13,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.DpRect
 import androidx.test.core.app.ApplicationProvider
+import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -29,6 +32,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 /**
  * Krok 1 V4: „Zrób zdjęcie” jako jedyna czynność główna, a po powrocie z kroku 2 „Dalej” nad „Zrób nowe zdjęcie”.
@@ -77,6 +81,31 @@ class QuickPhotoButtonsTest {
         RuntimeEnvironment.setFontScale(2f)
         show(withPhoto())
         assertTrue("„Zrób nowe zdjęcie” w treści nad „Dalej”", bounds("Zrób nowe zdjęcie").top < bounds("Dalej").top)
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w360dp-h800dp-xhdpi")
+    fun drawsPrimaryTakePhoto() {
+        show(ReportRoute(step = ReportStep.PHOTO))
+        compose.onRoot().captureRoboImage()
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w360dp-h800dp-xhdpi")
+    fun drawsOutlinedRetake() {
+        show(withPhoto())
+        compose.onRoot().captureRoboImage()
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w360dp-h800dp-xhdpi", fontScale = 2f)
+    fun drawsOutlinedRetakeAtFont200() {
+        show(withPhoto())
+        compose.onNodeWithText("Zrób nowe zdjęcie").performScrollTo()
+        compose.onRoot().captureRoboImage()
     }
 
     private fun withPhoto(): ReportRoute {
