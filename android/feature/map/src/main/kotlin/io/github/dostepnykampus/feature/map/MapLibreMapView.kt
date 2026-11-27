@@ -444,17 +444,6 @@ object MapLibreMapView : CampusMapView {
         return SignPoint(id = id, dx = screen.x + offset.x * pxPerDp - at.x, dy = screen.y + offset.y * pxPerDp - at.y)
     }
 
-    private fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
-        val pinned = beside.pinnedOffset(getStringProperty(BARRIER_ENTRANCE))
-        if (pinned != null) return PointF(pinned.toFloat(), 0f)
-        val offset =
-            getProperty(BARRIER_OFFSET)
-                ?.takeIf { it.isJsonArray && beside.isBeside(zoom = zoom, building = getStringProperty(BARRIER_BUILDING)) }
-                ?.asJsonArray
-                ?: getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
-        return PointF(offset?.get(0)?.asFloat ?: 0f, offset?.get(1)?.asFloat ?: 0f)
-    }
-
     private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
         var isByPerson = false
         addOnCameraMoveStartedListener { reason -> isByPerson = reason == REASON_API_GESTURE }
@@ -623,6 +612,20 @@ object MapLibreMapView : CampusMapView {
 
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
+}
+
+private fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
+    val pinned = beside.pinnedOffset(getStringProperty(BARRIER_ENTRANCE))
+    if (pinned != null) return PointF(pinned.toFloat(), 0f)
+    val offset =
+        getProperty(BARRIER_OFFSET)
+            ?.takeIf { value ->
+                val building = getStringProperty(BARRIER_BUILDING)
+                value.isJsonArray && beside.isBeside(zoom = zoom, building = building)
+            }
+            ?.asJsonArray
+            ?: getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
+    return offset?.run { PointF(get(0).asFloat, get(1).asFloat) } ?: PointF()
 }
 
 /**

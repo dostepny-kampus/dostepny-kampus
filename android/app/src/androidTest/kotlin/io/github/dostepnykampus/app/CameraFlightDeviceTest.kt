@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.app
 
+import android.graphics.Bitmap
 import android.graphics.PointF
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -40,7 +40,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -49,7 +48,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
-import kotlin.math.abs
 
 /**
  * Sterownik kamery na prawdziwym MapLibre: wynik wyszukiwania z innego terenu to przelot, który kończy się nad
@@ -143,25 +141,6 @@ class CameraFlightDeviceTest {
 
     @Test
     fun barrierShowsBesidePin() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            checkBarrierBesidePin(recordEvidence = false)
-            return
-        }
-        val size = DeviceEvidence.shell("wm size")
-        val overrideLine = size.lineSequence().firstOrNull { it.startsWith("Override size: ") }
-        val restore = overrideLine?.substringAfter(": ")?.trim() ?: "reset"
-        try {
-            DeviceEvidence.shell("wm size 480x960")
-            composeRule.waitUntil(READY_TIMEOUT_MS) {
-                composeRule.activity.resources.configuration.screenHeightDp >= TALL_SCREEN_DP
-            }
-            checkBarrierBesidePin(recordEvidence = true)
-        } finally {
-            DeviceEvidence.shell("wm size $restore")
-        }
-    }
-
-    private fun checkBarrierBesidePin(recordEvidence: Boolean) {
         val entries = runBlocking { catalog.catalog() }.copy(hasServerList = true)
         val entrance = entries.entrances.first { it.buildingSymbol == "A-1" && it.isForVisitors }
         val barrier =
@@ -183,7 +162,6 @@ class CameraFlightDeviceTest {
         val map = awaitReadyMap()
         val location = LatLng(latitude = entrance.location.latitude, longitude = entrance.location.longitude)
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(hasText("Bariery przy tym wejściu")) }
-        if (recordEvidence) frameEntrance(map = map, location = location)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
                 val density = composeRule.activity.resources.displayMetrics.density
@@ -194,26 +172,14 @@ class CameraFlightDeviceTest {
                     map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
             }
         }
-        if (recordEvidence) DeviceEvidence.record("v1-barrier-beside-pin")
+        recordMap(map)
     }
 
-    private fun frameEntrance(map: MapLibreMap, location: LatLng) {
-        val metrics = composeRule.activity.resources.displayMetrics
-        val x = metrics.widthPixels / 2f
-        val y = metrics.heightPixels * MAP_SCREEN_FRACTION
-        composeRule.runOnUiThread {
-            val projection = map.projection
-            val focus = projection.toScreenLocation(location)
-            val center = projection.toScreenLocation(requireNotNull(map.cameraPosition.target))
-            val target = projection.fromScreenLocation(PointF(center.x + focus.x - x, center.y + focus.y - y))
-            map.moveCamera(CameraUpdateFactory.newLatLng(target))
-        }
-        composeRule.waitUntil(READY_TIMEOUT_MS) {
-            composeRule.runOnUiThread {
-                val point = map.projection.toScreenLocation(location)
-                abs(point.y - y) < FRAME_TOLERANCE_PX
-            }
-        }
+    private fun recordMap(map: MapLibreMap) {
+        val snapshot = AtomicReference<Bitmap>()
+        composeRule.runOnUiThread { map.snapshot(snapshot::set) }
+        composeRule.waitUntil(READY_TIMEOUT_MS) { snapshot.get() != null }
+        DeviceEvidence.record(label = "v1-barrier-beside-pin", bitmap = requireNotNull(snapshot.get()))
     }
 
     private fun showMap(state: CampusMapUiState, focus: MapFocus) {
@@ -311,9 +277,6 @@ class CameraFlightDeviceTest {
         const val FLOOR_PLAN_ZOOM = 17.0
         const val BARRIER_PIN_GAP_DP = 48f
         const val PIN_BODY_DP = 24f
-        const val TALL_SCREEN_DP = 700
-        const val MAP_SCREEN_FRACTION = 0.30f
-        const val FRAME_TOLERANCE_PX = 30f
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L

@@ -19,7 +19,7 @@ private const val CHUNK_SIZE = 32_000
 private const val IDLE_MS = 300L
 private const val SCREEN_TIMEOUT_MS = 5_000L
 
-/** Zrzuty całego ekranu z IME trafiają do istniejącego artefaktu instrumentacja.txt, w numerowanych częściach PNG. */
+/** Zrzuty ekranu albo widoku trafiają do artefaktu instrumentacja.txt w numerowanych częściach PNG. */
 internal object DeviceEvidence {
     fun isKeyboardVisible(): Boolean {
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
@@ -43,6 +43,11 @@ internal object DeviceEvidence {
         instrumentation.waitForIdleSync()
         instrumentation.uiAutomation.waitForIdle(IDLE_MS, SCREEN_TIMEOUT_MS)
         val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot()) { "Brak zrzutu ekranu" }
+        record(label = label, bitmap = bitmap)
+    }
+
+    fun record(label: String, bitmap: Bitmap) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
         val encoded =
             try {
                 ByteArrayOutputStream().use { output ->
