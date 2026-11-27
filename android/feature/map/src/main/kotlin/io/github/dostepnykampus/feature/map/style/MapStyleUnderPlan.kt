@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.map.style.expression
+import io.github.dostepnykampus.core.map.style.lineLayer
+import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.feature.map.campus.LABEL_SEPARATOR
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

@@ -7,6 +7,11 @@ package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
 import io.github.dostepnykampus.core.designsystem.MapaPrzygaszenie
+import io.github.dostepnykampus.core.map.style.BASEMAP_LAYERS
+import io.github.dostepnykampus.core.map.style.basemapMinZoom
+import io.github.dostepnykampus.core.map.style.expression
+import io.github.dostepnykampus.core.map.style.lineLayer
+import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection

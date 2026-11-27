@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.tiles
 
+import io.github.dostepnykampus.core.map.style.BASEMAP_TILES
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.style.BASEMAP_TILES
 import org.junit.jupiter.api.Assertions.assertFalse

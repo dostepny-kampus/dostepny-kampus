@@ -6,6 +6,7 @@
 
 plugins {
     id("dostepnykampus.android.library")
+    id("dostepnykampus.android.compose")
 }
 
 kotlin {
@@ -14,10 +15,8 @@ kotlin {
 
 dependencies {
     api(libs.androidx.compose.runtime)
-    api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.json)
     implementation(project(":core:designsystem"))
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.maplibre.android)
-    testImplementation(libs.junit4)
-    testImplementation(libs.kotlinx.coroutines.test)
 }

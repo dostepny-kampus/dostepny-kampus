@@ -6,6 +6,12 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.MapaSciezka
+import io.github.dostepnykampus.core.map.style.PATHS_SOURCE
+import io.github.dostepnykampus.core.map.style.PATH_EDGE_LAYER
+import io.github.dostepnykampus.core.map.style.PATH_INSIDE_LAYER
+import io.github.dostepnykampus.core.map.style.PathColors
+import io.github.dostepnykampus.core.map.style.basemapNameLayers
+import io.github.dostepnykampus.core.map.style.basemapShapeLayers
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.path.AccessiblePath
 import io.github.dostepnykampus.feature.map.campus.campusMapData

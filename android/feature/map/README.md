@@ -35,6 +35,7 @@ Trasa mapy w pakiecie `navigation` i ekran mapy dla `:app`.
 - `:core:data`
 - `:core:designsystem`
 - `:core:geo`
+- `:core:map`
 - `:core:model`
 
 ## Czego moduł nie robi

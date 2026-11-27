@@ -5,6 +5,15 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.map.style.OVERLAP
+import io.github.dostepnykampus.core.map.style.expression
+import io.github.dostepnykampus.core.map.style.geoJsonSource
+import io.github.dostepnykampus.core.map.style.lineLayer
+import io.github.dostepnykampus.core.map.style.numbers
+import io.github.dostepnykampus.core.map.style.paint
+import io.github.dostepnykampus.core.map.style.property
+import io.github.dostepnykampus.core.map.style.styleLayer
+import io.github.dostepnykampus.core.map.style.symbolLayer
 import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
