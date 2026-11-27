@@ -400,7 +400,7 @@ Ikonami jest 7 z 15 metafor (47%). Pozostałe to słowa, układ ekranu i sposób
 
 ### Ikony
 
-Pinezka na V1 wskazuje wybrany punkt z otwartym arkuszem. Pod znakiem stoi jego nazwa, np. „Wejście”, „Schody przy wejściu” albo „Winda”. TalkBack podaje wybór, np. „Zaznaczona winda: 2 piętro, budynek A-1”. Zasady zaznaczenia opisują [wymagania wspólne](wymagania-ekranow.md#zaznaczenie-na-mapie).
+Pinezka na V1 znaczy „to, co wybrałeś”. Wskazuje punkt z otwartym arkuszem. Pod znakiem stoi jego nazwa, np. „Wejście”, „Schody przy wejściu” albo „Winda”. TalkBack podaje wybór, np. „Zaznaczona winda: 2 piętro, budynek A-1”. Zasady zaznaczenia opisują [wymagania wspólne](wymagania-ekranow.md#zaznaczenie-na-mapie).
 
 Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każda ikona stoi obok tekstu, a tekst niesie znaczenie sam. Wyjątkiem są przyciski na samej mapie i znak zgłoszenia do sprawdzenia: zamiast napisu mają nazwę dla TalkBack. Kolor nigdy nie jest jedynym nośnikiem znaczenia: na znakach mapy i w legendzie barwa powtarza kształt i słowo (NFR-21) [5].
 

@@ -42,6 +42,8 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 ### V1: arkusz bariery po dotknięciu znaku
 
+Poniższe obrazy pokazują zaznaczenie sprzed [wspólnej zasady pinezki](../wymagania-ekranow.md#zaznaczenie-na-mapie).
+
 `m-v1-mapa-bariera` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariera-na-mapie)
 
 | Jasny | Ciemny | Czcionka 200% |
@@ -89,6 +91,8 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 | [![Przybliżony budynek podstawowy A-4: pod przyciskiem terenu zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu, bez kolumny pięter, sąsiedni A-1 przygaszony z zachowaniem barwy PWr](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie, na dole podpis OpenStreetMap](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
 
 ### V1: winda na planie
+
+Poniższe obrazy pokazują plan sprzed [wspólnej zasady pinezki](../wymagania-ekranow.md#zaznaczenie-na-mapie).
 
 `m-v1-mapa-plan-winda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-winda-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US18.2
 

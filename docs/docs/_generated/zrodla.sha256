@@ -51,7 +51,7 @@ be55cb73398cec1151a2979eff6ca086972761cd318592efbc87b0d13d863bb7  ux/makiety/m-r
 c689082aeaa314c0120525f4b6f16559847eff26fc3ab400148d9abffffefbc6  ux/makiety/m-r2-sprawdzenie-zgloszenia-wejscie.puml
 8f25e813c0b55c08a8e35d84bd18f65843f5f930904658e44a3373fc8516faad  ux/makiety/m-r2-sprawdzenie-zgloszenia.puml
 5e87a2171c7f330439d9250f3a4dc022d5c1a4d59a5d24ad3aa1ebbd5248ba63  ux/makiety/m-r2-zaslanianie-zdjecia.puml
-7af2caf2d706929ac23f3db8ad89e4c0dcbbeead61ed4efc48681ff92b8f19af  ux/makiety/m-v1-mapa-bariera.puml
+6e92a985e4dfc1ca91ef45edbe217aaa00b4d40ef813e02a38150ddef325ea8f  ux/makiety/m-v1-mapa-bariera.puml
 7647d2591ed663e44cc07be3b6ec3589c0e0ed2154e87f8771f0f3c254ef91ee  ux/makiety/m-v1-mapa-brak-sieci.puml
 f9f9ae2aeb182d10aa780651fc8d9bf983f184a45f4bdad02c98609370b1a7ed  ux/makiety/m-v1-mapa-ktory-budynek.puml
 a1e277dce10a02e0e0f5938d4f7167da6bac4c060047f27a8f4f1547cb5acd94  ux/makiety/m-v1-mapa-lista.puml
@@ -59,7 +59,7 @@ a1e277dce10a02e0e0f5938d4f7167da6bac4c060047f27a8f4f1547cb5acd94  ux/makiety/m-v
 ac6cb55f91993b041d949df750480ee904dffd4df06c194f3fbd0a2bb713755f  ux/makiety/m-v1-mapa-plan-bariery.puml
 5f0f01593b824d3355a5a24cb123b4d7f13f36b8c6aa6339358450eb638ad053  ux/makiety/m-v1-mapa-plan-legenda.puml
 5d25e81c7e4bcb550ca70e4c90fdfb2e592785ac017745815791fae716e976c6  ux/makiety/m-v1-mapa-plan-podstawowy.puml
-cde8d162514ca1d5b78c4de560af44856b9718df87e3718de1bc6d7f6d8b942d  ux/makiety/m-v1-mapa-plan-winda.puml
+41cb98b3a64a9741766e64065ceb1cde7af9735255fcae0065dbafdc3191a218  ux/makiety/m-v1-mapa-plan-winda.puml
 19c52c1f07faa3e8f82caeafcfe936fe27284a4f57538b46f31c6f5a3ef52c4b  ux/makiety/m-v1-mapa-plan.puml
 faf4ec17d828eef9dc478a61f23fc22c416a37f842aeb9421e80fba26b67b8dc  ux/makiety/m-v1-mapa-pusty.puml
 42fa225fad1393a98ab3fa4820e4a9c1b5f1a3af9f4da7d91df308ff6048295e  ux/makiety/m-v1-mapa-sala-kroki.puml
