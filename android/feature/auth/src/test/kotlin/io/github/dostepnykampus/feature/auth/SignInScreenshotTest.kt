@@ -32,10 +32,7 @@ class SignInScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(
-        state: SignInUiState,
-        scrollToEnd: Boolean = false,
-    ) {
+    private fun capture(state: SignInUiState, scrollToEnd: Boolean = false) {
         compose.setContent {
             DostepnyKampusTheme {
                 SignInContent(

@@ -112,10 +112,7 @@ fun ExportContent(
 }
 
 @Composable
-private fun ExportBody(
-    state: ExportUiState,
-    onChoose: (ExportFormat) -> Unit,
-) {
+private fun ExportBody(state: ExportUiState, onChoose: (ExportFormat) -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -179,11 +176,7 @@ private fun labelOf(format: ExportFormat): Int =
     }
 
 @Composable
-private fun FormatOption(
-    @StringRes label: Int,
-    isChosen: Boolean,
-    onClick: () -> Unit,
-) {
+private fun FormatOption(@StringRes label: Int, isChosen: Boolean, onClick: () -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onClick),
         border =

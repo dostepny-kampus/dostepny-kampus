@@ -111,11 +111,7 @@ private data class Choice(
 )
 
 @Composable
-private fun Message(
-    state: SignInUiState,
-    isForReport: Boolean,
-    onLeave: () -> Unit,
-) {
+private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         when {
             !state.isOnline -> {
@@ -170,12 +166,7 @@ private fun SignInPanel(
 }
 
 @Composable
-private fun Choices(
-    state: SignInUiState,
-    onLeave: () -> Unit,
-    onOpen: (SignInEntry) -> Unit,
-    onRetry: () -> Unit,
-) {
+private fun Choices(state: SignInUiState, onLeave: () -> Unit, onOpen: (SignInEntry) -> Unit, onRetry: () -> Unit) {
     val buttons =
         when {
             !state.isOnline -> {

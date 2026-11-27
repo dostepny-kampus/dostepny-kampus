@@ -120,10 +120,7 @@ private fun Loading() {
 }
 
 @Composable
-private fun Ready(
-    state: CoverUiState.Ready,
-    actions: CoverActions,
-) {
+private fun Ready(state: CoverUiState.Ready, actions: CoverActions) {
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
 
     Column(
@@ -145,10 +142,7 @@ private fun Ready(
 }
 
 @Composable
-private fun SaveButton(
-    state: CoverUiState.Ready,
-    actions: CoverActions,
-) {
+private fun SaveButton(state: CoverUiState.Ready, actions: CoverActions) {
     PinnedButton(
         text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
         onClick = actions.onSave,

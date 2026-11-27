@@ -36,10 +36,7 @@ class HelpScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(
-        isFirstStep: Boolean,
-        scrollToEnd: Boolean = false,
-    ) {
+    private fun capture(isFirstStep: Boolean, scrollToEnd: Boolean = false) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = isFirstStep, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
