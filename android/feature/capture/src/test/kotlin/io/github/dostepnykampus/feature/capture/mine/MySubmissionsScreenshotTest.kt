@@ -35,11 +35,12 @@ class MySubmissionsScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture() {
+    private fun capture(hasJustSaved: Boolean = false) {
         val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}, onSync = {})
+        val state = MySubmissionsUiState.Ready(MySubmissions(ITEMS), isOnline = !hasJustSaved)
         compose.setContent {
             DostepnyKampusTheme {
-                MySubmissionsContent(state = MySubmissionsUiState.Ready(MySubmissions(ITEMS)), actions = actions)
+                MySubmissionsContent(state = state, actions = actions, hasJustSaved = hasJustSaved)
             }
         }
         compose.waitForIdle()
@@ -62,6 +63,12 @@ class MySubmissionsScreenshotTest {
     fun drawsListAtFont200() {
         RuntimeEnvironment.setFontScale(2f)
         capture()
+    }
+
+    /** Potwierdzenie zapisu podczas pracy bez internetu. Wymagania: US9.1 */
+    @Test
+    fun drawsOfflineSaveConfirmation() {
+        capture(hasJustSaved = true)
     }
 
     private companion object {
