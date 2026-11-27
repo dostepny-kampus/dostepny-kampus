@@ -56,7 +56,7 @@ class CampusAreasPwrTest {
     private var selection = MapSelection()
     private var camera: MapCamera? = null
     private val fakeMap =
-        CampusMapView { shownData, shownSelection, move, _, _, _, _, _ ->
+        CampusMapView { shownData, shownSelection, move, _, _, _, _, _, _ ->
             areas = shownData.areas
             outlines = shownData.outlinesBySymbol
             selection = shownSelection

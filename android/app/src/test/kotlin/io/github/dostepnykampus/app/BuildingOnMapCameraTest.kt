@@ -111,7 +111,7 @@ class BuildingOnMapCameraTest {
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
-        CampusMapView { data: CampusMapData, _, move, inset, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { data: CampusMapData, _, move, inset, _, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
             shown += data to move.camera
             bottomInset = inset.bottom
             topInset = inset.top

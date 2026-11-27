@@ -36,6 +36,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
 
@@ -133,7 +134,8 @@ fun BuildingCardContent(
     val isFullScreen = mode != CardMode.Compact
     val isHeaderFixed = mode == CardMode.Expanded
     val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
-    Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
+    val column = modifier.readableWidth()
+    Column(if (isFullScreen) column.fillMaxSize() else column) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
         Box(Modifier.weight(1f, isFullScreen)) {

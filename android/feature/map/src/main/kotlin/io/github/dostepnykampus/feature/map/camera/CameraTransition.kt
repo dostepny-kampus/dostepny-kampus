@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlin.math.PI
@@ -40,11 +42,36 @@ enum class CameraMotion {
 
 /**
  * Ruch mapy: widok docelowy [camera] dla wolnej części mapy (dopełnienie arkusza ustawia wołający), rodzaj ruchu
- * [motion] i jego czas [durationMillis]. Widok mapy wykonuje każdy ruch raz.
+ * [motion], jego czas [durationMillis] i numer czynności [action]. Widok mapy wykonuje ruch raz na numer czynności;
+ * ruch z tym samym numerem nie rusza kamery ponownie.
  *
  * Wymagania: US2.8, NFR-56
  */
-data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
+data class CameraTransition(
+    val camera: MapCamera,
+    val motion: CameraMotion,
+    val durationMillis: Long,
+    val action: Long = 0L,
+)
+
+/**
+ * Ruch [move] z numerem czynności: inny ruch niż w poprzedniej kompozycji dostaje nowy numer, ten sam ruch
+ * zachowuje numer. `null` bez ruchu.
+ *
+ * Wymagania: US2.8, NFR-56
+ */
+@Composable
+internal fun rememberAction(move: CameraTransition?): CameraTransition? {
+    val counter = remember { ActionCounter() }
+    val action = remember(move) { counter.next() }
+    return move?.copy(action = action)
+}
+
+private class ActionCounter {
+    private var last = 0L
+
+    fun next(): Long = ++last
+}
 
 /** Ten sam ruch z widokiem w granicy terenu [limits] dla wolnej części mapy [free]. Wymagania: US1.7, US2.8 */
 internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =

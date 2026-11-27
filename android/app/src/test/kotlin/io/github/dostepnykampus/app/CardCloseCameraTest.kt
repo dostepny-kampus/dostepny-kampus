@@ -47,7 +47,7 @@ class CardCloseCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private lateinit var mapViewModel: CampusMapViewModel
     private val fakeMap =
-        CampusMapView { _, _, move, inset, _, onBuildingsTouch, _, modifier: Modifier ->
+        CampusMapView { _, _, move, inset, _, _, onBuildingsTouch, _, modifier: Modifier ->
             shown += move to inset.top
             touch = onBuildingsTouch
             Box(modifier)

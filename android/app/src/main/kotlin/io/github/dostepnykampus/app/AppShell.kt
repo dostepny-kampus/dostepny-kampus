@@ -5,14 +5,21 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.mandatorySystemGestures
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -58,9 +65,12 @@ import io.github.dostepnykampus.core.designsystem.bar.BottomBarItem
 import io.github.dostepnykampus.core.designsystem.bar.BottomBarItems
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.bar.SideBar
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 
@@ -113,7 +123,7 @@ fun AppShell(
                         key = route,
                         contentKey = navigator.contentKey(index),
                         metadata = SheetSceneStrategy.metadata(route),
-                    ) { navigator.content(it) }
+                    ) { route -> RouteContent(route) { navigator.content(route) } }
                 },
             entryDecorators =
                 listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
@@ -132,13 +142,27 @@ fun AppShell(
             content = {
                 NavDisplay(
                     entries = entries,
-                    modifier = Modifier.consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide)),
+                    modifier =
+                        Modifier
+                            .consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
+                            .windowInsetsPadding(wideNavigationInsets(isWide)),
                     sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
                 )
             },
         )
     }
+}
+
+@Composable
+private fun RouteContent(route: NavKey, content: @Composable () -> Unit) {
+    val frame =
+        if (route is MapRoute || route is BuildingRoute) {
+            Modifier
+        } else {
+            Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer).readableWidth()
+        }
+    Box(modifier = frame, propagateMinConstraints = true) { content() }
 }
 
 @Composable
@@ -164,10 +188,18 @@ private fun insetsTakenByBar(bar: IntSize, isShown: Boolean, isWide: Boolean): W
     val bottomBar = WindowInsets(bottom = bar.height)
     return when {
         !isShown -> WindowInsets(0)
-        isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start).union(rail)
+        isWide -> WindowInsets.safeDrawing.only(WindowInsetsSides.Start).union(rail)
         else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom).union(bottomBar)
     }
 }
+
+@Composable
+private fun wideNavigationInsets(isWide: Boolean): WindowInsets =
+    if (isWide) {
+        WindowInsets.navigationBars.union(WindowInsets.mandatorySystemGestures).only(WindowInsetsSides.Bottom)
+    } else {
+        WindowInsets(0)
+    }
 
 /** Pliki zdjęć odtworzonych szkiców: zgłoszenia szybkiego w [routes] i C2 w [draft]. */
 internal fun keptPhotos(routes: List<NavKey>, draft: ReportDraft): Set<String> =

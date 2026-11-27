@@ -31,8 +31,9 @@ internal interface CameraPort {
     fun lift()
 
     /**
-     * Ruch [motion] do widoku [camera] z dopełnieniem [inset] w [millis] ms; [CameraMotion.NONE] to skok. [end]
-     * dostaje koniec ruchu, także przerwanego; zgłoszenie końca nie mówi, czy kamera doszła do celu.
+     * Ruch [motion] do widoku [camera] z dopełnieniem [inset] w [millis] ms; [CameraMotion.NONE] ustawia widok
+     * i dopełnienie synchronicznie. [end] dostaje koniec ruchu, także przerwanego; zgłoszenie końca nie mówi,
+     * czy kamera doszła do celu.
      */
     fun move(camera: MapCamera, inset: MapInset, motion: CameraMotion, millis: Long, end: () -> Unit)
 
@@ -76,6 +77,13 @@ internal class CameraController(private val port: CameraPort) {
     private var limits: MapLimits? = null
     private var isResumed = false
     private var isByPerson = false
+
+    /** Ustawia pierwszy widok [camera] z dopełnieniem [inset] synchronicznym skokiem, pozostając w spoczynku. */
+    fun place(camera: MapCamera, inset: MapInset) {
+        goal = camera
+        goalInset = inset
+        port.move(camera = camera, inset = inset, motion = CameraMotion.NONE, millis = 0L) {}
+    }
 
     /** Ruch [move] z dopełnieniem [inset]; kamera już w celu przy tym samym dopełnieniu stoi. */
     fun move(move: CameraTransition, inset: MapInset) {

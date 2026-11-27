@@ -4,9 +4,11 @@
 
 Aplikacja: start, nawigacja między ekranami funkcji, powłoka z paskiem nawigacji i wysyłka zgłoszeń po starcie.
 
+Powłoka ogranicza szerokość tras treściowych wspólnym modyfikatorem; trasa mapy zachowuje pełny obszar.
+
 ## Pakiety
 
-- `app` — aktywność, powłoka aplikacji, start wysyłki zgłoszeń, ekran wygasłego logowania i drzewo logów wersji release.
+- `app` — aktywność, powłoka z wcięciami systemu, start wysyłki, ekran wygasłego logowania i logi wersji release.
 - `app.di` — wiązania Hilt aplikacji: nagłówek klienta mapy i ładowanie obrazów.
 - `app.navigation` — nawigacja między ekranami mapy, zgłoszeń i logowania oraz arkusz, w którym ekrany się pokazują.
 

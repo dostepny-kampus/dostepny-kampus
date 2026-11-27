@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -26,7 +29,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
@@ -117,17 +119,18 @@ public fun BottomBar(
  * Reguła 8: stała szerokość pozycji jak w pasku dolnym w oknie 360 dp (80 dp), ten sam rozmiar napisów, 2 wiersze,
  * [Odstepy.s] od sąsiada i krawędzi. Gdy pozycje nie mieszczą się w wysokości okna, pasek się przewija.
  *
- * Wymagania: NFR-52, NFR-18
+ * Wymagania: NFR-52, NFR-18, NFR-22
  */
 @Composable
 public fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val iconSize = Modifier.size(Ikony.rozmiar)
+    val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical)
     Row(modifier = modifier.background(colors.surfaceContainerLow)) {
         Column(
             modifier =
                 Modifier
-                    .windowInsetsPadding(NavigationRailDefaults.windowInsets)
+                    .windowInsetsPadding(insets)
                     .verticalScroll(rememberScrollState())
                     .padding(Odstepy.s)
                     .selectableGroup(),

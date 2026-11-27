@@ -53,7 +53,7 @@ internal class TouchableMap {
     var touchBuildings: (List<String>) -> Unit = {}
         private set
     val view =
-        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, onSignTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, move, inset, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
             selected = selection.building
             pinned = selection.entrance?.id
             camera = move to inset

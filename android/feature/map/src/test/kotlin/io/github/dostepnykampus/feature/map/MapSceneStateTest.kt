@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapFrame
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
@@ -32,7 +33,7 @@ class MapSceneStateTest {
         MapSceneState(
             scene = null,
             shown = SceneCamera(move = start.byControl(), inset = MapInset(), landing = landing),
-            limits = limits,
+            frame = MapFrame(limits = limits, basemap = null, isMeasured = true),
             cover = mapCover(isCovered, hasControls = true),
             taps = MapPicking(choices = choices),
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),

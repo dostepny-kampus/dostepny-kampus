@@ -87,4 +87,16 @@ class HelpScreenshotTest {
         RuntimeEnvironment.setFontScale(2f)
         capture(isFirstStep = false)
     }
+
+    @Test
+    @Config(qualifiers = "w840dp-h800dp-xhdpi")
+    fun drawsWideContent() {
+        capture(isFirstStep = true)
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp-h800dp-xhdpi", fontScale = 2f)
+    fun drawsWideContentAtFont200() {
+        capture(isFirstStep = true)
+    }
 }

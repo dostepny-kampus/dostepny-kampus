@@ -20,6 +20,7 @@ import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
@@ -31,9 +32,8 @@ private const val RGB_MASK = 0xFFFFFF
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
     /**
-     * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z krawędziami zasłoniętymi według [inset]: cel
-     * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [inset] zmienia tylko dopełnienie
-     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez [onCameraIdle].
+     * Mapa [data] z zaznaczeniem [selection] po ruchu [move] (raz na ruch) z dopełnieniem [inset], którego zmiana
+     * nie przerywa ruchu; granice w spoczynku i podkład z [frame]. Po geście zgłasza widok przez [onCameraIdle].
      * Dotknięcie wewnątrz konturu zgłasza przez [onBuildingsTouch] symbole tego konturu, dotknięcie obok konturów
      * symbole konturów w zasięgu dotknięcia, a dotknięcie pustej mapy pustą listę. Dotknięcie znaku zgłasza
      * przez [onSignTouch] rodzaj znaku i identyfikator jego obiektu i nie zgłasza konturu pod znakiem.
@@ -46,10 +46,41 @@ fun interface CampusMapView {
         selection: MapSelection,
         move: CameraTransition,
         inset: MapInset,
+        frame: MapFrame,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onSignTouch: (TouchSign, String) -> Unit,
         modifier: Modifier,
+    )
+}
+
+/**
+ * Geometria mapy z jednego pomiaru: granice kamery [limits] (`null` bez terenu) i obszar podkładu [basemap]
+ * (`null` bez terenu albo przed pomiarem mapy, [isMeasured]).
+ *
+ * Wymagania: NFR-39, BR-G5
+ */
+class MapFrame internal constructor(
+    internal val limits: MapLimits?,
+    internal val basemap: Basemap?,
+    private val isMeasured: Boolean,
+) {
+    /** Granice kamery w spoczynku: [limits] po pomiarze mapy, przed pomiarem `null`. */
+    internal fun restLimits(): MapLimits? = limits.takeIf { isMeasured }
+}
+
+/**
+ * Geometria mapy o rozmiarze [size] w pikselach dla terenu [bounds]: granice kamery pod zasłoniętą górą [top]
+ * w pikselach i obszar podkładu na całej mapie.
+ *
+ * Wymagania: NFR-39, BR-G5
+ */
+internal fun Density.frameOf(bounds: CampusBounds?, size: IntSize, top: Double): MapFrame {
+    val isMeasured = size != IntSize.Zero
+    return MapFrame(
+        limits = mapLimits(bounds, size.belowTop(top)),
+        basemap = mapLimits(bounds, size).takeIf { isMeasured }?.basemap,
+        isMeasured = isMeasured,
     )
 }
 

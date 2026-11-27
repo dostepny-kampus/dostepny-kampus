@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,12 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
@@ -37,9 +40,10 @@ import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
 /**
  * Tryb po kolei karty [room]: „Krok N z M” z powrotem do listy, pasek postępu, sam bieżący krok drogi do sali
- * [roomTitle] z odsyłaczem szczegółów [onDetails] oraz „Wstecz” i „Dalej”, wyłączone na brzegach drogi.
+ * [roomTitle] z odsyłaczem szczegółów [onDetails]. Czynność przejścia dalej jest pierwsza; przy dużej czcionce
+ * czynności zajmują osobne wiersze. Przejście poza brzeg drogi jest niedostępne.
  *
- * Wymagania: US18.2, NFR-17, NFR-18, NFR-21
+ * Wymagania: US18.2, NFR-17, NFR-18, NFR-20, NFR-21
  */
 @Composable
 internal fun RoomStepByStep(room: OpenRoom, roomTitle: String, onDetails: ((RoomStepDetail) -> Unit)?) {
@@ -62,15 +66,22 @@ internal fun RoomStepByStep(room: OpenRoom, roomTitle: String, onDetails: ((Room
         }
         StepProgress(done = index + 1, count = card.stepCount)
         RoomWayStep(card = card, roomTitle = roomTitle, onDetails = onDetails)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
+        val spacing = Arrangement.spacedBy(CeleDotyku.odstep)
+        val maxActions = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) 1 else 2
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = spacing,
+            verticalArrangement = spacing,
+            maxItemsInEachRow = maxActions,
+        ) {
             val button = Modifier.weight(1f).heightIn(min = CeleDotyku.przycisk)
-            OutlinedAction(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
-                Icon(imageVector = MapControlIcons.Left, contentDescription = null)
-                Text(stringResource(R.string.mapa_sala_krok_wstecz))
-            }
             PrimaryAction(onClick = { room.onStep(index + 1) }, modifier = button, enabled = card.hasNext) {
                 Text(stringResource(R.string.mapa_sala_krok_dalej))
                 Icon(imageVector = MapControlIcons.Right, contentDescription = null)
+            }
+            OutlinedAction(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
+                Icon(imageVector = MapControlIcons.Left, contentDescription = null)
+                Text(stringResource(R.string.mapa_sala_krok_wstecz))
             }
         }
     }

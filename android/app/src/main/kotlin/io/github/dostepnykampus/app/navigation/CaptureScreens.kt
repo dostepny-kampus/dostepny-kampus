@@ -59,19 +59,20 @@ private fun AppNavigator.ReportForm(route: ReportFormRoute) {
  */
 @Composable
 internal fun AppNavigator.MySubmissions() {
-    val actions =
-        MySubmissionsActions(
-            onBack = { back() },
-            onMeasure = { measure() },
-            onOpen = { openEdit(it) },
-            onConflict = { openConflict(it) },
-            onOpenMarking = { openMarking(it) },
-            onOpenRemoval = { openEdit(it, isBarrierRemoved = true) },
-            onResendChange = { openEdit(it, mode = ReportEditMode.RESEND_OUTDATED) },
-            onSync = { openSync() },
-        )
-    MySubmissionsScreen(actions)
+    MySubmissionsScreen(actions = mySubmissionsActions(), hasJustSaved = hasJustSavedReport)
 }
+
+internal fun AppNavigator.mySubmissionsActions(): MySubmissionsActions =
+    MySubmissionsActions(
+        onBack = { back() },
+        onMeasure = { measure() },
+        onOpen = { openEdit(it) },
+        onConflict = { openConflict(it) },
+        onOpenMarking = { openMarking(it) },
+        onOpenRemoval = { openEdit(it, isBarrierRemoved = true) },
+        onResendChange = { openEdit(it, mode = ReportEditMode.RESEND_OUTDATED) },
+        onSync = { openSync() },
+    )
 
 /**
  * Poprawka C2 zgłoszenia [route] z C3; zapis i wyjście wracają do C3, „Zmień miejsce” idzie przez C1.

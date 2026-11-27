@@ -108,6 +108,7 @@ dependencies {
     androidTestUtil(libs.androidx.test.orchestrator)
     androidTestUtil(libs.androidx.test.services)
     androidTestImplementation(libs.androidx.compose.ui.test)
+    androidTestImplementation(libs.androidx.core)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.junit4)

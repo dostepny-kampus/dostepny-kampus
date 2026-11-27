@@ -53,7 +53,7 @@ class QuickPlanObjectTest {
     private val saved = mutableListOf<SubmissionContent>()
     private var onSign: (TouchSign, String) -> Unit = { _, _ -> }
     private val map =
-        CampusMapView { _, _, _, _, _, _, sign, modifier: Modifier ->
+        CampusMapView { _, _, _, _, _, _, _, sign, modifier: Modifier ->
             onSign = sign
             Box(modifier)
         }

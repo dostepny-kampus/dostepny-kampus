@@ -54,7 +54,7 @@ class MapPlanCameraTest {
     private val reported = mutableListOf<MapCamera>()
     private var idle: (MapCamera) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _: CampusMapData, _, move, _, onCameraIdle, _, _, _: Modifier ->
+        CampusMapView { _: CampusMapData, _, move, _, _, onCameraIdle, _, _, _: Modifier ->
             moves += move.camera
             idle = onCameraIdle
         }

@@ -21,11 +21,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -47,12 +44,11 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapFrame
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.camera.belowTop
-import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -138,6 +134,7 @@ object MapLibreMapView : CampusMapView {
         selection: MapSelection,
         move: CameraTransition,
         inset: MapInset,
+        frame: MapFrame,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onSignTouch: (TouchSign, String) -> Unit,
@@ -156,36 +153,26 @@ object MapLibreMapView : CampusMapView {
         val tiles = rememberMapTiles(context)
         val mapView = rememberMapView(context, background = colors.lad.toArgb(), tiles = tiles)
         val tileAreas = remember(tiles) { tiles.newView() }
-        var map by remember { mutableStateOf<MapLibreMap?>(null) }
-        var size by remember { mutableStateOf(IntSize.Zero) }
-        val limits =
-            remember(selection.bounds, size, density, inset.top) {
-                density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
-            }
-        val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
-        val area = styleAreaOf(selection = selection, basemap = basemap)
+        val area = styleAreaOf(selection = selection, basemap = frame.basemap)
         val areas = remember(tileAreas) { FlightArea(first = area, onTileAreas = tileAreas::update) }
         FollowScreenLifecycle(mapView, tileAreas)
         val reveal = remember { BasemapReveal() }
-        val currentMove by rememberUpdatedState(move)
-        val currentInset by rememberUpdatedState(inset)
+        val ready = ReadyMap.rememberReady(mapView = mapView, areas = areas, move = move, inset = inset)
+        val map = ready?.map
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
         val signTouch by rememberUpdatedState(onSignTouch)
         val currentLook by rememberUpdatedState(look)
-        DisposableEffect(mapView) {
-            mapView.getMapAsync { ready ->
-                ready.prefetchZoomDelta = 0
-                ready.cameraPosition = currentMove.camera.toPosition(currentInset)
-                ready.onPersonIdle { cameraIdle(it) }
+        DisposableEffect(map) {
+            if (map != null) {
+                map.onPersonIdle { cameraIdle(it) }
                 val onSign = { touch: MapTouch.Sign -> signTouch(touch.sign, touch.id) }
-                ready.onTouch(tolerance = tolerance, look = { currentLook }, onSign = onSign) { hit, near ->
+                map.onTouch(tolerance = tolerance, look = { currentLook }, onSign = onSign) { hit, near ->
                     currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
-                map = ready
             }
-            onDispose { map = null }
+            onDispose {}
         }
         map.FollowStyle(
             data = data,
@@ -197,22 +184,28 @@ object MapLibreMapView : CampusMapView {
             reveal = reveal,
         )
         map.FollowBasemapReveal(mapView = mapView, reveal = reveal, area = areas.shown)
-        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas, view = mapView)
-        AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
+        map.FollowEachMoveOnce(
+            controller = ready?.controller,
+            move = move,
+            inset = inset,
+            limits = frame.restLimits(),
+            area = area,
+            areas = areas,
+        )
+        AndroidView(factory = { mapView }, modifier = modifier)
     }
 
     @Composable
     private fun MapLibreMap?.FollowEachMoveOnce(
+        controller: CameraController?,
         move: CameraTransition,
         inset: MapInset,
         limits: MapLimits?,
         area: StyleArea,
         areas: FlightArea,
-        view: View,
     ) {
         val map = this
-        val controller =
-            remember(map) { map?.let { CameraController(MapLibreCamera(map = it, areas = areas, view = view)) } }
+        val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(map, controller) {
             val gesture =
@@ -222,8 +215,8 @@ object MapLibreMapView : CampusMapView {
             map?.addOnCameraMoveStartedListener(gesture)
             onDispose { map?.removeOnCameraMoveStartedListener(gesture) }
         }
-        DisposableEffect(controller, move) {
-            controller?.move(move, currentInset)
+        DisposableEffect(controller, move.action) {
+            controller?.move(currentMove, currentInset)
             onDispose {}
         }
         DisposableEffect(controller, limits) {
@@ -450,6 +443,29 @@ object MapLibreMapView : CampusMapView {
         addOnCameraIdleListener {
             if (isByPerson) report(cameraPosition.toCamera())
             isByPerson = false
+        }
+    }
+
+    private data class ReadyMap(val map: MapLibreMap, val controller: CameraController) {
+        companion object {
+            @Composable
+            fun rememberReady(mapView: MapView, areas: FlightArea, move: CameraTransition, inset: MapInset): ReadyMap? {
+                var ready by remember(mapView) { mutableStateOf<ReadyMap?>(null) }
+                val currentMove by rememberUpdatedState(move)
+                val currentInset by rememberUpdatedState(inset)
+                DisposableEffect(mapView) {
+                    mapView.getMapAsync { map ->
+                        map.prefetchZoomDelta = 0
+                        val controller =
+                            CameraController(MapLibreCamera(map = map, areas = areas, view = mapView)).apply {
+                                place(currentMove.camera, currentInset)
+                            }
+                        ready = ReadyMap(map, controller)
+                    }
+                    onDispose { ready = null }
+                }
+                return ready
+            }
         }
     }
 
@@ -682,6 +698,3 @@ internal fun Style.addMapImages(images: MapImages) {
  */
 internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> =
     entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
-
-private fun Density.basemapOf(bounds: CampusBounds?, size: IntSize): Basemap? =
-    mapLimits(bounds, size).takeIf { size != IntSize.Zero }?.basemap

@@ -2,7 +2,9 @@
 
 ## Zadanie
 
-Wspólne elementy interfejsu Compose: motyw, nagłówki, przyciski, ikony i znaki oceny dostępności.
+Wspólne elementy interfejsu Compose: motyw, nagłówki, przyciski, ikony, kolumna tekstu i znaki oceny dostępności.
+
+Pasek nawigacji z boku uwzględnia wcięcia systemowe przy krawędziach okna.
 
 ## Pakiety
 

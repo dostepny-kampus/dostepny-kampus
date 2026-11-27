@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -36,6 +37,7 @@ import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.SECOND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.VIA_LIFT
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.lift
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -128,6 +130,23 @@ class RoomCardSheetTest {
     @Test
     fun matchesStepByStepMockup() {
         show(VIA_LIFT) { started() }
+        val next = compose.onNodeWithText("Dalej").getUnclippedBoundsInRoot()
+        val previous = compose.onNodeWithText("Wstecz").getUnclippedBoundsInRoot()
+        assertTrue("„Dalej” jest pierwszą czynnością w wierszu", next.right < previous.left)
+        compose.onRoot().captureRoboImage()
+    }
+
+    /** Przy czcionce 200 % oba przyciski stoją na osobnych wierszach. Wymagania: NFR-18, NFR-20 */
+    @Test
+    @Config(fontScale = 2f)
+    fun stacksStepActionsAtFont200() {
+        show(VIA_LIFT) { started().next() }
+        val previousAction = compose.onNodeWithText("Wstecz").performScrollTo()
+        val next = compose.onNodeWithText("Dalej").getUnclippedBoundsInRoot()
+        val previous = previousAction.getUnclippedBoundsInRoot()
+        assertTrue("„Dalej” stoi nad „Wstecz”", next.bottom < previous.top)
+        assertEquals("Przyciski mają wspólny lewy brzeg", next.left, previous.left)
+        assertEquals("Przyciski mają wspólny prawy brzeg", next.right, previous.right)
         compose.onRoot().captureRoboImage()
     }
 
