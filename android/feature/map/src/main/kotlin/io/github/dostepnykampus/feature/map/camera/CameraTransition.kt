@@ -8,22 +8,11 @@ package io.github.dostepnykampus.feature.map.camera
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.math.hypot
-import kotlin.math.ln
 import kotlin.math.pow
-import kotlin.math.roundToLong
-import kotlin.math.sqrt
 
-private const val FLIGHT_CURVE = 1.42
-private const val VISIBLE_MILLIS = 300.0
-private const val NEAR_MILLIS = 400.0
-private const val FLIGHT_MIN_MILLIS = 400.0
-private const val FLIGHT_MAX_MILLIS = 1500.0
-private const val FLIGHT_MILLIS_PER_PATH = 250.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
-private const val SAME_PLACE_DP = 1e-6
 
 /** Czas ruchu po przycisku mapy i ruchu bez arkusza w zasięgu ekranu w ms. */
 internal const val CONTROL_MILLIS = 300L
@@ -61,7 +50,7 @@ data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val
 internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =
     limits?.let { copy(camera = it.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)) } ?: this
 
-/** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
+/** Ruch do widoku po przycisku mapy albo odtworzeniu widoku: przelot w 300 ms. Wymagania: NFR-53 */
 internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
@@ -84,32 +73,8 @@ internal fun cameraTransition(
     val approach = (fits - 1).coerceAtMost(maximumValue = APPROACH_MAX_ZOOM)
     val zoom = (if (keepsZoom) from.zoom else maxOf(a = from.zoom, b = approach)).coerceAtMost(fits)
     val camera = centered(outline, zoom, free)
-    val distance = distanceDp(from = from, to = camera)
-    val (motion, millis) =
-        when {
-            animationScale <= 0f -> CameraMotion.NONE to 0.0
-            isVisible(outline, from, free) -> CameraMotion.EASE to VISIBLE_MILLIS
-            distance <= free.widthDp -> CameraMotion.EASE to NEAR_MILLIS
-            else -> CameraMotion.FLIGHT to flightMillis(from = from, to = camera, free = free, distance = distance)
-        }
-    val duration = (millis * animationScale).roundToLong()
-    return CameraTransition(camera = camera, motion = motion, durationMillis = duration)
-}
-
-private fun flightMillis(from: MapCamera, to: MapCamera, free: FreeMap, distance: Double): Double {
-    val rho2 = FLIGHT_CURVE * FLIGHT_CURVE
-    val w0 = maxOf(a = free.widthDp, b = free.heightDp)
-    val w1 = w0 / 2.0.pow(to.zoom - from.zoom)
-    val path =
-        if (distance < SAME_PLACE_DP) {
-            abs(ln(w1 / w0)) / FLIGHT_CURVE
-        } else {
-            val start = (w1 * w1 - w0 * w0 + rho2 * rho2 * distance * distance) / (2 * w0 * rho2 * distance)
-            val end = (w1 * w1 - w0 * w0 - rho2 * rho2 * distance * distance) / (2 * w1 * rho2 * distance)
-            (ln(sqrt(end * end + 1) - end) - ln(sqrt(start * start + 1) - start)) / FLIGHT_CURVE
-        }
-    val millis = path * FLIGHT_MILLIS_PER_PATH
-    return millis.coerceIn(minimumValue = FLIGHT_MIN_MILLIS, maximumValue = FLIGHT_MAX_MILLIS)
+    val isShown = isVisible(outline, from, free)
+    return travel(from = from, to = camera, free = free, animationScale = animationScale, isVisible = isShown)
 }
 
 /**

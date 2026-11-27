@@ -99,8 +99,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property planRoom sala wyróżniona w warstwach z [chosenRoomLayers]; `null` bez wyróżnienia
  * @property roomSteps dane GeoJSON numerów kroków na planie
  * @property barriersFilter filtr warstw [BARRIERS_LAYER] i [BARRIER_WORDS_LAYER]
- * @property besideEntrance kiedy znak bariery przy wejściu stoi obok znaku wejścia: przy tych samych
- *   powiększeniach i budynkach co znaki wejść z [entrancesMinZoom] i [entrancesFilter]
+ * @property besideEntrance położenie bariery przy pinezce albo przy znaku wejścia, gdy ten jest widoczny
  */
 internal data class SelectionLook(
     val dimmed: List<Boolean>,
@@ -157,7 +156,8 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
                 barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
                 barriersByZoom(chosen),
             ),
-        besideEntrance = BesideEntrance(minZoom = entrancesZoom, buildings = alone),
+        besideEntrance =
+            BesideEntrance(minZoom = entrancesZoom, buildings = alone, pinnedEntrance = selection.entrance?.id),
     )
 }
 

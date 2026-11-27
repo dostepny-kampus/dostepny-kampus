@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.core.map.style.symbolLayer
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ENTRANCE
 import io.github.dostepnykampus.feature.map.campus.BARRIER_FLOOR
 import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
@@ -35,6 +36,7 @@ internal const val CHOSEN_BARRIER_LAYER = "bariera_wybrana"
 internal const val BARRIERS_SOURCE = BARRIERS_LAYER
 
 private const val FILTER = "filter"
+private const val LITERAL = "literal"
 
 /** Bok obrazu znaku bariery na mapie w dp. */
 internal const val BARRIER_SIGN_DP = 32
@@ -52,31 +54,36 @@ internal const val BARRIER_WORD_ZOOM = 17
 internal const val MINOR_BARRIER_ZOOM = 16
 
 private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
+private const val PINNED_BARRIER_DP = 48.0
 
 private const val ICON_OFFSET = "icon-offset"
 
 private const val ICON_IMAGE = "icon-image"
 
 /**
- * Warunki, przy których znak bariery przy wejściu stoi obok znaku wejścia, a nie w punkcie wejścia: te same, przy
- * których widać znak wejścia, czyli od powiększenia [minZoom] i tylko przy wejściach budynków [buildings]; `null`
- * przy wejściach wszystkich budynków.
+ * Znak bariery obok pinezki [pinnedEntrance], obok znaku wejścia od [minZoom] dla [buildings]
+ * (`null` dla wszystkich), albo w punkcie bariery.
  *
- * Wymagania: US2.2, NFR-17
+ * Wymagania: US2.2, US3.3, NFR-17, NFR-18
  */
-internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?) {
+internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?, private val pinnedEntrance: String?) {
     /** Czy przy powiększeniu [zoom] znak bariery przy wejściu budynku [building] stoi obok znaku wejścia. */
     fun isBeside(zoom: Double, building: String?): Boolean =
         zoom >= minZoom && (buildings == null || building in buildings)
 
-    /** Pole `icon-offset` znaku bariery: przesunięcie z punktu obok widocznego znaku wejścia, inaczej zero. */
-    fun signOffset(): JsonElement = shifted(key = BARRIER_OFFSET, still = numbers(0.0, 0.0))
+    /** Poziome przesunięcie znaku po prawej od pinezki, w dp, albo `null` przy innym wejściu. */
+    fun pinnedOffset(entrance: String?): Double? =
+        PINNED_BARRIER_DP.takeIf { entrance != null && entrance == pinnedEntrance }
+
+    /** Pole `icon-offset` znaku bariery. */
+    fun signOffset(): JsonElement = shifted(key = BARRIER_OFFSET, atAnchor = 0.0)
 
     /** Pole `icon-offset` słowa uciążliwości: obok znaku bariery tam, gdzie stoi znak. */
-    fun wordOffset(): JsonElement = shifted(key = BARRIER_WORD_OFFSET, still = numbers(WORD_OFFSET_DP.toDouble(), 0.0))
+    fun wordOffset(): JsonElement = shifted(key = BARRIER_WORD_OFFSET, atAnchor = WORD_OFFSET_DP.toDouble())
 
-    private fun shifted(key: String, still: JsonArray): JsonElement {
-        val stays = expression("literal", still)
+    private fun shifted(key: String, atAnchor: Double): JsonElement {
+        val still = numbers(atAnchor, 0.0)
+        val stays = expression(LITERAL, still)
         val moves = offsetOr(key, still)
         val symbols = buildings?.map(::JsonPrimitive)
         val building = expression("to-string", property(BARRIER_BUILDING))
@@ -86,7 +93,19 @@ internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?)
                 symbols.isEmpty() -> stays
                 else -> expression("match", building, JsonArray(symbols), moves, stays)
             }
-        return expression("step", expression("zoom"), stays, JsonPrimitive(minZoom), byBuilding)
+        val atPin = expression(LITERAL, numbers(PINNED_BARRIER_DP + atAnchor, 0.0))
+        return expression(
+            "step",
+            expression("zoom"),
+            besidePin(base = stays, offset = atPin),
+            JsonPrimitive(minZoom),
+            besidePin(base = byBuilding, offset = atPin),
+        )
+    }
+
+    private fun besidePin(base: JsonElement, offset: JsonArray): JsonElement {
+        val id = pinnedEntrance ?: return base
+        return expression("case", expression("==", property(BARRIER_ENTRANCE), JsonPrimitive(id)), offset, base)
     }
 }
 
@@ -208,4 +227,4 @@ internal fun ofBarrier(id: String): JsonElement = expression("==", property(BARR
 
 /** Przesunięcie z właściwości [key] punktu, a bez niej [fallback]. */
 internal fun offsetOr(key: String, fallback: JsonArray): JsonArray =
-    expression("coalesce", property(key), expression("literal", fallback))
+    expression("coalesce", property(key), expression(LITERAL, fallback))

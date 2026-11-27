@@ -262,7 +262,7 @@ Zestaw [makiet low-fi V4](../makiety/odwiedzajacy.md#v4-zgoszenie-szybkie).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po wysłaniu bez internetu: pasek „Bez internetu · dane z 27.10.2026”, „Zapisaliśmy zdjęcie w telefonie.”, „Wyślemy je sami, gdy wróci internet.” i przycisk Wróć do mapy](obrazy/m-v4-wyslane-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp) |
+| [![Po wysłaniu bez internetu: pasek „Bez internetu · dane z 27.10.2026”, „Zapisaliśmy zdjęcie w telefonie.”, „Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” i przycisk Wróć do mapy](obrazy/m-v4-wyslane-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp) |
 
 ## V5 Pomoc
 

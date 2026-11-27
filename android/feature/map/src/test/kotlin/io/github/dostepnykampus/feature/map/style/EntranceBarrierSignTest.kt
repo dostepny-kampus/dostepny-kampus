@@ -9,10 +9,12 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ENTRANCE
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.campus.ENTRANCE_BARRIER_DP
 import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.withBarriers
@@ -23,6 +25,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import kotlin.math.roundToInt
 
@@ -66,6 +69,7 @@ class EntranceBarrierSignTest {
             properties.map { it.text(BARRIER_SEVERITY) to it.offset() },
             "Przesunięty jest tylko znak bariery przy wejściu",
         )
+        assertEquals("w1", properties.last().text(BARRIER_ENTRANCE), "Identyfikator wejścia przy znaku")
     }
 
     /**
@@ -127,6 +131,32 @@ class EntranceBarrierSignTest {
         )
     }
 
+    @Test
+    fun keepsBarrierBesidePin() {
+        val entrance =
+            SelectedEntrance(
+                id = "w1",
+                location = data.entrancePoints.getValue("w1"),
+                label = "Wejście",
+                buildingSymbol = "C-13",
+            )
+        val zero = """["literal",[0.0,0.0]]"""
+        val still = """["literal",[20.0,0.0]]"""
+        val sign = """["literal",[48.0,0.0]]"""
+        val word = """["literal",[68.0,0.0]]"""
+        val pin = """["==",["get","entrance"],"w1"]"""
+        val selection = data.selection(entrance = entrance)
+        val signMoves = """["coalesce",["get","$BARRIER_OFFSET"],$zero]"""
+        val wordMoves = """["coalesce",["get","word_offset"],$still]"""
+        val expectedSign = """["step",["zoom"],["case",$pin,$sign,$zero],17.0,["case",$pin,$sign,$signMoves]]"""
+        val expectedWord = """["step",["zoom"],["case",$pin,$word,$still],17.0,["case",$pin,$word,$wordMoves]]"""
+        assertEquals(listOf(expectedSign, expectedSign), signOffsets(selection), "Znak obok pinezki")
+        assertEquals(listOf(expectedWord), iconOffsets(selection, listOf(BARRIER_WORDS_LAYER)), "Słowo obok znaku")
+        val beside = selectionLook(data, selection).besideEntrance
+        assertEquals(48.0, beside.pinnedOffset("w1"), "Przesunięcie używane przy dotknięciu")
+        assertNull(beside.pinnedOffset("w2"), "Inne wejście zachowuje zwykłe przesunięcie")
+    }
+
     /** Wiersz: V1, znak bariery stoi obok znaku wejścia dokładnie tam, gdzie ten znak widać. */
     @Test
     fun besideWhereEntranceShows() {
@@ -153,10 +183,13 @@ class EntranceBarrierSignTest {
         )
     }
 
-    private fun signOffsets(selection: MapSelection): List<String> {
+    private fun signOffsets(selection: MapSelection): List<String> =
+        iconOffsets(selection, listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER))
+
+    private fun iconOffsets(selection: MapSelection, ids: List<String>): List<String> {
         val style = Json.parseToJsonElement(campusMapStyle(data, selection, styleColors())).jsonObject
         val layers = style.getValue("layers").jsonArray.map { it.jsonObject }
-        return listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER).map { id ->
+        return ids.map { id ->
             layers
                 .single { it.text("id") == id }
                 .getValue("layout")

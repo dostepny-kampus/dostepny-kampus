@@ -59,6 +59,7 @@ import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
 import io.github.dostepnykampus.feature.map.camera.traceSection
 import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ENTRANCE
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
@@ -70,6 +71,7 @@ import io.github.dostepnykampus.feature.map.entrance.entranceImages
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
+import io.github.dostepnykampus.feature.map.style.BesideEntrance
 import io.github.dostepnykampus.feature.map.style.ContourStates
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
@@ -394,7 +396,7 @@ object MapLibreMapView : CampusMapView {
                     near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
                 )
             val zoom = cameraPosition.zoom
-            val beside = { building: String? -> look().besideEntrance.isBeside(zoom = zoom, building = building) }
+            val beside = look().besideEntrance
             val signsUnder = { sign: TouchSign ->
                 if (sign == TouchSign.ROOM && zoom < PLAN_ROOM_NUMBER_ZOOM) {
                     emptyList()
@@ -411,7 +413,7 @@ object MapLibreMapView : CampusMapView {
                             idKey = sign.idKey,
                             at = at,
                             pxPerDp = tolerance / TOUCH_TOLERANCE_DP,
-                            isBeside = beside,
+                            offset = feature.signOffset(beside = beside, zoom = zoom),
                         )
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
@@ -434,21 +436,13 @@ object MapLibreMapView : CampusMapView {
         idKey: String,
         at: PointF,
         pxPerDp: Float,
-        isBeside: (building: String?) -> Boolean,
+        offset: PointF,
     ): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = (feature.geometry() as? Point)?.let { LatLng(latitude = it.latitude(), longitude = it.longitude()) }
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
-        val offset =
-            feature
-                .getProperty(BARRIER_OFFSET)
-                ?.takeIf { it.isJsonArray && isBeside(feature.getStringProperty(BARRIER_BUILDING)) }
-                ?.asJsonArray
-                ?: feature.getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
-        val shiftX = offset?.run { get(0).asFloat * pxPerDp } ?: 0f
-        val shiftY = offset?.run { get(1).asFloat * pxPerDp } ?: 0f
-        return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
+        return SignPoint(id = id, dx = screen.x + offset.x * pxPerDp - at.x, dy = screen.y + offset.y * pxPerDp - at.y)
     }
 
     private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
@@ -619,6 +613,20 @@ object MapLibreMapView : CampusMapView {
 
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
+}
+
+/** Przesunięcie punktu dotknięcia znaku względem współrzędnych obiektu, w dp. */
+internal fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
+    val pinned = beside.pinnedOffset(getStringProperty(BARRIER_ENTRANCE))
+    if (pinned != null) return PointF(pinned.toFloat(), 0f)
+    val offset =
+        getProperty(BARRIER_OFFSET)
+            ?.takeIf { value ->
+                val building = getStringProperty(BARRIER_BUILDING)
+                value.isJsonArray && beside.isBeside(zoom = zoom, building = building)
+            }?.asJsonArray
+            ?: getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
+    return offset?.run { PointF(get(0).asFloat, get(1).asFloat) } ?: PointF()
 }
 
 /**
