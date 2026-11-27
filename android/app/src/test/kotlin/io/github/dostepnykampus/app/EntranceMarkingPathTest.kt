@@ -25,6 +25,7 @@ import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
+import io.github.dostepnykampus.app.navigation.MySubmissions
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.DataModule
@@ -38,8 +39,6 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
@@ -154,6 +153,8 @@ class EntranceMarkingPathTest {
         compose.onNodeWithText("Wyślij do sprawdzenia").performClick()
 
         waitFor("W telefonie")
+        compose.onNodeWithText("Zmiana zapisana w telefonie.").assertIsDisplayed()
+        compose.onNodeWithText("Wyślemy ją, gdy wróci internet.").assertIsDisplayed()
         compose.onNodeWithText("W telefonie").assertIsDisplayed()
         assertTrue("bez sieci serwer nie dostał zgłoszenia", received.isEmpty())
         runBlocking {
@@ -164,6 +165,7 @@ class EntranceMarkingPathTest {
         waitFor("Wysłane")
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("W telefonie").assertDoesNotExist()
+        compose.onNodeWithText("Zmiana zapisana w telefonie.").assertDoesNotExist()
         val submission = received.single()
         assertEquals("zmiana oznaczenia", SubmissionKind.ENTRANCE_MARKING, submission.kind)
         assertEquals("budynek zgłoszenia", BUILDING, submission.buildingSymbol)
@@ -195,12 +197,7 @@ class EntranceMarkingPathTest {
                 EditMarking(route = route, takePhoto = takePhoto, onFinish = { reportSaved() }, onBack = { back() })
             }
 
-            MySubmissionsRoute -> {
-                MySubmissionsScreen(
-                    actions = MySubmissionsActions(onBack = { back() }, onMeasure = {}, onOpen = {}),
-                    viewModel = mine,
-                )
-            }
+            MySubmissionsRoute -> MySubmissions(viewModel = mine)
 
             else -> {
                 AppScreen(route)
