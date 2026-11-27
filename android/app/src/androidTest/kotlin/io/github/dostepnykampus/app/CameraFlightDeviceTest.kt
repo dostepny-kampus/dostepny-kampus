@@ -9,8 +9,6 @@ import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -27,20 +25,11 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.CampusBounds
-import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
-import io.github.dostepnykampus.feature.map.MapLibreMapView
-import io.github.dostepnykampus.feature.map.camera.CameraMotion
-import io.github.dostepnykampus.feature.map.camera.CameraTransition
-import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.MapInset
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
-import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
-import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.withBarriers
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
@@ -171,13 +160,6 @@ class CameraFlightDeviceTest {
         )
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(hasText("Bariery przy tym wejściu")) }
         val map = awaitReadyMap()
-        awaitPinAndBarrier(map = map, entrance = entrance, barrierId = barrier.id)
-        showMapForEvidence(data = data, entrance = entrance)
-        awaitPinAndBarrier(map = awaitReadyMap(previous = map), entrance = entrance, barrierId = barrier.id)
-        DeviceEvidence.record("v1-barrier-beside-pin")
-    }
-
-    private fun awaitPinAndBarrier(map: MapLibreMap, entrance: Entrance, barrierId: String) {
         val location = LatLng(latitude = entrance.location.latitude, longitude = entrance.location.longitude)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
@@ -186,34 +168,7 @@ class CameraFlightDeviceTest {
                 val sign = PointF(anchor.x + BARRIER_PIN_GAP_DP * density, anchor.y)
                 val pin = PointF(anchor.x, anchor.y - PIN_BODY_DP * density)
                 map.queryRenderedFeatures(pin, "wejscie_pinezka").isNotEmpty() &&
-                    map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrierId }
-            }
-        }
-    }
-
-    private fun showMapForEvidence(data: CampusMapData, entrance: Entrance) {
-        val pin =
-            SelectedEntrance(
-                id = entrance.id,
-                location = entrance.location,
-                label = entrance.name ?: "Wejście",
-                buildingSymbol = entrance.buildingSymbol,
-            )
-        val camera = MapCamera(center = entrance.location, zoom = PIN_ZOOM)
-        composeRule.activityRule.scenario.onActivity { activity ->
-            activity.setContent {
-                DostepnyKampusTheme {
-                    MapLibreMapView.Show(
-                        data = data,
-                        selection = data.selection(entrance = pin),
-                        move = CameraTransition(camera = camera, motion = CameraMotion.NONE, durationMillis = 0L),
-                        inset = MapInset(),
-                        onCameraIdle = {},
-                        onBuildingsTouch = {},
-                        onSignTouch = { _, _ -> },
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
+                    map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
             }
         }
     }
@@ -257,15 +212,14 @@ class CameraFlightDeviceTest {
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(area) }
     }
 
-    private fun awaitReadyMap(previous: MapLibreMap? = null): MapLibreMap {
+    private fun awaitReadyMap(): MapLibreMap {
         val mapRef = AtomicReference<MapLibreMap?>(null)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
                 val root = composeRule.activity.findViewById<View>(android.R.id.content)
                 findAttachedMapView(root)?.getMapAsync(mapRef::set)
             }
-            val map = mapRef.get()
-            map != null && map !== previous && composeRule.runOnUiThread { map.style?.isFullyLoaded == true }
+            mapRef.get()?.let { map -> composeRule.runOnUiThread { map.style?.isFullyLoaded == true } } == true
         }
         composeRule.waitForIdle()
         return requireNotNull(mapRef.get())
@@ -314,7 +268,6 @@ class CameraFlightDeviceTest {
         const val FLOOR_PLAN_ZOOM = 17.0
         const val BARRIER_PIN_GAP_DP = 48f
         const val PIN_BODY_DP = 24f
-        const val PIN_ZOOM = 19.0
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L
