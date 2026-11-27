@@ -90,7 +90,12 @@ Wymagania: [C1 Pomiar pozycji](../wymagania-ekranow.md#c1-pomiar-pozycji). Nagł
 
 ## C2 Formularz zgłoszenia
 
-Makiety hi-fi C2 zatwierdził właściciel projektu 30.10.2026 razem z całą partią 2 (C1–C7, R1–R2, K1–K3). Według nich powstaje kod ekranu.
+Pierwszą wersję makiet C2 właściciel zatwierdził w październiku. Listopadowa aktualizacja pokazuje sześć stanów formularza według kodu aplikacji.
+
+Przycisk „Wybierz typ bariery” otwiera panel na cały ekran. „Zapisz” pozostaje na dole także przy czcionce 200%.
+
+Długie obrazy pokazują całą przewijaną treść. W aplikacji widać jej fragment nad przypiętym przyciskiem.
+Makiety pokazują docelowy obrys przycisków zdjęcia i ponowienia zapisu.
 
 Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgoszenia). Nagłówek w aplikacji: „Opisz barierę”, przy edycji „Popraw zgłoszenie”.
 
@@ -100,7 +105,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Nowe zgłoszenie: Budynek A-1 Gmach Główny, ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m, przycisk Zmień miejsce, wybór piętra od Piwnica do 3 piętro, pole Typ bariery z listą, Uciążliwość ze zdaniem Oceń dla osoby, dla której bariera jest najtrudniejsza, i trzema wyborami Utrudnienie, Tylko z pomocą, Blokada z ikoną i opisem, komunikat Ważne o twarzach i tablicach, Zrób zdjęcie bez ikony, pole Opis i przycisk Zapisz](obrazy/m-c2-formularz-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny.webp) | [![Ten sam formularz w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, opisy uciążliwości w kilku wierszach, Zapisz na końcu formularza](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp) |
+| [![Opisz barierę w budynku A-1. Karta miejsca, wybór piętra i typu bariery. Trzy opcje uciążliwości mają znak, nazwę i opis. Znak „Blokada” ma poziomą belkę. Pod ostrzeżeniem „Ważne” jest obrysowany przycisk „Zrób zdjęcie”, niżej opis i „Zapisz”.](obrazy/m-c2-formularz-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny.webp) | [![Pusty formularz w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-ciemny.webp) | [![Pusty formularz przy 200%. Tytuł pod przyciskiem „Wstecz”, opisy pod znakami, „Zapisz” przypięte.](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp) |
 
 ### C2: edycja w budynku bez planu (C-13)
 
@@ -108,7 +113,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Popraw zgłoszenie: Budynek C-13 Zintegrowane Centrum Studenckie, ok. 6 m od wejścia głównego, dokładność 1,2 m, napis Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter, pole Numer piętra z wartością 2 i pole Półpiętro, Typ bariery Inna bariera, wybrana uciążliwość Tylko z pomocą, zdjęcie progu, Zrób nowe zdjęcie, wypełniony Opis i Zapisz](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp) | [![Ta sama edycja w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pole numeru piętra i Półpiętro jedno pod drugim](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp) |
+| [![Popraw zgłoszenie w C-13. Numer piętra 2, pole „Półpiętro”, typ „Inna bariera” i zaznaczone „Tylko z pomocą”. Pod zdjęciem jest „Zrób nowe zdjęcie”, dalej wypełniony opis.](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp) | [![Edycja zgłoszenia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp) | [![Edycja przy 200%. Numer piętra i pole „Półpiętro” jedno pod drugim.](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp) |
 
 ### C2: błąd walidacji
 
@@ -116,7 +121,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd walidacji: nad formularzem Brakuje typu bariery. Uzupełnij to pole, aby zapisać; przy polu Typ bariery ten sam pogrubiony tekst z kołem ze znakiem „!” i ramka pola w kolorze błędu, reszta formularza wypełniona](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym: tekst błędu i ramka pola jasnołososiowe](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu przy polu w trzech wierszach](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp) |
+| [![Brakuje typu bariery. Komunikat nad formularzem powtarza się przy polu ze znakiem wykrzyknika. Pole ma ramkę błędu. Zaznaczona „Blokada” ma znak z jedną poziomą belką.](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp) | [![Błąd typu bariery w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp) | [![Błąd przy 200%. Komunikat przy polu zajmuje kilka wierszy.](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp) |
 
 ### C2: zmiana zgłoszenia przyjętego
 
@@ -124,7 +129,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Popraw zgłoszenie przyjęte: na górze Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator, niżej formularz z wybraną uciążliwością Utrudnienie, zdjęciem i przyciskiem Zapisz](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp) | [![Ten sam formularz zgłoszenia przyjętego w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie o nowym zgłoszeniu w kilku wierszach](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp) |
+| [![Popraw zgłoszenie przyjęte. Nad formularzem informacja, że zapis utworzy nowe zgłoszenie do sprawdzenia. Zaznaczone „Utrudnienie”, niżej zdjęcie i „Zapisz”.](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp) | [![Zmiana przyjętego zgłoszenia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp) | [![Zmiana przy 200%. Informacja o nowym zgłoszeniu nad kartą miejsca.](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp) |
 
 ### C2: wyjście bez zapisu
 
@@ -132,7 +137,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Wyjście bez zapisu po Wstecz: Wyjść bez zapisu? Wpisane pola nie zostaną zapisane, dwa przyciski Wyjdź bez zapisu i Wróć do formularza](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp) | [![To samo pytanie w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przyciski jeden pod drugim](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp) |
+| [![Okno nad przyciemnionym formularzem pyta „Wyjść bez zapisu?”. Można wrócić do formularza albo wyjść bez zapisu.](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp) | [![Potwierdzenie wyjścia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp) | [![Okno przy 200%. Obie czynności mieszczą się pod pytaniem.](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp) |
 
 ### C2: błąd zapisu
 
@@ -140,7 +145,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie, przycisk Spróbuj ponownie, niżej wypełniony formularz](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad formularzem](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp) |
+| [![Za mało miejsca w telefonie. Pod komunikatem obrysowany przycisk „Spróbuj ponownie”. W formularzu zostają wybrane piętro, typ bariery, „Blokada” i zdjęcie.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp) | [![Błąd zapisu w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp) | [![Błąd zapisu przy 200%. Komunikat i przycisk ponowienia nad kartą miejsca.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp) |
 
 ## C3 Moje zgłoszenia
 
@@ -154,7 +159,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista zgłoszeń: Czeka na wysłanie: 2 i przycisk wypełniony Zmierz i zgłoś barierę, potem karty z ramką, w każdej status słowem z ikoną, typ, Budynek i piętro, data: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz ze strzałką; Odrzucone, Próg z Powód odrzucenia: Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Zmiana czeka na wysłanie, Ciężkie drzwi; Wysłane, Próg z Dwie wersje: wybierz jedną i Otwórz; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
+| [![Lista zgłoszeń: Czeka na wysłanie: 2 i przycisk wypełniony Zmierz i zgłoś barierę, potem karty z ramką, w każdej status słowem z ikoną, typ, Budynek i piętro, data: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz ze strzałką; Odrzucone, Próg z Powód odrzucenia: Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Zmiana czeka na wysłanie, Ciężkie drzwi; Wysłane, Próg z jedną czynnością „Dwie wersje: wybierz jedną” ze strzałką; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
 
 ### C3: odrzucone jako „Nieaktualne”
 
@@ -214,7 +219,7 @@ Wymagania: [C4 Synchronizacja i wybór wersji](../wymagania-ekranow.md#c4-synchr
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Konflikt: Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta, napis Różni się: uciążliwość, karta Moja wersja, Próg, C-13, piętro 1, Uciążliwość Tylko z pomocą, karta Wersja z serwera z Uciążliwość Blokada, pod nimi Zostaw moją wersję, Weź wersję z serwera i Zdecyduję później](obrazy/m-c4-synchronizacja-konflikt-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny.webp) | [![Ten sam konflikt w motywie ciemnym](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wersje jedna pod drugą, trzy przyciski na końcu](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp) |
+| [![Konflikt: Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta, napis Różni się: uciążliwość, karta Moja wersja, Urządzenie poza zasięgiem, Budynek C-13 · piętro 1, Uciążliwość: znak pomarańczowej tarczy i Tylko z pomocą, karta Wersja z serwera z czerwoną tablicą z poziomą belką i Blokada, pod nimi trzy obrysowane przyciski Zostaw moją wersję, Weź wersję z serwera i Zdecyduję później](obrazy/m-c4-synchronizacja-konflikt-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny.webp) | [![Ten sam konflikt w motywie ciemnym](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wersje jedna pod drugą, trzy przyciski na końcu](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp) |
 
 ### C4: wszystko wysłane
 
@@ -247,6 +252,14 @@ Wymagania: [C4 Synchronizacja i wybór wersji](../wymagania-ekranow.md#c4-synchr
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Błąd serwera: Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później, pod nim karta Czeka na wysłanie: 3](obrazy/m-c4-synchronizacja-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny.webp) | [![Ten sam błąd serwera w motywie ciemnym](obrazy/m-c4-synchronizacja-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c4-synchronizacja-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny-200.webp) |
+
+### C4: wygasłe logowanie
+
+`m-c4-synchronizacja-logowanie` · odwołania: US9.4, US14.4, BR-26, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wygasłe logowanie: Czeka na wysłanie: 3, 2 zgłoszenia i 1 znacznik piętra, Ostatnia synchronizacja, panel Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same, przycisk Zaloguj się](obrazy/m-c4-synchronizacja-logowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c4-synchronizacja-logowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c4-synchronizacja-logowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-logowanie-jasny-200.webp) |
 
 ### C4: mało miejsca w telefonie
 
@@ -310,7 +323,7 @@ Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-ozn
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Przed wyborem: karta Obecne oznaczenie z Niedostępne, Z map i opisów, 18.12.2023, Wejście Cesarskie, Budynek A-1, Gmach Główny, niżej Nowe oznaczenie z dwoma dużymi wyborami Dostępne i Niedostępne, Zdjęcie wejścia z komunikatem Ważne i Zrób zdjęcie, napis Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie, przycisk Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp) | [![Ten sam ekran w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, nazwa ekranu w dwóch wierszach, wybory na całą szerokość](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp) |
+| [![Przed wyborem: karta Obecne oznaczenie ze znakiem ośmiokąta i słowem Niedostępne, Z map i opisów, stan z 18.12.2023, Wejście Cesarskie, A-1 Gmach Główny, niżej Nowe oznaczenie z dwoma wyborami: zielone koło Dostępne i ośmiokąt Niedostępne, Zdjęcie wejścia z komunikatem Ważne i Zrób zdjęcie, napis Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie, przycisk Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp) | [![Ten sam ekran w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści w dwóch wierszach, wybory na całą szerokość, Wyślij do sprawdzenia przypięte na dole w dwóch wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp) |
 
 ### C6: potwierdzenie obecnego oznaczenia
 
@@ -318,7 +331,7 @@ Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-ozn
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Wybrane Niedostępne, czyli obecne oznaczenie: pod wyborem Potwierdzasz obecne oznaczenie. Zmieni się data i źródło, zdjęcie wejścia ze schodami, Zrób nowe zdjęcie i Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie pod wyborem w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp) |
+| [![Wybrane Niedostępne, czyli obecne oznaczenie, wybór w grubszej ramce: pod nim Potwierdzasz obecne oznaczenie. Zmieni się data i źródło, rysunek zdjęcia wejścia z drzwiami przesuwnymi, Zrób nowe zdjęcie i Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie pod wyborem w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp) |
 
 ### C6: błąd walidacji
 
@@ -326,7 +339,7 @@ Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-ozn
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd walidacji: pod Nowe oznaczenie Wybierz: dostępne czy niedostępne, nad Zrób zdjęcie Dodaj zdjęcie wejścia, aby wysłać zmianę; oba z kołem ze znakiem „!”, pogrubione, w kolorze błędu, ramki wyborów też](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp) | [![Ten sam błąd w motywie ciemnym: teksty błędów i ramki jasnołososiowe](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, teksty błędów w dwóch wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp) |
+| [![Błąd walidacji: pod Nowe oznaczenie Wybierz: dostępne czy niedostępne, nad Zrób zdjęcie Dodaj zdjęcie wejścia, aby wysłać zmianę; oba z kołem ze znakiem „!”, pogrubione, w kolorze błędu, ramki obu wyborów też](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp) | [![Ten sam błąd w motywie ciemnym: teksty błędów i ramki jasnołososiowe](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, teksty błędów w dwóch wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp) |
 
 ### C6: błąd zapisu
 
@@ -334,7 +347,7 @@ Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-ozn
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie z przyciskiem Spróbuj ponownie, niżej obecne oznaczenie, wybrane Niedostępne i zdjęcie wejścia](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp) |
+| [![Błąd zapisu: nad treścią pogrubiony tekst w kolorze błędu Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie i obrysowany przycisk Spróbuj ponownie, niżej obecne oznaczenie, wybrane Dostępne i zdjęcie wejścia](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp) |
 
 ### C6: po wysłaniu bez internetu (C3)
 
@@ -342,7 +355,7 @@ Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-ozn
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po wysłaniu bez internetu otwiera się Moje zgłoszenia: linia Bez internetu · Ostatnia synchronizacja, komunikat Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet, karta W telefonie, Zmiana oznaczenia wejścia, A-1, Wejście Cesarskie](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp) |
+| [![Po wysłaniu bez internetu otwiera się Moje zgłoszenia: Czeka na wysłanie: 1, Zmierz i zgłoś barierę, Bez internetu, komunikat Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet, karta W telefonie, Zmiana oznaczenia wejścia, Nowe oznaczenie: Dostępne, A-1, Wejście Cesarskie, data i Otwórz](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp) |
 
 ## C7 Usunięcie bariery
 
