@@ -15,6 +15,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -23,6 +25,7 @@ import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -34,14 +37,18 @@ import org.robolectric.shadows.ShadowNetworkCapabilities
 
 /**
  * Jedna czynność osoby przez prawdziwą oboczkę aplikacji (V1 z arkuszem V2) do podróbki widoku mapy, która zapisuje
- * każde polecenie ruchu podane mapie. Dane PWr z zasobów aplikacji. Liczy się zmiana polecenia po czynności: jedna
- * czynność daje najwyżej jedną. Pierwsze polecenie mapy, która dopiero powstała, to jej widok początkowy, a nie ruch.
+ * każde polecenie ruchu podane mapie. Dane PWr z zasobów aplikacji. Liczy się nowy numer czynności polecenia: jedna
+ * czynność daje najwyżej jeden. Pierwsze polecenie mapy, która dopiero powstała, to jej widok początkowy, a nie ruch.
  *
  * Wymagania: US2.8, NFR-56
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class OneMovePerActionTest {
+    private companion object {
+        const val CONTROL_FLIGHT_MILLIS = 300L
+    }
+
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
@@ -84,16 +91,38 @@ class OneMovePerActionTest {
         assertTrue("Bez ruchu na ekranie: $moves", moves.all { it.motion == CameraMotion.NONE })
     }
 
-    private fun movesAfter(action: () -> Unit): List<CameraTransition> {
+    /**
+     * Wiersz: V1, wybór terenu w panelu po zamknięciu karty V2 → ruch według drogi na teren, nie przelot przycisków
+     * 300 ms. Wymagania: US1.7, NFR-56
+     */
+    @Test
+    fun areaAfterClosedCardFollowsRoute() {
         startApp()
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        click(hasText("Zamknij") and hasClickAction())
+        compose.waitForIdle()
+        val moves = movesAfter(isStarted = true) { chooseArea("Wittigowo") }
+        assertEquals("Jeden przelot: $moves", listOf(CameraMotion.FLIGHT), moves.map { it.motion })
+        assertNotEquals("Według drogi: $moves", CONTROL_FLIGHT_MILLIS, moves.single().durationMillis)
+    }
+
+    private fun movesAfter(isStarted: Boolean = false, action: () -> Unit): List<CameraTransition> {
+        if (!isStarted) startApp()
         val before = shown.size
         val last = shown.lastOrNull()
         action()
         compose.waitForIdle()
         val after = shown.subList(fromIndex = before, toIndex = shown.size)
         val changes =
-            after.fold(listOfNotNull(last)) { kept, move -> if (kept.lastOrNull() == move) kept else kept + move }
+            after.fold(listOfNotNull(last)) { kept, move ->
+                if (kept.lastOrNull()?.action == move.action) kept else kept + move
+            }
         return changes.drop(1)
+    }
+
+    private fun chooseArea(name: String) {
+        click(hasContentDescription("Zmień teren", substring = true) and hasClickAction())
+        click(hasText(name) and isSelectable())
     }
 
     private fun search(symbol: String) {
