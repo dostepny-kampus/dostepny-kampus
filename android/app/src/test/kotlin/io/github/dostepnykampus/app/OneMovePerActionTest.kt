@@ -45,10 +45,6 @@ import org.robolectric.shadows.ShadowNetworkCapabilities
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class OneMovePerActionTest {
-    private companion object {
-        const val CONTROL_FLIGHT_MILLIS = 300L
-    }
-
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
@@ -96,7 +92,7 @@ class OneMovePerActionTest {
      * 300 ms. Wymagania: US1.7, NFR-56
      */
     @Test
-    fun areaAfterClosedCardFollowsRoute() {
+    fun areaAfterCloseFollowsRoute() {
         startApp()
         compose.runOnUiThread { touch(listOf("A-1")) }
         click(hasText("Zamknij") and hasClickAction())
@@ -153,5 +149,9 @@ class OneMovePerActionTest {
         }
         compose.waitUntil { choice.savedChoice.value == true || shown.isNotEmpty() }
         compose.waitForIdle()
+    }
+
+    private companion object {
+        const val CONTROL_FLIGHT_MILLIS = 300L
     }
 }
