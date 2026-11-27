@@ -44,7 +44,6 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     implementation(libs.maplibre.android)
     implementation(libs.maplibre.geojson)
-    implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)

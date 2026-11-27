@@ -105,7 +105,6 @@ import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
-import org.maplibre.android.module.http.HttpRequestUtil
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.LayoutPropertyValue
@@ -345,7 +344,7 @@ object MapLibreMapView : CampusMapView {
     private fun rememberMapView(context: Context, background: Int, tiles: MapTileHttp): MapView =
         remember {
             MapLibre.getInstance(context)
-            HttpRequestUtil.setOkHttpClient(tiles.calls)
+            tiles.install()
             MapView(context, northUpOptions(context, background)).apply {
                 addOnDidFailLoadingMapListener { Timber.w("Mapa: błąd stylu: %s", it) }
             }

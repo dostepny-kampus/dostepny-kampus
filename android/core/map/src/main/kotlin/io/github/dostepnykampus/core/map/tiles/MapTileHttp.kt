@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.CampusBounds
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.OkHttpClient
+import org.maplibre.android.module.http.HttpRequestUtil
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
@@ -67,6 +68,11 @@ public class MapTileHttp
                 if (isBlocked) sent.cacheControl(CacheControl.FORCE_CACHE)
                 client.newCall(sent.build())
             }
+
+        /** Podpina klienta kafelków do MapLibre. Wymagania: NFR-39 */
+        public fun install() {
+            HttpRequestUtil.setOkHttpClient(calls)
+        }
 
         /** Tworzy rejestrację prostokątów jednego widoku mapy, początkowo ukrytego. */
         public fun newView(): ViewAreas = ViewAreas()
