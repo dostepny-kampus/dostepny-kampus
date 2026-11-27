@@ -103,7 +103,8 @@ class CampusMapBarriersStyleTest {
         val look = selectionLook(data, selected)
         assertEquals(BARRIER_NO_FLOOR_DP / 2.0 + 2, look.chosenPoint.barrierCaptionOffset)
         val hidden = selectionLook(data, selected.copy(barrier = known.id))
-        val points = hidden.chosenPoint.data.getValue("features").jsonArray
+        val dataSource = hidden.chosenPoint.data
+        val points = dataSource.getValue("features").jsonArray
         assertEquals(emptyList<JsonObject>(), points)
     }
 

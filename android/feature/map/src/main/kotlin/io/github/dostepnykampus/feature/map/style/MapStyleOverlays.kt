@@ -63,7 +63,7 @@ internal fun CampusMapData.chosenPoint(selection: MapSelection): ChosenPoint {
     val point = selection.entrance?.let { ChosenPoint(entrancePoint(it)) } ?: barrierPoint(selection)
     val collection =
         buildJsonObject {
-            put("type", "FeatureCollection")
+            put(key = "type", value = "FeatureCollection")
             put(FEATURES, JsonArray(listOfNotNull(point?.data)))
         }
     return ChosenPoint(collection, point?.barrierCaptionOffset)
@@ -74,7 +74,7 @@ private fun CampusMapData.barrierPoint(selection: MapSelection): ChosenPoint? {
     val label = selection.barrierCaption
     if (id == null || label == null) return null
     val point = barriers.points().firstOrNull { it.jsonObject.properties()[BARRIER_ID] == JsonPrimitive(id) }
-    return point?.jsonObject?.withCaption(label, selection.plan)
+    return point?.run { jsonObject.withCaption(label, selection.plan) }
 }
 
 private fun JsonElement.points(): JsonArray = jsonObject.getValue(FEATURES).jsonArray
@@ -83,22 +83,23 @@ private fun JsonObject.properties(): JsonObject = getValue(PROPERTIES).jsonObjec
 
 private fun JsonObject.withCaption(label: String, plan: ShownPlan?): ChosenPoint? {
     val properties = properties()
-    val floor = properties[BARRIER_FLOOR]?.jsonPrimitive?.content
-    val building = properties[BARRIER_BUILDING]?.jsonPrimitive?.content
-    val onPlan = plan != null && plan.building == building
-    if (onPlan && floor != null && floor != plan.floor) return null
-    val height = if (onPlan && floor == null) BARRIER_NO_FLOOR_DP else BARRIER_SIGN_DP
+    val floor = properties[BARRIER_FLOOR]?.run { jsonPrimitive.content }
+    val building = properties[BARRIER_BUILDING]?.run { jsonPrimitive.content }
+    val isOnPlan = plan != null && plan.building == building
+    if (isOnPlan && floor != null && floor != plan.floor) return null
+    val height = if (isOnPlan && floor == null) BARRIER_NO_FLOOR_DP else BARRIER_SIGN_DP
     val offset = properties[BARRIER_OFFSET]?.jsonArray
     val gap = height / 2.0 + 2
-    val x = offset?.get(0)?.jsonPrimitive?.double ?: 0.0
-    val y = offset?.get(1)?.jsonPrimitive?.double ?: 0.0
+    val x = offset?.run { get(0).jsonPrimitive.double } ?: 0.0
+    val y = offset?.run { get(1).jsonPrimitive.double } ?: 0.0
     val caption = numbers(x, y + gap)
-    val captionProperties = buildJsonObject {
-        properties.forEach { (key, value) -> put(key, value) }
-        put(LABEL, label)
-        put(IMAGE, pointCaptionImage(label))
-        put(BARRIER_CAPTION_OFFSET, caption)
-    }
+    val captionProperties =
+        buildJsonObject {
+            properties.forEach { (key, value) -> put(key, value) }
+            put(key = LABEL, value = label)
+            put(key = IMAGE, value = pointCaptionImage(label))
+            put(BARRIER_CAPTION_OFFSET, caption)
+        }
     return ChosenPoint(JsonObject(this + (PROPERTIES to captionProperties)), gap)
 }
 
