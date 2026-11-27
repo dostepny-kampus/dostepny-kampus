@@ -82,4 +82,16 @@ class SignInScreenshotTest {
     fun drawsLightFailure() {
         capture(SignInUiState(stage = SignInStage.FAILED))
     }
+
+    @Test
+    @Config(qualifiers = "w840dp-h800dp-xhdpi")
+    fun drawsWideContent() {
+        capture(SignInUiState())
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp-h800dp-xhdpi", fontScale = 2f)
+    fun drawsWideContentAtFont200() {
+        capture(SignInUiState())
+    }
 }

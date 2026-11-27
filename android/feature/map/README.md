@@ -4,6 +4,8 @@
 
 Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta budynku i lista wejść.
 
+Tekstowe listy, wyszukiwanie i arkusze stosują wspólną kolumnę w szerokim oknie; mapa zachowuje pełny obszar.
+
 ## Pakiety
 
 - `feature.map` — ekran mapy kampusu, jego model widoku, nakładka z odnośnikiem OSM, wyszukiwanie i widok MapLibre.
