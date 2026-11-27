@@ -262,20 +262,15 @@ class BuildingCardTest {
 
                     override fun syncedAt() = Instant.EPOCH
                 }
-            val first =
-                BuildingCardViewModel(
-                    symbol = "T-18",
-                    repository = repo,
-                    networkStatus = online,
-                    acceptedBarriers = barriers,
-                )
-            val second =
-                BuildingCardViewModel(
-                    symbol = "T-22",
-                    repository = repo,
-                    networkStatus = online,
-                    acceptedBarriers = barriers,
-                )
+            val (first, second) =
+                listOf("T-18", "T-22").map { symbol ->
+                    BuildingCardViewModel(
+                        symbol = symbol,
+                        repository = repo,
+                        networkStatus = online,
+                        acceptedBarriers = barriers,
+                    )
+                }
             backgroundScope.launch { first.uiState.collect {} }
             backgroundScope.launch { second.uiState.collect {} }
             val state = first.uiState.value as BuildingCardUiState.Ready

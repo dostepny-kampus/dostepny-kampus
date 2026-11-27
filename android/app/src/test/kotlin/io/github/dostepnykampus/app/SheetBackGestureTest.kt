@@ -257,6 +257,7 @@ class SheetBackGestureTest {
     /**
      * Wiersz: pełny ekran po małej karcie, „Wstecz” przyciskiem albo gestem → znowu mała karta, V2 zostaje;
      * z małej karty „Wstecz” → V1.
+     * Scenariusz: przegladanie-mapy.feature: „Wstecz” zwija rozwiniętą kartę budynku do niskiej
      *
      * Wymagania: NFR-15, US2.8
      */

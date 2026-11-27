@@ -187,16 +187,13 @@ private fun SymbolOverName(ready: BuildingCardUiState.Ready) {
 
 @Composable
 @ReadOnlyComposable
-private fun spokenHeader(ready: BuildingCardUiState.Ready): String {
-    val symbols = ready.symbols
-    val name = ready.name
-    return if (symbols.size > 1) {
-        val joined = symbols.joinToString(separator = ", ")
-        name?.let { stringResource(R.string.karta_czytaj_wiele, joined, it) }
+private fun spokenHeader(ready: BuildingCardUiState.Ready): String =
+    if (ready.symbols.size > 1) {
+        val joined = ready.symbols.joinToString(separator = ", ")
+        ready.name?.let { stringResource(R.string.karta_czytaj_wiele, joined, it) }
             ?: stringResource(R.string.mapa_budynki, joined)
     } else {
-        val single = symbols.singleOrNull().orEmpty()
-        name?.let { stringResource(R.string.karta_czytaj, single, it) }
+        val single = ready.symbols.singleOrNull().orEmpty()
+        ready.name?.let { stringResource(R.string.karta_czytaj, single, it) }
             ?: stringResource(R.string.mapa_budynek, single)
     }
-}
