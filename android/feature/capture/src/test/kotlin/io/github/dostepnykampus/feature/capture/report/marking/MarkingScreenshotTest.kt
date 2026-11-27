@@ -76,6 +76,12 @@ class MarkingScreenshotTest {
         capture(EDITING.copy(isChoiceMissing = true, isPhotoMissing = true))
     }
 
+    /** C6 po nieudanym zapisie: obrysowana czynność ponowienia. Wymagania: NFR-7, NFR-21 */
+    @Test
+    fun drawsSaveFailure() {
+        capture(EDITING.copy(chosen = EntranceMarking.ACCESSIBLE, stage = MarkingStage.SAVE_FAILED))
+    }
+
     private companion object {
         val EDITING =
             MarkingUiState(
