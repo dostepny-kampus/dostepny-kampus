@@ -20,12 +20,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.StaffProblem
@@ -40,6 +41,7 @@ import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
@@ -118,6 +120,14 @@ private fun Loading() {
 
 @Composable
 private fun ColumnScope.Ready(state: CoverUiState.Ready, actions: CoverActions) {
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val saveButton: @Composable () -> Unit = {
+        PinnedButton(
+            text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
+            onClick = actions.onSave,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
     Column(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -132,35 +142,41 @@ private fun ColumnScope.Ready(state: CoverUiState.Ready, actions: CoverActions) 
         }
         Text(stringResource(R.string.zaslona_dotknij), style = MaterialTheme.typography.bodyLarge)
         CoverPhotoView(photo = state.photo, covers = state.covers, onTap = actions.onTap)
-        SelectedCover(covers = state.covers, actions = actions)
+        SelectedCover(covers = state.covers, actions = actions, isLarge = isLarge)
+        if (isLarge) saveButton()
     }
-    PinnedActionBar {
-        PinnedButton(
-            text = stringResource(if (state.isSaving) R.string.zaslona_zapisujemy else R.string.zaslona_zapisz),
-            onClick = actions.onSave,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
+    if (!isLarge) PinnedActionBar { saveButton() }
 }
 
 @Composable
-private fun SelectedCover(covers: Covers, actions: CoverActions) {
+private fun SelectedCover(covers: Covers, actions: CoverActions, isLarge: Boolean) {
     val selected = covers.selected ?: return
     val button = Modifier.heightIn(min = CeleDotyku.przycisk)
+    val bigger: @Composable (Modifier) -> Unit = { width ->
+        OutlinedAction(onClick = actions.onBigger, modifier = button.then(width)) {
+            Text(stringResource(R.string.zaslona_wiekszy))
+        }
+    }
+    val smaller: @Composable (Modifier) -> Unit = { width ->
+        OutlinedAction(onClick = actions.onSmaller, modifier = button.then(width)) {
+            Text(stringResource(R.string.zaslona_mniejszy))
+        }
+    }
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.zaslona_ktora_zaznaczona, selected + 1, covers.items.size),
             style = MaterialTheme.typography.titleMedium,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-            OutlinedButton(onClick = actions.onBigger, modifier = button.weight(1f)) {
-                Text(stringResource(R.string.zaslona_wiekszy))
-            }
-            OutlinedButton(onClick = actions.onSmaller, modifier = button.weight(1f)) {
-                Text(stringResource(R.string.zaslona_mniejszy))
+        if (isLarge) {
+            bigger(Modifier.fillMaxWidth())
+            smaller(Modifier.fillMaxWidth())
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
+                bigger(Modifier.weight(1f))
+                smaller(Modifier.weight(1f))
             }
         }
-        OutlinedButton(onClick = actions.onRemove, modifier = button.fillMaxWidth()) {
+        OutlinedAction(onClick = actions.onRemove, modifier = button.fillMaxWidth()) {
             Text(stringResource(R.string.zaslona_usun))
         }
     }

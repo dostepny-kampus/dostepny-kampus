@@ -165,16 +165,14 @@ private fun SelectedLabel(cover: Cover, area: Pair<Dp, Dp>) {
                 .padding(horizontal = Odstepy.s, vertical = Odstepy.xs)
                 .semantics { hideFromAccessibility() },
         color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
-        softWrap = false,
         style = MaterialTheme.typography.labelLarge,
     )
 }
 
 private fun Modifier.besideCover(cover: Cover, width: Dp, height: Dp): Modifier =
     layout { measurable, _ ->
-        val label = measurable.measure(Constraints())
         val areaWidth = width.roundToPx()
+        val label = measurable.measure(Constraints(maxWidth = areaWidth))
         val half = cover.size / 2
         val gap = Odstepy.xs.roundToPx()
         val left = (cover.x * areaWidth - label.width / 2f).roundToInt()
