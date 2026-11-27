@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.building
 
 import android.content.res.AssetManager
+import android.database.sqlite.SQLiteException
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.server.map
@@ -32,6 +33,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.IOException
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -161,7 +163,7 @@ public class BuildingCatalogRepository internal constructor(
             supervisorScope {
                 val work =
                     async(start = CoroutineStart.UNDISPATCHED) {
-                        load(isFresh).also { mine.complete(Result.success(it)) }
+                        load(isFresh, mine).also { mine.complete(Result.success(it)) }
                     }
                 work.invokeOnCompletion { cause ->
                     if (cause != null && cause !is CancellationException) mine.complete(Result.failure(cause))
@@ -173,17 +175,20 @@ public class BuildingCatalogRepository internal constructor(
             mine.cancel()
         }
 
-    private suspend fun load(isFresh: Boolean): BuildingCatalog {
+    private suspend fun load(isFresh: Boolean, mine: Running): BuildingCatalog {
         val started = System.nanoTime()
         val file = readBundled(isFresh)
         val server = nonEmptyServerList()
         var source = if (server != null) "serwer" else "poprzedni odczyt"
         if (server != null) {
             val syncedAtMillis = nowMillis()
-            downloaded.value = Downloaded(file.withServerList(server), syncedAtMillis)
-            copy?.save(server, Instant.ofEpochMilli(syncedAtMillis))
+            val ready = file.withServerList(server)
+            downloaded.value = Downloaded(ready, syncedAtMillis)
+            cached = ready
+            mine.complete(Result.success(ready))
+            copy?.let { store -> copyOrNull("zapis") { store.save(server, Instant.ofEpochMilli(syncedAtMillis)) } }
         } else if (downloaded.value == null) {
-            val restored = copy?.restore()
+            val restored = copy?.let { store -> copyOrNull("odczyt") { store.restore() } }
             downloaded.value =
                 restored?.let { Downloaded(file.withServerList(it.value), it.syncedAt.toEpochMilli()) }
             source = if (restored != null) "kopia z bazy" else "plik"
@@ -224,6 +229,29 @@ internal fun assetRepository(
     )
 
 internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
+
+internal suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? =
+    try {
+        block()
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: IOException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: SQLiteException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: IllegalStateException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: IllegalArgumentException) {
+        logCopyFailure(action, error)
+        null
+    }
+
+private fun logCopyFailure(action: String, error: Throwable) {
+    Timber.w("Kopia katalogu budynków (%s): %s", action, error.javaClass.simpleName)
+}
 
 private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
     { list().map { found -> BuildingList(found.source, found.apiBuildings()) } }
