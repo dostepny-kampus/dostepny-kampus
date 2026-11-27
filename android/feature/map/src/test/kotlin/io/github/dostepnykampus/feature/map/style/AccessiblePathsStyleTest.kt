@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.MapaSciezka
+import io.github.dostepnykampus.core.map.style.LINE_GROWTH
 import io.github.dostepnykampus.core.map.style.PATHS_SOURCE
 import io.github.dostepnykampus.core.map.style.PATH_EDGE_LAYER
 import io.github.dostepnykampus.core.map.style.PATH_INSIDE_LAYER

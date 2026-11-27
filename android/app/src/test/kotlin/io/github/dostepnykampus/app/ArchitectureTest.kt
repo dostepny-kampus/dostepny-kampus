@@ -347,10 +347,6 @@ class ArchitectureTest {
         val GLOBAL_STATE = emptyMap<String, String>()
 
         /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć. */
-        val OWN_HTTP =
-            mapOf(
-                "$BASE.core.map.tiles.MapTileHttp" to
-                    "#822: MapLibre przyjmuje tylko Call.Factory z okhttp; klient powstaje z klienta core:network",
-            )
+        val OWN_HTTP = emptyMap<String, String>()
     }
 }
