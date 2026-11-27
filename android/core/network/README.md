@@ -7,7 +7,7 @@ Klient HTTP serwera: budynki, zgłoszenia, ich sprawdzanie, zmiany znaczników p
 ## Pakiety
 
 - `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, właścicielem wpisu kolejki i parserem kontraktu.
-- `core.network.auth` — token dostępu, role realmu i kontrola właściciela przy wysyłce wpisu kolejki.
+- `core.network.auth` — token dostępu, role realmu, nazwa osoby i kontrola właściciela przy wysyłce wpisu kolejki.
 - `core.network.building` — klient listy budynków, karty budynku, podpowiedzi punktu i ścieżek dostosowanych.
 - `core.network.di` — wiązania Hilt klienta HTTP i interfejsów API.
 - `core.network.export` — klient eksportu GeoJSON i CSV dla Koordynatora.

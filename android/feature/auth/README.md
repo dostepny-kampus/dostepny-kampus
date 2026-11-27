@@ -2,7 +2,7 @@
 
 ## Zadanie
 
-Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z rolami i wylogowaniem (L2).
+Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z nazwą, rolami i wylogowaniem (L2).
 
 ## Pakiety
 

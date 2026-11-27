@@ -33,7 +33,7 @@ class AccountScreenshotTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture() {
-        val account = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.COORDINATOR))
+        val account = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.COORDINATOR), displayName = "Jan Kowalski")
         compose.setContent {
             DostepnyKampusTheme {
                 AccountScreen(account = account, actions = AccountActions(onBack = {}, onWork = {}, onSignOut = {}))

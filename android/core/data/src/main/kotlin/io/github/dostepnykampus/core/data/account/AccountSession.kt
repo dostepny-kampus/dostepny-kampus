@@ -8,7 +8,7 @@ package io.github.dostepnykampus.core.data.account
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
-import io.github.dostepnykampus.core.network.auth.realmRolesOf
+import io.github.dostepnykampus.core.network.auth.accountClaimsOf
 import io.github.dostepnykampus.core.network.auth.subjectOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Sesja konta: konto wynika z ról w tokenie Usługi logowania, a token trafia do [AccessTokens]. Na starcie Gość,
+ * Sesja konta odczytuje role i nazwę z tokenu Usługi logowania, a token trafia do [AccessTokens]. Na starcie Gość,
  * dopóki nie wróci zapisane logowanie; jego token dostępu odświeża się przed wygaśnięciem.
  *
  * Wymagania: US14.1, US14.4, BR-1, NFR-35
@@ -129,10 +129,15 @@ internal interface QueueHandover {
 }
 
 /**
- * Konto z ról realmu w tokenie; token bez ról pracowniczych to Odwiedzający.
+ * Konto z rolami realmu i nazwą osoby z tokenu. Bez ról pracowniczych konto ma rolę Odwiedzającego.
  *
  * @param token token JWT z Usługi logowania
  * @return konto albo `null`, gdy tokenu nie da się odczytać
  */
-public fun accountOf(token: String): Account? =
-    realmRolesOf(token)?.let { names -> Account.SignedIn(StaffRole.entries.filter { it.name in names }.toSet()) }
+public fun accountOf(token: String): Account? {
+    val claims = accountClaimsOf(token) ?: return null
+    return Account.SignedIn(
+        staffRoles = StaffRole.entries.filter { it.name in claims.realmRoles }.toSet(),
+        displayName = claims.displayName,
+    )
+}

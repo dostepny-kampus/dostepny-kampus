@@ -22,8 +22,15 @@ public sealed interface Account {
     /** Gość niezalogowany: mapa i opisy budynków bez konta. Wymagania: RO-GOS, US1.2 */
     public data object Guest : Account
 
-    /** Osoba zalogowana: Odwiedzający, a z [staffRoles] także role pracownicze. Wymagania: RO-ODW, BR-1 */
-    public data class SignedIn(val staffRoles: Set<StaffRole> = emptySet()) : Account
+    /**
+     * Osoba zalogowana z rolą Odwiedzającego.
+     *
+     * Wymagania: RO-ODW, BR-1, US14.3
+     *
+     * @property staffRoles dodatkowe role pracownicze
+     * @property displayName nazwa osoby albo `null`, gdy jest niedostępna
+     */
+    public data class SignedIn(val staffRoles: Set<StaffRole> = emptySet(), val displayName: String? = null) : Account
 }
 
 /** Czy osoba jest zalogowana, czyli może zgłosić barierę i otworzyć konto L2. Wymagania: US14.2 */
