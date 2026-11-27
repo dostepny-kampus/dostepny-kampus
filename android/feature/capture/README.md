@@ -12,7 +12,7 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 - `feature.capture.mine` — lista moich zgłoszeń z kartami, statusami i potwierdzeniem zapisu bez internetu.
 - `feature.capture.navigation` — trasy ekranów zgłoszeń.
 - `feature.capture.photo` — aparat, plik, podgląd zdjęcia zgłoszenia i wspólne ostrzeżenie związane ze zdjęciami.
-- `feature.capture.quick` — szybkie zgłoszenie wejścia krok po kroku.
+- `feature.capture.quick` — szybkie zgłoszenie wejścia krok po kroku, z możliwością ponownego zrobienia zdjęcia.
 - `feature.capture.report` — ekran pełnego zgłoszenia: szkic, akcje, model widoku formularza i zapis stanu.
 - `feature.capture.report.edit` — edycja wysłanego zgłoszenia.
 - `feature.capture.report.form` — stan edycji, pola, wybory i komunikaty formularza z czynnością ponowienia zapisu.

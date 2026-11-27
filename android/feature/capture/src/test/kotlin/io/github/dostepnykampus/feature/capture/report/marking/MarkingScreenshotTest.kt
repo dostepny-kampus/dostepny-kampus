@@ -46,6 +46,7 @@ class MarkingScreenshotTest {
 
     /** C6 przed wyborem: obecne oznaczenie i dwa wybory. Wymagania: US17.2, US17.3 */
     @Test
+    @Config(qualifiers = "w360dp-h1080dp-xhdpi")
     fun drawsLightEditing() {
         capture(EDITING)
     }
