@@ -230,7 +230,6 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Zakładając, że Gość niezalogowany rozwinął niską kartę budynku A-1 nad mapą
     Jeżeli wybierze „Wstecz” telefonu
     Wtedy nad mapą widzi niską kartę budynku A-1
-    Oraz budynek A-1 pozostaje zaznaczony
 
   @US2.8 @NFR-15 @aplikacja
   Scenariusz: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
