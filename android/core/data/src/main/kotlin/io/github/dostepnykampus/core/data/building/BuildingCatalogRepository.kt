@@ -161,7 +161,7 @@ public class BuildingCatalogRepository internal constructor(
             supervisorScope {
                 val work =
                     async(start = CoroutineStart.UNDISPATCHED) {
-                        load(isFresh).also { mine.complete(Result.success(it)) }
+                        load(isFresh, mine).also { mine.complete(Result.success(it)) }
                     }
                 work.invokeOnCompletion { cause ->
                     if (cause != null && cause !is CancellationException) mine.complete(Result.failure(cause))
@@ -173,17 +173,20 @@ public class BuildingCatalogRepository internal constructor(
             mine.cancel()
         }
 
-    private suspend fun load(isFresh: Boolean): BuildingCatalog {
+    private suspend fun load(isFresh: Boolean, mine: Running): BuildingCatalog {
         val started = System.nanoTime()
         val file = readBundled(isFresh)
         val server = nonEmptyServerList()
         var source = if (server != null) "serwer" else "poprzedni odczyt"
         if (server != null) {
             val syncedAtMillis = nowMillis()
-            downloaded.value = Downloaded(file.withServerList(server), syncedAtMillis)
-            copy?.save(server, Instant.ofEpochMilli(syncedAtMillis))
+            val ready = file.withServerList(server)
+            downloaded.value = Downloaded(ready, syncedAtMillis)
+            cached = ready
+            mine.complete(Result.success(ready))
+            copy?.let { store -> copyOrNull("zapis") { store.save(server, Instant.ofEpochMilli(syncedAtMillis)) } }
         } else if (downloaded.value == null) {
-            val restored = copy?.restore()
+            val restored = copy?.let { store -> copyOrNull("odczyt") { store.restore() } }
             downloaded.value =
                 restored?.let { Downloaded(file.withServerList(it.value), it.syncedAt.toEpochMilli()) }
             source = if (restored != null) "kopia z bazy" else "plik"
@@ -192,6 +195,14 @@ public class BuildingCatalogRepository internal constructor(
         Timber.i("Katalog budynków: %s, %d budynków, %d ms", source, result.buildings.size, elapsedMillis(started))
         cached = result
         return result
+    }
+
+    private suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? {
+        val outcome = runCatching { block() }
+        val error = outcome.exceptionOrNull()
+        if (error is CancellationException) throw error
+        if (error != null) Timber.w("Kopia katalogu budynków (%s): %s", action, error.javaClass.simpleName)
+        return outcome.getOrNull()
     }
 
     private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
