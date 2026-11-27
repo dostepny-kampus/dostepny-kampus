@@ -23,6 +23,9 @@ import kotlin.math.sin
  */
 const val BARRIER_ID = "id"
 
+/** Identyfikator wejścia, przy którym zgłoszono barierę. Wymagania: US3.3 */
+internal const val BARRIER_ENTRANCE = "entrance"
+
 /** Właściwość punktu bariery z nazwą uciążliwości: `HINDRANCE`, `ONLY_WITH_HELP` albo `BLOCKING`. */
 const val BARRIER_SEVERITY = "severity"
 
@@ -71,6 +74,7 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
                 buildJsonObject {
                     put(key = BARRIER_ID, value = barrier.id)
                     put(key = BARRIER_SEVERITY, value = barrier.severity.name)
+                    barrier.entranceId?.let { put(key = BARRIER_ENTRANCE, value = it) }
                     barrier.buildingSymbol?.let { put(key = BARRIER_BUILDING, value = it) }
                     barrier.floor?.floorId?.let { put(key = BARRIER_FLOOR, value = it) }
                     outwardDirection(barrier)?.let { (x, y) ->

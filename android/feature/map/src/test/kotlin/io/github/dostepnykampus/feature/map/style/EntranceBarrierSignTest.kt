@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ENTRANCE
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.campus.ENTRANCE_BARRIER_DP
@@ -24,6 +25,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import kotlin.math.roundToInt
 
@@ -67,6 +69,7 @@ class EntranceBarrierSignTest {
             properties.map { it.text(BARRIER_SEVERITY) to it.offset() },
             "Przesunięty jest tylko znak bariery przy wejściu",
         )
+        assertEquals("w1", properties.last().text(BARRIER_ENTRANCE), "Identyfikator wejścia przy znaku")
     }
 
     /**
@@ -143,6 +146,9 @@ class EntranceBarrierSignTest {
         val expectedWord = """["step",["zoom"],["case",$pin,$word,$still],17.0,["case",$pin,$word,$wordMoves]]"""
         assertEquals(listOf(expectedSign, expectedSign), signOffsets(selection), "Znak obok pinezki")
         assertEquals(listOf(expectedWord), iconOffsets(selection, listOf(BARRIER_WORDS_LAYER)), "Słowo obok znaku")
+        val beside = selectionLook(data, selection).besideEntrance
+        assertEquals(48.0, beside.pinnedOffset("w1"), "Przesunięcie używane przy dotknięciu")
+        assertNull(beside.pinnedOffset("w2"), "Inne wejście zachowuje zwykłe przesunięcie")
     }
 
     /** Wiersz: V1, znak bariery stoi obok znaku wejścia dokładnie tam, gdzie ten znak widać. */

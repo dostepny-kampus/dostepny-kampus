@@ -55,6 +55,7 @@ import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
 import io.github.dostepnykampus.feature.map.camera.traceSection
 import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ENTRANCE
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -67,6 +68,7 @@ import io.github.dostepnykampus.feature.map.entrance.entranceImages
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
+import io.github.dostepnykampus.feature.map.style.BesideEntrance
 import io.github.dostepnykampus.feature.map.style.ContourStates
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
@@ -393,7 +395,7 @@ object MapLibreMapView : CampusMapView {
                     near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
                 )
             val zoom = cameraPosition.zoom
-            val beside = { building: String? -> look().besideEntrance.isBeside(zoom = zoom, building = building) }
+            val beside = look().besideEntrance
             val signsUnder = { sign: TouchSign ->
                 if (sign == TouchSign.ROOM && zoom < PLAN_ROOM_NUMBER_ZOOM) {
                     emptyList()
@@ -410,7 +412,8 @@ object MapLibreMapView : CampusMapView {
                             idKey = sign.idKey,
                             at = at,
                             pxPerDp = tolerance / TOUCH_TOLERANCE_DP,
-                            isBeside = beside,
+                            beside = beside,
+                            zoom = zoom,
                         )
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
@@ -433,20 +436,22 @@ object MapLibreMapView : CampusMapView {
         idKey: String,
         at: PointF,
         pxPerDp: Float,
-        isBeside: (building: String?) -> Boolean,
+        beside: BesideEntrance,
+        zoom: Double,
     ): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = (feature.geometry() as? Point)?.let { LatLng(latitude = it.latitude(), longitude = it.longitude()) }
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
+        val pinned = beside.pinnedOffset(feature.getStringProperty(BARRIER_ENTRANCE))
         val offset =
             feature
                 .getProperty(BARRIER_OFFSET)
-                ?.takeIf { it.isJsonArray && isBeside(feature.getStringProperty(BARRIER_BUILDING)) }
+                ?.takeIf { it.isJsonArray && beside.isBeside(zoom, feature.getStringProperty(BARRIER_BUILDING)) }
                 ?.asJsonArray
                 ?: feature.getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
-        val shiftX = offset?.run { get(0).asFloat * pxPerDp } ?: 0f
-        val shiftY = offset?.run { get(1).asFloat * pxPerDp } ?: 0f
+        val shiftX = (pinned?.toFloat() ?: offset?.get(0)?.asFloat ?: 0f) * pxPerDp
+        val shiftY = (if (pinned == null) offset?.get(1)?.asFloat ?: 0f else 0f) * pxPerDp
         return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
     }
 
