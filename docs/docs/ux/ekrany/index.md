@@ -90,7 +90,11 @@ Wymagania: [C1 Pomiar pozycji](../wymagania-ekranow.md#c1-pomiar-pozycji). Nagł
 
 ## C2 Formularz zgłoszenia
 
-Makiety hi-fi C2 zatwierdził właściciel projektu 30.10.2026 razem z całą partią 2 (C1–C7, R1–R2, K1–K3). Według nich powstaje kod ekranu.
+Pierwszą wersję makiet C2 właściciel zatwierdził 30.10.2026. Wersja z 27.11.2026 pokazuje sześć stanów formularza według kodu aplikacji.
+
+Przycisk „Wybierz typ bariery” otwiera panel na cały ekran. „Zapisz” pozostaje na dole także przy czcionce 200%.
+Długie obrazy pokazują całą przewijaną treść. W aplikacji widać jej fragment nad przypiętym przyciskiem.
+Makiety pokazują docelowy obrys przycisków zdjęcia i ponowienia zapisu.
 
 Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgoszenia). Nagłówek w aplikacji: „Opisz barierę”, przy edycji „Popraw zgłoszenie”.
 
@@ -100,7 +104,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Nowe zgłoszenie: Budynek A-1 Gmach Główny, ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m, przycisk Zmień miejsce, wybór piętra od Piwnica do 3 piętro, pole Typ bariery z listą, Uciążliwość ze zdaniem Oceń dla osoby, dla której bariera jest najtrudniejsza, i trzema wyborami Utrudnienie, Tylko z pomocą, Blokada z ikoną i opisem, komunikat Ważne o twarzach i tablicach, Zrób zdjęcie bez ikony, pole Opis i przycisk Zapisz](obrazy/m-c2-formularz-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny.webp) | [![Ten sam formularz w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, opisy uciążliwości w kilku wierszach, Zapisz na końcu formularza](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp) |
+| [![Opisz barierę w budynku A-1. Karta miejsca, wybór piętra i typu bariery. Trzy opcje uciążliwości mają znak, nazwę i opis. Znak „Blokada” ma poziomą belkę. Pod ostrzeżeniem „Ważne” jest obrysowany przycisk „Zrób zdjęcie”, niżej opis i „Zapisz”.](obrazy/m-c2-formularz-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny.webp) | [![Pusty formularz w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-ciemny.webp) | [![Pusty formularz przy 200%. Tytuł pod przyciskiem „Wstecz”, opisy pod znakami, „Zapisz” przypięte.](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp) |
 
 ### C2: edycja w budynku bez planu (C-13)
 
@@ -108,7 +112,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Popraw zgłoszenie: Budynek C-13 Zintegrowane Centrum Studenckie, ok. 6 m od wejścia głównego, dokładność 1,2 m, napis Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter, pole Numer piętra z wartością 2 i pole Półpiętro, Typ bariery Inna bariera, wybrana uciążliwość Tylko z pomocą, zdjęcie progu, Zrób nowe zdjęcie, wypełniony Opis i Zapisz](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp) | [![Ta sama edycja w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pole numeru piętra i Półpiętro jedno pod drugim](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp) |
+| [![Popraw zgłoszenie w C-13. Numer piętra 2, pole „Półpiętro”, typ „Inna bariera” i zaznaczone „Tylko z pomocą”. Pod zdjęciem jest „Zrób nowe zdjęcie”, dalej wypełniony opis.](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp) | [![Edycja zgłoszenia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp) | [![Edycja przy 200%. Numer piętra i pole „Półpiętro” jedno pod drugim.](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp) |
 
 ### C2: błąd walidacji
 
@@ -116,7 +120,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd walidacji: nad formularzem Brakuje typu bariery. Uzupełnij to pole, aby zapisać; przy polu Typ bariery ten sam pogrubiony tekst z kołem ze znakiem „!” i ramka pola w kolorze błędu, reszta formularza wypełniona](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym: tekst błędu i ramka pola jasnołososiowe](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu przy polu w trzech wierszach](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp) |
+| [![Brakuje typu bariery. Komunikat nad formularzem powtarza się przy polu ze znakiem wykrzyknika. Pole ma ramkę błędu. Zaznaczona „Blokada” ma znak z jedną poziomą belką.](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp) | [![Błąd typu bariery w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp) | [![Błąd przy 200%. Komunikat przy polu zajmuje kilka wierszy.](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp) |
 
 ### C2: zmiana zgłoszenia przyjętego
 
@@ -124,7 +128,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Popraw zgłoszenie przyjęte: na górze Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator, niżej formularz z wybraną uciążliwością Utrudnienie, zdjęciem i przyciskiem Zapisz](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp) | [![Ten sam formularz zgłoszenia przyjętego w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie o nowym zgłoszeniu w kilku wierszach](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp) |
+| [![Popraw zgłoszenie przyjęte. Nad formularzem informacja, że zapis utworzy nowe zgłoszenie do sprawdzenia. Zaznaczone „Utrudnienie”, niżej zdjęcie i „Zapisz”.](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp) | [![Zmiana przyjętego zgłoszenia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp) | [![Zmiana przy 200%. Informacja o nowym zgłoszeniu nad kartą miejsca.](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp) |
 
 ### C2: wyjście bez zapisu
 
@@ -132,7 +136,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Wyjście bez zapisu po Wstecz: Wyjść bez zapisu? Wpisane pola nie zostaną zapisane, dwa przyciski Wyjdź bez zapisu i Wróć do formularza](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp) | [![To samo pytanie w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przyciski jeden pod drugim](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp) |
+| [![Okno nad przyciemnionym formularzem pyta „Wyjść bez zapisu?”. Można wrócić do formularza albo wyjść bez zapisu.](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp) | [![Potwierdzenie wyjścia w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp) | [![Okno przy 200%. Obie czynności mieszczą się pod pytaniem.](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp) |
 
 ### C2: błąd zapisu
 
@@ -140,7 +144,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie, przycisk Spróbuj ponownie, niżej wypełniony formularz](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad formularzem](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp) |
+| [![Za mało miejsca w telefonie. Pod komunikatem obrysowany przycisk „Spróbuj ponownie”. W formularzu zostają wybrane piętro, typ bariery, „Blokada” i zdjęcie.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp) | [![Błąd zapisu w ciemnym motywie.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp) | [![Błąd zapisu przy 200%. Komunikat i przycisk ponowienia nad kartą miejsca.](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp) |
 
 ## C3 Moje zgłoszenia
 
