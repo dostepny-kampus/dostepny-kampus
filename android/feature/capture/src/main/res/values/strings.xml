@@ -130,6 +130,8 @@
     <string name="szybkie_obiekt_winda">Winda</string>
     <string name="moje_naglowek">Moje zgłoszenia</string>
     <string name="moje_bez_internetu">Bez internetu</string>
+    <string name="moje_zapisano_w_telefonie">Zmiana zapisana w telefonie.</string>
+    <string name="moje_wyslemy_po_powrocie_sieci">Wyślemy ją, gdy wróci internet.</string>
     <string name="moje_czeka">Czeka na wysłanie: %1$d</string>
     <string name="moje_pusty">Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.</string>
     <string name="moje_w_telefonie">W telefonie</string>

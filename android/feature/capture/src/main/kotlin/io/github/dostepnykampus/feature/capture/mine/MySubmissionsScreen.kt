@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
@@ -43,15 +44,23 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel lista; w aplikacji z grafu Hilt
+ * @param hasJustSaved czy ekran otworzył się po zapisie zgłoszenia
  */
 @Composable
 fun MySubmissionsScreen(
     actions: MySubmissionsActions,
     modifier: Modifier = Modifier,
     viewModel: MySubmissionsViewModel = hiltViewModel(),
+    hasJustSaved: Boolean = false,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    MySubmissionsContent(state = state, actions = actions, modifier = modifier, onRetry = viewModel::retry)
+    MySubmissionsContent(
+        state = state,
+        actions = actions,
+        modifier = modifier,
+        onRetry = viewModel::retry,
+        hasJustSaved = hasJustSaved,
+    )
 }
 
 /**
@@ -64,6 +73,7 @@ fun MySubmissionsScreen(
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
  * @param onRetry „Spróbuj ponownie” po błędzie sprawdzania statusów
+ * @param hasJustSaved czy zgłoszenie właśnie zapisano
  */
 @Composable
 fun MySubmissionsContent(
@@ -71,19 +81,25 @@ fun MySubmissionsContent(
     actions: MySubmissionsActions,
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
+    hasJustSaved: Boolean = false,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
             if (state is MySubmissionsUiState.Ready) {
-                SubmissionList(state = state, actions = actions, onRetry = onRetry)
+                SubmissionList(state = state, actions = actions, onRetry = onRetry, hasJustSaved = hasJustSaved)
             }
         }
     }
 }
 
 @Composable
-private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmissionsActions, onRetry: () -> Unit) {
+private fun SubmissionList(
+    state: MySubmissionsUiState.Ready,
+    actions: MySubmissionsActions,
+    onRetry: () -> Unit,
+    hasJustSaved: Boolean,
+) {
     LazyColumn(
         contentPadding = PaddingValues(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -94,6 +110,9 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
         item {
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
+        if (hasJustSaved && !state.isOnline) {
+            item { OfflineSaveConfirmation() }
+        }
         items(state.list.items, key = { it.id }) { item ->
             val conflict = actions.onConflict.takeIf { item.hasVersionConflict }
             SubmissionCard(
@@ -103,6 +122,14 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
                 onConflict = conflict?.let { { it(item.id) } },
             )
         }
+    }
+}
+
+@Composable
+private fun OfflineSaveConfirmation() {
+    InfoPanel(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) {
+        Text(stringResource(R.string.moje_zapisano_w_telefonie), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.moje_wyslemy_po_powrocie_sieci), style = MaterialTheme.typography.bodyLarge)
     }
 }
 

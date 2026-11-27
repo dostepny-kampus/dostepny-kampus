@@ -28,6 +28,7 @@ fun AppNavigator.openReportForm(route: ReportFormRoute) {
 
 /** L2 → C3: „Moje zgłoszenia”. Wymagania: US8.1 */
 fun AppNavigator.mySubmissions() {
+    hasJustSavedReport = false
     leaving { add(MySubmissionsRoute) }
 }
 
@@ -85,6 +86,7 @@ fun AppNavigator.changeEditPlace() {
  * Wymagania: NFR-54, US9.1, US8.3
  */
 fun AppNavigator.reportSaved() {
+    hasJustSavedReport = current is ReportFormRoute || current is ReportEditRoute || current is MarkingRoute
     leaving {
         while (last().isCaptureRoute()) removeAt(lastIndex)
         if (last() != MySubmissionsRoute) add(MySubmissionsRoute)

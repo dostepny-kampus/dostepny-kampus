@@ -6,11 +6,13 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.feature.capture.conflict.VersionConflictScreen
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
@@ -58,7 +60,7 @@ private fun AppNavigator.ReportForm(route: ReportFormRoute) {
  * Wymagania: US8.1, US8.3, US9.3
  */
 @Composable
-internal fun AppNavigator.MySubmissions() {
+internal fun AppNavigator.MySubmissions(viewModel: MySubmissionsViewModel = hiltViewModel()) {
     val actions =
         MySubmissionsActions(
             onBack = { back() },
@@ -70,7 +72,7 @@ internal fun AppNavigator.MySubmissions() {
             onResendChange = { openEdit(it, mode = ReportEditMode.RESEND_OUTDATED) },
             onSync = { openSync() },
         )
-    MySubmissionsScreen(actions)
+    MySubmissionsScreen(actions = actions, viewModel = viewModel, hasJustSaved = hasJustSavedReport)
 }
 
 /**
