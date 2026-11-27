@@ -6,8 +6,6 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.cache.ServerCopyDao
-import io.github.dostepnykampus.core.database.cache.ServerCopyEntity
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
@@ -29,6 +27,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -42,27 +41,19 @@ import kotlin.coroutines.EmptyCoroutineContext
 class BuildingCatalogFailureTest {
     private val reads = AtomicInteger()
 
-    /** Wiersz: błąd zapisu kopii u prowadzącego → trzej wywołujący dostają go bez kolejnych zapytań do serwera. */
+    /** Wiersz: błąd serwera u prowadzącego → trzej wywołujący dostają go bez kolejnych zapytań do serwera. */
     @Test
-    fun asksServerOnceWhenCopyFails() {
+    fun asksServerOnceWhenServerFails() {
         val calls = AtomicInteger()
         val gate = CompletableDeferred<Unit>()
-        val failingCopy =
-            object : ServerCopyDao {
-                override suspend fun get(key: String): ServerCopyEntity? = null
-
-                override suspend fun save(entity: ServerCopyEntity) = error("disk full")
-
-                override suspend fun delete(key: String) = Unit
-            }
         val repository =
             BuildingCatalogRepository(
-                serverCopy = failingCopy,
+                serverCopy = null,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = {
                     calls.incrementAndGet()
                     gate.await()
-                    serverList()
+                    throw IOException("network down")
                 },
             ) { FILE_JSON }
         val messages =
@@ -74,7 +65,7 @@ class BuildingCatalogFailureTest {
                     results.map { it.getCompletionExceptionOrNull()?.message }
                 }
             }
-        assertEquals(List(WAITERS) { "disk full" }, messages, "wywołujący nie dostali tego samego błędu")
+        assertEquals(List(WAITERS) { "network down" }, messages, "wywołujący nie dostali tego samego błędu")
         assertEquals(1, calls.get(), "liczba zapytań do serwera")
     }
 
