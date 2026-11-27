@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -97,7 +99,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun returnsServerCatalogWhenSaveFails() {
+    fun keepsCatalogWhenSaveFails() {
         val calls = AtomicInteger()
         val repository =
             repository(
@@ -130,7 +132,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun emitsServerCatalogInUpdatesWhenSaveFails() {
+    fun emitsUpdatesWhenSaveFails() {
         val repository =
             repository(
                 remote = { listed("A-2") },
@@ -149,7 +151,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun returnsFileCatalogWhenRestoreFails() {
+    fun usesFileWhenRestoreFails() {
         val repository =
             repository(
                 remote = { OFFLINE },
@@ -167,7 +169,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun keepsServerCatalogWhenCancelledDuringSave() {
+    fun keepsCatalogAfterSaveCancel() {
         val calls = AtomicInteger()
         val saving = CompletableDeferred<Unit>()
         val blockSave = CompletableDeferred<Unit>()
@@ -204,11 +206,10 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun propagatesCancellationFromCopy() {
+    fun rethrowsCopyCancellation() {
         val saving = CompletableDeferred<Unit>()
-        val restoring = CompletableDeferred<Unit>()
         val block = CompletableDeferred<Unit>()
-        val online =
+        val blockingOnline =
             repository(
                 remote = { listed("A-2") },
                 dao =
@@ -219,47 +220,38 @@ class BuildingCatalogCacheTest {
                         },
                     ),
             )
-        val offline =
+        val throwingOnline =
+            repository(
+                remote = { listed("A-2") },
+                dao = copyDao(onSave = { throw CancellationException("cancelled save") }),
+            )
+        val throwingOffline =
             repository(
                 remote = { OFFLINE },
-                dao =
-                    copyDao(
-                        onGet = {
-                            restoring.complete(Unit)
-                            block.await()
-                            null
-                        },
-                    ),
+                dao = copyDao(onGet = { throw CancellationException("cancelled restore") }),
             )
+        var isCompleted = false
         runBlocking {
-            var cancelledSave = false
             val saveJob =
                 launch {
-                    try {
-                        online.catalog()
-                    } catch (cancelled: CancellationException) {
-                        cancelledSave = true
-                        throw cancelled
-                    }
+                    blockingOnline.catalog()
+                    isCompleted = true
                 }
             saving.await()
             saveJob.cancelAndJoin()
-            assertTrue(cancelledSave, "anulowanie podczas zapisu kopii wychodzi jako CancellationException")
-
-            var cancelledRestore = false
-            val restoreJob =
-                launch {
-                    try {
-                        offline.catalog()
-                    } catch (cancelled: CancellationException) {
-                        cancelledRestore = true
-                        throw cancelled
-                    }
-                }
-            restoring.await()
-            restoreJob.cancelAndJoin()
-            assertTrue(cancelledRestore, "anulowanie podczas odczytu kopii wychodzi jako CancellationException")
+            assertFalse(isCompleted, "anulowanie podczas zapisu kopii przerywa catalog()")
+            assertTrue(saveJob.isCancelled, "zadanie po anulowaniu zapisu ma stan anulowany")
         }
+        assertThrows(
+            CancellationException::class.java,
+            { runBlocking { throwingOnline.catalog() } },
+            "CancellationException podczas zapisu kopii wychodzi z catalog()",
+        )
+        assertThrows(
+            CancellationException::class.java,
+            { runBlocking { throwingOffline.catalog() } },
+            "CancellationException podczas odczytu kopii wychodzi z catalog()",
+        )
     }
 
     private fun copyDao(

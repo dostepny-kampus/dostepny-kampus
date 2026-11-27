@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.building
 
 import android.content.res.AssetManager
+import android.database.sqlite.SQLiteException
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.server.map
@@ -32,6 +33,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.IOException
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -197,14 +199,6 @@ public class BuildingCatalogRepository internal constructor(
         return result
     }
 
-    private suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? {
-        val outcome = runCatching { block() }
-        val error = outcome.exceptionOrNull()
-        if (error is CancellationException) throw error
-        if (error != null) Timber.w("Kopia katalogu budynków (%s): %s", action, error.javaClass.simpleName)
-        return outcome.getOrNull()
-    }
-
     private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
         reading.withLock {
             (if (isFresh) null else bundled)
@@ -235,6 +229,29 @@ internal fun assetRepository(
     )
 
 internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
+
+private suspend fun <T> copyOrNull(action: String, block: suspend () -> T): T? =
+    try {
+        block()
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: IOException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: SQLiteException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: IllegalStateException) {
+        logCopyFailure(action, error)
+        null
+    } catch (error: IllegalArgumentException) {
+        logCopyFailure(action, error)
+        null
+    }
+
+private fun logCopyFailure(action: String, error: Throwable) {
+    Timber.w("Kopia katalogu budynków (%s): %s", action, error.javaClass.simpleName)
+}
 
 private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
     { list().map { found -> BuildingList(found.source, found.apiBuildings()) } }
