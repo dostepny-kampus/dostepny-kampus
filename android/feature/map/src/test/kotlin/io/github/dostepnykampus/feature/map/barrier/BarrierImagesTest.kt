@@ -12,16 +12,12 @@ import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.style.BARRIER_NO_FLOOR_DP
 import io.github.dostepnykampus.feature.map.style.BARRIER_SIGN_DP
-import io.github.dostepnykampus.feature.map.style.CHOSEN_BARRIER_DP
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.barrierNoFloorImage
 import io.github.dostepnykampus.feature.map.style.barrierSignImage
 import io.github.dostepnykampus.feature.map.style.barrierWordImage
-import io.github.dostepnykampus.feature.map.style.chosenBarrierImage
-import io.github.dostepnykampus.feature.map.style.chosenNoFloorImage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,7 +51,7 @@ class BarrierImagesTest {
     }
 
     /**
-     * Wiersz: V1 z planem, znak bariery bez piętra ma dopisek „?”, więc jest innym obrazem niż zwykły i wybrany.
+     * Wiersz: V1 z planem, znak bariery bez piętra ma dopisek „?”, więc jest innym obrazem niż zwykły.
      *
      * Wymagania: US16.1, BR-14, NFR-21
      */
@@ -67,30 +63,15 @@ class BarrierImagesTest {
             val unknown = images.getValue(barrierNoFloorImage(severity))
             assertEquals("bok znaku z „?”", BARRIER_NO_FLOOR_DP * 2, unknown.width)
             assertFalse(
-                "wybrany znak z „?” różni się od wybranego bez „?”",
-                images.getValue(chosenNoFloorImage(severity)).sameAs(images.getValue(chosenBarrierImage(severity))),
+                "znak z „?” różni się od znaku bez „?”",
+                unknown.sameAs(images.getValue(barrierSignImage(severity))),
             )
         }
     }
 
-    /**
-     * Wiersz: V1, znak wybranej bariery jest osobnym, większym obrazem dla każdej uciążliwości.
-     *
-     * Wymagania: US1.5, NFR-21
-     */
-    @Test
-    fun enlargesChosenSign() {
-        val images = barrierImages(images(words = emptyList()))
-
-        val chosen = Severity.entries.map { images.getValue(chosenBarrierImage(it)) }
-        assertEquals(listOf(CHOSEN_BARRIER_DP * 2), chosen.map { it.width }.distinct())
-        assertTrue(chosen.first().width > images.getValue(barrierSignImage(Severity.entries.first())).width)
-        assertFalse(chosen.first().sameAs(chosen.last()))
-    }
-
     private fun signNames(): List<String> =
         Severity.entries.flatMap {
-            listOf(barrierSignImage(it), barrierNoFloorImage(it), chosenBarrierImage(it), chosenNoFloorImage(it))
+            listOf(barrierSignImage(it), barrierNoFloorImage(it))
         }
 
     private fun images(words: List<String>): MapImages {

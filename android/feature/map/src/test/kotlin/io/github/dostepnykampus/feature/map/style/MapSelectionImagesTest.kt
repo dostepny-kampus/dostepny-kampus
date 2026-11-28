@@ -72,7 +72,7 @@ class MapSelectionImagesTest {
         val selection = data.selection(entrance = entrance)
         target.showSelection(selectionLook(data, selection), selectionImages(selection, images))
 
-        assertEquals(listOf(entranceCaptionImage("Główne")), target.images)
+        assertEquals(listOf(pointCaptionImage("Główne")), target.images)
     }
 
     /** Zmiana zaznaczonego budynku nie dodaje żadnego obrazu. */

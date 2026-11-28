@@ -62,8 +62,8 @@ import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.touchedSymbols
-import io.github.dostepnykampus.feature.map.entrance.entranceCaption
 import io.github.dostepnykampus.feature.map.entrance.entranceImages
+import io.github.dostepnykampus.feature.map.entrance.pointCaption
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
@@ -693,8 +693,12 @@ internal fun Style.addMapImages(images: MapImages) {
 }
 
 /**
- * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą. Numery sal planu dodaje
+ * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego punktu. Numery sal planu dodaje
  * `showPlanData`. Wymagania: US3.3
  */
 internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> =
-    entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
+    pointCaption(
+        label = selection.entrance?.label ?: selection.barrierCaption,
+        colors = images.colors,
+        labelSize = images.labelSize,
+    )

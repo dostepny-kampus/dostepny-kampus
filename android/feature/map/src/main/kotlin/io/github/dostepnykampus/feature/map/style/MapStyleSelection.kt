@@ -15,7 +15,6 @@ import io.github.dostepnykampus.core.map.style.property
 import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
-import io.github.dostepnykampus.feature.map.campus.featureCollection
 import io.github.dostepnykampus.feature.map.campus.outlineOf
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -92,8 +91,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property labelsFilter filtr warstwy [LABELS_LAYER]: bez symbolu budynku z widocznym planem
  * @property entrancesFilter filtr warstwy [ENTRANCES_LAYER]
  * @property entrancesMinZoom najmniejsze powiększenie, przy którym rysuje się warstwa [ENTRANCES_LAYER]
- * @property chosenBarrierFilter filtr warstwy [CHOSEN_BARRIER_LAYER]
- * @property chosenEntrance dane GeoJSON źródła [CHOSEN_SOURCE]
+ * @property chosenPoint dane punktu zaznaczonego pinezką w źródle [CHOSEN_SOURCE]
  * @property planBuilding symbol budynku z widocznym planem; `null` bez planu
  * @property planFloor piętro planu w warstwach planu; `null` bez planu
  * @property planRoom sala wyróżniona w warstwach z [chosenRoomLayers]; `null` bez wyróżnienia
@@ -109,8 +107,7 @@ internal data class SelectionLook(
     val labelsFilter: JsonElement,
     val entrancesFilter: JsonElement,
     val entrancesMinZoom: Double,
-    val chosenBarrierFilter: JsonElement,
-    val chosenEntrance: JsonElement,
+    val chosenPoint: ChosenPoint,
     val planBuilding: String?,
     val planFloor: String?,
     val planRoom: String?,
@@ -144,8 +141,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
         labelsFilter = planned?.let(::withoutLabel) ?: ALL_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
         entrancesMinZoom = entrancesZoom,
-        chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
-        chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
+        chosenPoint = data.chosenPoint(selection),
         planBuilding = selection.plan?.building,
         planFloor = selection.plan?.floor,
         planRoom = selection.plan?.room,
@@ -154,7 +150,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
             expression(
                 "all",
                 barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
-                barriersByZoom(chosen),
+                barriersByZoom(chosen, selection.barrier),
             ),
         besideEntrance =
             BesideEntrance(minZoom = entrancesZoom, buildings = alone, pinnedEntrance = selection.entrance?.id),
@@ -222,8 +218,9 @@ internal fun MapStyleTarget.showSelection(
     filter(layer = LABELS_LAYER, filter = look.labelsFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
     minZoom(layer = ENTRANCES_LAYER, zoom = look.entrancesMinZoom)
-    filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
-    data(source = CHOSEN_SOURCE, geoJson = geoJsonText(CHOSEN_SOURCE) { look.chosenEntrance })
+    data(source = CHOSEN_SOURCE, geoJson = geoJsonText(CHOSEN_SOURCE) { look.chosenPoint.data })
+    layout(layer = ENTRANCE_PIN_LAYER, property = "icon-offset", value = pinOffset(look))
+    layout(layer = ENTRANCE_CAPTION_LAYER, property = "icon-offset", value = captionOffset(look))
     showPlanFloor(floor = look.planFloor)
     showChosenRoom(floor = look.planFloor, room = look.planRoom)
     data(source = ROOM_STEPS_SOURCE, geoJson = geoJsonText(ROOM_STEPS_SOURCE) { look.roomSteps })

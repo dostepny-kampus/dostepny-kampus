@@ -23,7 +23,7 @@ Tekstowe listy, wyszukiwanie i arkusze stosują wspólną kolumnę w szerokim ok
 - `feature.map.plan` — plan piętra budynku po przybliżeniu mapy i arkusz znaku planu.
 - `feature.map.room` — znaleziona sala: wynik pod polem szukaj, karta sali i droga z czynnościami zmiany kroku.
 - `feature.map.search` — wyniki pod polem szukaj: budynki i sale, prośba o budynek i karta „brak wyniku”.
-- `feature.map.style` — styl mapy: warstwy i obrazy, w tym znak bariery obok pinezki wybranego wejścia.
+- `feature.map.style` — styl mapy: warstwy i obrazy, w tym pinezka i podpis wybranego punktu.
 - `feature.map.trace` — sekcje śladu systemowego (Perfetto) wokół pracy mapy.
 
 ## API

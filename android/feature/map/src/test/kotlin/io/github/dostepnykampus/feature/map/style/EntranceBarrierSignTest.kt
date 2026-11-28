@@ -111,7 +111,7 @@ class EntranceBarrierSignTest {
         val zero = """["literal",[0.0,0.0]]"""
         val moved = """["coalesce",["get","$BARRIER_OFFSET"],$zero]"""
         val expected = """["step",["zoom"],$zero,17.0,$moved]"""
-        assertEquals(listOf(expected, expected), signOffsets(data.selection()), "Przesunięcie od progu znaków wejść")
+        assertEquals(listOf(expected), signOffsets(data.selection()), "Przesunięcie od progu znaków wejść")
     }
 
     /**
@@ -125,7 +125,7 @@ class EntranceBarrierSignTest {
         val match = """["match",["to-string",["get","building"]],["C-13"],$moved,$zero]"""
         val expected = """["step",["zoom"],$zero,0.0,$match]"""
         assertEquals(
-            listOf(expected, expected),
+            listOf(expected),
             signOffsets(data.selection(building = "C-13")),
             "Przy zaznaczonym budynku przesunięcie tylko przy jego wejściach",
         )
@@ -150,7 +150,7 @@ class EntranceBarrierSignTest {
         val wordMoves = """["coalesce",["get","word_offset"],$still]"""
         val expectedSign = """["step",["zoom"],["case",$pin,$sign,$zero],17.0,["case",$pin,$sign,$signMoves]]"""
         val expectedWord = """["step",["zoom"],["case",$pin,$word,$still],17.0,["case",$pin,$word,$wordMoves]]"""
-        assertEquals(listOf(expectedSign, expectedSign), signOffsets(selection), "Znak obok pinezki")
+        assertEquals(listOf(expectedSign), signOffsets(selection), "Znak obok pinezki")
         assertEquals(listOf(expectedWord), iconOffsets(selection, listOf(BARRIER_WORDS_LAYER)), "Słowo obok znaku")
         val beside = selectionLook(data, selection).besideEntrance
         assertEquals(48.0, beside.pinnedOffset("w1"), "Przesunięcie używane przy dotknięciu")
@@ -183,8 +183,29 @@ class EntranceBarrierSignTest {
         )
     }
 
-    private fun signOffsets(selection: MapSelection): List<String> =
-        iconOffsets(selection, listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER))
+    /** Pinezka dzieli przesunięcie znaku bariery przy wejściu. Wymagania: US1.5, US2.2, NFR-21 */
+    @Test
+    fun offsetsPinBesideEntrance() {
+        val shown = data.withBarriers(listOf(barrier("b", Severity.BLOCKING, entrance = "w1")))
+        val selected = shown.selection().copy(barrier = "b", barrierCaption = "Schody przy wejściu")
+        val look = selectionLook(shown, selected)
+        val properties =
+            look.chosenPoint.data
+                .getValue("features")
+                .jsonArray
+                .single()
+                .jsonObject
+                .getValue("properties")
+                .jsonObject
+        val sign = properties.getValue(BARRIER_OFFSET).jsonArray
+        val label = properties.getValue(BARRIER_CAPTION_OFFSET).jsonArray
+        assertEquals(look.besideEntrance.signOffset(), pinOffset(look), "pinezka ma przesunięcie znaku")
+        assertEquals(sign[0], label[0], "podpis jest w osi znaku")
+        val gap = label[1].jsonPrimitive.double - sign[1].jsonPrimitive.double
+        assertEquals(BARRIER_SIGN_DP / 2.0 + 2, gap, 1e-9, "podpis jest poniżej znaku")
+    }
+
+    private fun signOffsets(selection: MapSelection): List<String> = iconOffsets(selection, listOf(BARRIERS_LAYER))
 
     private fun iconOffsets(selection: MapSelection, ids: List<String>): List<String> {
         val style = Json.parseToJsonElement(campusMapStyle(data, selection, styleColors())).jsonObject
