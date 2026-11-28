@@ -8,12 +8,9 @@ package io.github.dostepnykampus.feature.voice
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 
 /**
- * Rozpoznaje grupę barier w transkrypcji [text], np. „za wąskie drzwi” albo „winda nie działa”.
- * Słowa grupy mogą stać w dowolnym miejscu zdania, bo jedna wypowiedź może wypełnić kilka slotów.
- * Zwraca `null`, gdy wypowiedź nie ma słowa ze słownika albo ma słowa z różnych grup:
- * wtedy dialog pyta o grupę jeszcze raz. „Inne” albo „coś innego” wybiera grupę „inne”
- * tylko jako cała odpowiedź, więc „inna winda” to dalej winda. Dłuższe wyrażenia słownika wygrywają z krótszymi:
- * „schody przy wejściu” to wejście, a same „schody” to komunikacja pionowa.
+ * Rozpoznaje grupę barier w transkrypcji [text] („za wąskie drzwi”, „winda nie działa”) w dowolnym miejscu zdania.
+ * Zwraca `null`, gdy brak słowa ze słownika albo słowa wskazują różne grupy; wtedy dialog pyta ponownie.
+ * „Inne” wybiera grupę „inne” tylko jako cała odpowiedź; dłuższe wyrażenia wygrywają („schody przy wejściu”).
  *
  * Wymagania: US4.3
  *
