@@ -165,7 +165,7 @@ internal fun styleBuilder(style: String): Style.Builder = Style.Builder().fromJs
 internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${marking.name}"
 
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
-internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
+internal fun pointCaptionImage(label: String): String = "punkt: $label"
 
 private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
@@ -175,7 +175,7 @@ private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement)
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         put(key = PATHS_SOURCE, element = geoJsonSource(data.paths))
-        put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
+        put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenPoint.data))
         put(key = PLAN_SOURCE, element = geoJsonSource(plan))
         put(key = ROOM_STEPS_SOURCE, element = geoJsonSource(look.roomSteps))
     }
@@ -213,14 +213,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         ).forEach { add(it) }
         val labels = symbolLayer(id = LABELS_LAYER, source = LABELS_SOURCE, image = property(LABEL))
         add(JsonObject(labels + ("filter" to look.labelsFilter)))
-        add(
-            chosenBarrierLayer(
-                filter = look.chosenBarrierFilter,
-                beside = look.besideEntrance,
-                planBuilding = look.planBuilding,
-            ),
-        )
-        chosenLayers().forEach { add(it) }
+        chosenLayers(look).forEach { add(it) }
         add(roomStepsLayer())
     }
 

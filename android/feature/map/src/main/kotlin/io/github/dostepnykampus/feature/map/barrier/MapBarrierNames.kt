@@ -38,11 +38,12 @@ internal fun BarrierDescriptions(
     barriers: ShownBarriers,
     modifier: Modifier = Modifier,
     planBuilding: String? = null,
+    selected: String? = null,
 ) {
     Column(modifier) {
         barriers.barriers.forEach { barrier ->
             key(barrier.id) {
-                val text = barrierName(barrier = barrier, planBuilding = planBuilding)
+                val text = barrierName(barrier, planBuilding, isSelected = barrier.id == selected)
                 Spacer(Modifier.size(NodeSize).semantics { contentDescription = text })
             }
         }
@@ -50,10 +51,16 @@ internal fun BarrierDescriptions(
 }
 
 @Composable
-private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?): String {
+private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?, isSelected: Boolean): String {
     val severity = stringResource(barrier.severity.nameRes())
     val type = barrier.type?.run { stringResource(nameRes()).replaceFirstChar(Char::lowercaseChar) }
-    val what = if (type == null) severity else stringResource(R.string.mapa_bariera_typ, severity, type)
+    val what =
+        when {
+            isSelected && type != null -> stringResource(R.string.mapa_zaznaczona_bariera_typ, severity, type)
+            isSelected -> stringResource(R.string.mapa_zaznaczona_bariera, severity)
+            type != null -> stringResource(R.string.mapa_bariera_typ, severity, type)
+            else -> severity
+        }
     val symbol = barrier.buildingSymbol
     val place =
         if (symbol == null) {
@@ -69,3 +76,10 @@ private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?): String
         place
     }
 }
+
+/** Podpis bariery [id] z jej typem, jeśli bariera jest wśród [this]. */
+@Composable
+internal fun ShownBarriers.caption(id: String?): String? =
+    barriers.firstOrNull { it.id == id }?.let {
+        stringResource(it.type?.nameRes() ?: R.string.mapa_bariera_bez_typu)
+    }

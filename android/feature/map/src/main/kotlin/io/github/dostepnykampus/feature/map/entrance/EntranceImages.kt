@@ -19,12 +19,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_PIN_IMAGE
-import io.github.dostepnykampus.feature.map.style.entranceCaptionImage
 import io.github.dostepnykampus.feature.map.style.entranceMarkImage
 import io.github.dostepnykampus.feature.map.style.entranceSign
 import io.github.dostepnykampus.feature.map.style.labelImage
+import io.github.dostepnykampus.feature.map.style.pointCaptionImage
 import kotlin.math.ceil
 
 private const val PIN_UNIT_DP = 2f
@@ -46,9 +45,9 @@ internal fun entranceImages(colors: MapColors, density: Float): Map<String, Bitm
     return marks + (ENTRANCE_PIN_IMAGE to pinImage(unitPx = density * PIN_UNIT_DP, colors = colors))
 }
 
-/** Obraz podpisu z nazwą zaznaczonego wejścia [selected] o wysokości [labelSize]; bez zaznaczenia brak obrazów. */
-internal fun entranceCaption(selected: SelectedEntrance?, colors: MapColors, labelSize: Float): Map<String, Bitmap> =
-    selected?.let { mapOf(entranceCaptionImage(it.label) to labelImage(it.label, colors, labelSize)) }.orEmpty()
+/** Obraz podpisu zaznaczonego punktu [label] o wysokości [labelSize]. */
+internal fun pointCaption(label: String?, colors: MapColors, labelSize: Float): Map<String, Bitmap> =
+    label?.let { mapOf(pointCaptionImage(it) to labelImage(it, colors, labelSize)) }.orEmpty()
 
 private fun pinImage(unitPx: Float, colors: MapColors): Bitmap {
     val size = Size(width = ceil(PIN_WIDTH * unitPx), height = ceil(PIN_HEIGHT * unitPx))

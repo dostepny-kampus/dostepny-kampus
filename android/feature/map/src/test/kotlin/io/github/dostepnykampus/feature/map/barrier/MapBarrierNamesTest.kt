@@ -49,6 +49,20 @@ class MapBarrierNamesTest {
         compose.onNodeWithContentDescription("Tylko z pomocą, budynek C-13").assertExists()
     }
 
+    /** Nazwa wybranego znaku bariery zapowiada zaznaczenie. Wymagania: NFR-18 */
+    @Test
+    fun namesTheSelectedBarrier() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                BarrierDescriptions(barriers = ShownBarriers(listOf(stairs, curb)), selected = stairs.id)
+            }
+        }
+
+        val selected = "Zaznaczona bariera: Blokada, schody przy wejściu, budynek A-1"
+        compose.onNodeWithContentDescription(selected).assertExists()
+        compose.onNodeWithContentDescription("Utrudnienie: krawężnik, poza budynkiem").assertExists()
+    }
+
     /**
      * Wiersz: V1 z planem budynku A-1, TalkBack dopowiada „piętro nieznane” tylko barierze tego budynku bez piętra.
      *

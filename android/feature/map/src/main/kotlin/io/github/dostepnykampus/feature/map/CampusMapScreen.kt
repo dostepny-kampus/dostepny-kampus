@@ -46,6 +46,7 @@ import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
+import io.github.dostepnykampus.feature.map.barrier.caption
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
@@ -222,7 +223,7 @@ fun CampusMapScreen(
                         motion = motion,
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
-                        onEmptyMapClick = onEmptyMapClick,
+                        onEmptyMap = onEmptyMapClick,
                         onRoomClick = onRoomClick,
                         entrance = entranceActions,
                         room = room,
@@ -329,7 +330,7 @@ private fun MapArea(
             .then(if (sheet.isEntranceFull) Modifier.clearAndSetSemantics {} else Modifier)
     Box(modifier) {
         content(shown)
-        BarrierDescriptions(barriers = shown, planBuilding = planBuilding)
+        BarrierDescriptions(barriers = shown, planBuilding = planBuilding, selected = sheet.signs.barrierId)
     }
 }
 
@@ -346,7 +347,7 @@ private fun CampusMap(
     motion: MapMotion?,
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
-    onEmptyMapClick: () -> Unit,
+    onEmptyMap: () -> Unit,
     onRoomClick: (FoundRoom) -> Unit,
     entrance: EntranceActions,
     room: OpenRoom?,
@@ -356,7 +357,6 @@ private fun CampusMap(
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val signs = sheet.signs
     val isRoomOnMap = room != null && !isRoomFull
     val (state, rooms) =
         rememberCampusScene(
@@ -367,15 +367,16 @@ private fun CampusMap(
             size = size,
             top = cameraTop,
             motion = motion,
-            room = RoomScene(room = room, isOnMap = isRoomOnMap, plan = plan.shown, sign = signs.planSignId),
+            room = RoomScene(room = room, isOnMap = isRoomOnMap, plan = plan.shown, sign = sheet.signs.planSignId),
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val move = state.move
         if (state.scene != null && move != null && state.limits != null) {
-            val pinned = signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
+            val pinned = sheet.signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
+            val mark = sheet.signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned)
             mapView.Show(
                 data = state.scene.data,
-                selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
+                selection = mark.copy(barrierCaption = barriers.caption(sheet.signs.barrierId)),
                 move = move,
                 inset = state.inset,
                 frame = state.frame,
@@ -383,9 +384,9 @@ private fun CampusMap(
                     areas.acknowledge()
                     plan.onView(view.also { state.keep(it) }.also(rooms::onIdle))
                 },
-                onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
+                onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMap).also { sheet.signs.close() } },
                 onSignTouch =
-                    signs.signTouch(room, state.taps::dismiss) {
+                    sheet.signs.signTouch(room, state.taps::dismiss) {
                         plan.shown?.roomAt(it)?.let(rooms.tapped(onRoomClick))
                     },
                 modifier = Modifier.fillMaxSize(),
@@ -406,7 +407,7 @@ private fun CampusMap(
                 val open =
                     OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
-                    signs.measureRoom(height = it, card = this)
+                    sheet.signs.measureRoom(height = it, card = this)
                 }
             }
         }
