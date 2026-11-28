@@ -11,6 +11,7 @@ import android.graphics.RectF
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.SemanticsMatcher
@@ -183,6 +184,7 @@ class CameraFlightDeviceTest {
         composeRule.waitUntil(READY_TIMEOUT_MS) { hasRenderedPin(map, barrierId = barrier.id) }
         recordMap(map, "v1-barrier-selected")
 
+        SystemClock.sleep(ViewConfiguration.getDoubleTapTimeout().toLong() + 1)
         tapMap(map, location)
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             nodeExists(hasContentDescription("Zaznaczone wejście:", substring = true)) &&
