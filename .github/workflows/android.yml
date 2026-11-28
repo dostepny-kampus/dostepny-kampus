@@ -149,7 +149,7 @@ jobs:
           echo no | "$sdk/avdmanager" create avd --force -n kampus -k "$IMAGE"
           "$ANDROID_HOME/emulator/emulator" -accel-check
           nohup "$ANDROID_HOME/emulator/emulator" -avd kampus -no-window -no-audio -no-boot-anim \
-            -no-snapshot -gpu swiftshader_indirect -camera-back none > "$RUNNER_TEMP/emulator.log" 2>&1 &
+            -no-snapshot -gpu lavapipe -camera-back none > "$RUNNER_TEMP/emulator.log" 2>&1 &
           if ! timeout 600 bash -c 'adb wait-for-device && until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 5; done'; then
             echo "::error title=Emulator::Emulator API ${{ matrix.api }} nie uruchomił się w 10 minut."
             cat "$RUNNER_TEMP/emulator.log"
