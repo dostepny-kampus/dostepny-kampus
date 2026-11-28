@@ -45,18 +45,19 @@ class BarrierGroupSpeechTest {
         assertEquals(
             BarrierGroup.VERTICAL_CIRCULATION,
             recognizeBarrierGroup("Zgłaszam, że winda na pierwszym piętrze nie działa, zdjęcie już mam"),
+            "Grupa w zdaniu z innymi slotami",
         )
     }
 
     @Test
-    fun leavesSlotEmptyWithoutDictionaryWord() {
+    fun emptyWithoutDictionaryWord() {
         listOf("", "  … ", "tak", "nie wiem", "tutaj", "program").forEach { phrase ->
             assertNull(recognizeBarrierGroup(phrase), "Wypowiedź bez słowa ze słownika: $phrase")
         }
     }
 
     @Test
-    fun leavesSlotEmptyWhenWordsPointToDifferentGroups() {
+    fun emptyForTwoGroups() {
         listOf("Ciężkie drzwi i zepsuta winda", "toaleta i parking").forEach { phrase ->
             assertNull(recognizeBarrierGroup(phrase), "Wypowiedź z dwiema grupami: $phrase")
         }
