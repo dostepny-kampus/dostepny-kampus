@@ -101,7 +101,7 @@ jobs:
         # z serwerem i bazą uruchomionymi na runnerze, na API równym `targetSdk`; porażka każdego wariantu czerwieni
         # `budowanie`.
         include:
-          - { api: 26, zestaw: aplikacja }
+          - { api: 26, zestaw: aplikacja, gpu: lavapipe }
           - { api: 36, zestaw: aplikacja }
           - { api: '37.0', zestaw: system }
     env:
@@ -139,6 +139,7 @@ jobs:
         timeout-minutes: 15
         env:
           ANDROID_AVD_HOME: ${{ runner.temp }}/avd
+          EMULATOR_GPU: ${{ matrix.gpu || 'swiftshader_indirect' }}
         run: |
           sdk="$ANDROID_HOME/cmdline-tools/latest/bin"
           (yes || true) | "$sdk/sdkmanager" --licenses > /dev/null
@@ -149,7 +150,7 @@ jobs:
           echo no | "$sdk/avdmanager" create avd --force -n kampus -k "$IMAGE"
           "$ANDROID_HOME/emulator/emulator" -accel-check
           nohup "$ANDROID_HOME/emulator/emulator" -avd kampus -no-window -no-audio -no-boot-anim \
-            -no-snapshot -gpu swiftshader_indirect -camera-back none > "$RUNNER_TEMP/emulator.log" 2>&1 &
+            -no-snapshot -gpu "$EMULATOR_GPU" -camera-back none > "$RUNNER_TEMP/emulator.log" 2>&1 &
           if ! timeout 600 bash -c 'adb wait-for-device && until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 5; done'; then
             echo "::error title=Emulator::Emulator API ${{ matrix.api }} nie uruchomił się w 10 minut."
             cat "$RUNNER_TEMP/emulator.log"
