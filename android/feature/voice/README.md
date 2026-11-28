@@ -6,17 +6,17 @@ Obsługa dialogu głosowego i normalizacja tekstu z rozpoznawania mowy.
 
 ## Pakiety
 
-- `feature.voice` — normalizacja tekstu, polecenia wspólne dla kroków i kontrakt rozpoznawania mowy.
+- `feature.voice` — normalizacja tekstu, polecenia wspólne dla kroków, grupa barier z wypowiedzi i kontrakt rozpoznawania mowy.
 
 ## API
 
-Funkcje `normalizeSpeechText` i `recognizeSpeechCommand`, typ `SpeechCommand`, interfejs `SpeechToText` i jego wynik
+Funkcje `normalizeSpeechText`, `recognizeSpeechCommand` i `recognizeBarrierGroup`, typ `SpeechCommand`, interfejs `SpeechToText` i jego wynik
 `SpeechResult` w pakiecie `feature.voice`.
 Atrapa `FakeSpeechToText` jest w testach modułu.
 
 ## Zależności
 
-Brak zależności od innych modułów projektu.
+- `:core:model`
 
 ## Czego moduł nie robi
 

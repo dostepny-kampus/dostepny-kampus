@@ -9,5 +9,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:model"))
     testImplementation(libs.kotlinx.coroutines.test)
 }
